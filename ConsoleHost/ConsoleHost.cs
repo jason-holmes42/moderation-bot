@@ -1,6 +1,6 @@
 ﻿namespace ConsoleHost
 {
-    internal class Program
+    internal class ConsoleHost
     {
         static void Main(string[] args)
         {

@@ -1,6 +1,6 @@
 ﻿namespace BotCore
 {
-    public class Class1
+    public class BotCore
     {
 
     }

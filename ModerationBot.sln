@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChatReplayProvider", "ChatR
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleHost", "ConsoleHost\ConsoleHost.csproj", "{602F32DF-5DCA-4109-BA27-ECE9E2CBD2BB}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WPF Client", "WPF Client\WPF Client.csproj", "{6C2FDAB1-2C42-4682-8B5E-63DE66D55FFC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{602F32DF-5DCA-4109-BA27-ECE9E2CBD2BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{602F32DF-5DCA-4109-BA27-ECE9E2CBD2BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{602F32DF-5DCA-4109-BA27-ECE9E2CBD2BB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C2FDAB1-2C42-4682-8B5E-63DE66D55FFC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C2FDAB1-2C42-4682-8B5E-63DE66D55FFC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C2FDAB1-2C42-4682-8B5E-63DE66D55FFC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C2FDAB1-2C42-4682-8B5E-63DE66D55FFC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
