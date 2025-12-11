@@ -4,13 +4,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BotCore
+namespace BotCore;
+
+// Defines a data container for incoming chat messages for use by the bot. ChatProviders convert incoming data into a ChatMessage before passing it on to the BotCore for processing.
+public class ChatMessage
 {
-    // Defines a data container for incoming chat messages for use by the bot. ChatProviders convert incoming data into a ChatMessage before passing it on to the BotCore for processing.
-    public class ChatMessage
+    public string username;
+    public string message;
+    public DateTime timestamp;
+
+    public ChatMessage(string user, string msg, DateTime msgTime)
     {
-        public string username;
-        public string message;
-        public DateTime timestamp;
+        username = user;
+        message = msg;
+        timestamp = msgTime;
     }
 }

@@ -1,7 +1,7 @@
-﻿namespace BotCore
-{
-    public class BotCore
-    {
+﻿namespace BotCore;
 
-    }
+// Core functionality for the moderation bot.
+public class BotCore
+{
+
 }
