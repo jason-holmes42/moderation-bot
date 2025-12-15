@@ -4,7 +4,7 @@ using System.Text.Json;
 
 namespace ChatReplayProvider;
 
-// A JSON receptacle class for incoming Twitch data. Can be reused between ChatReplayProvider and TwitchChatProvider
+// A JSON receptacle class for incoming Twitch data. Only suitable for VOD replay chat logs used by Chat Replay.
 public class TwitchJSONData
 {
     public TwitchCommenterData commenter { get; init; }
@@ -31,7 +31,7 @@ public class ChatReplayProvider : IChatProvider
     public event Action<ChatMessage>? OnMessageReceived;
 
     // Temporary display test, to be replaced with actual functionality once complete.
-    public void ProvideTestChat()
+    public async Task StartAsync()
     {
         Console.WriteLine("Initiating Test Chat");
         string[] testMessages =
@@ -56,10 +56,10 @@ public class ChatReplayProvider : IChatProvider
         Console.WriteLine("Begin Playback");
         for (int i = 0; i < testMessages.Length; i++)
         {
-            tempMessage = ParseData(testMessages[i]);                           // Convert the raw string data into ChatMessage
-            MessageReceived(tempMessage);                                       // Fire OnMessageReceived event
-            Thread.Sleep((tempMessage.offsetSeconds - timeElapsed) * 1000);     // Thread.Sleep wants times in milliseconds but we're measuring by seconds, so multiply by 1000
-            timeElapsed += tempMessage.offsetSeconds - timeElapsed;             // Update playback time elapsed for future message timing
+            tempMessage = ParseData(testMessages[i]);                               // Convert the raw string data into ChatMessage
+            MessageReceived(tempMessage);                                           // Fire OnMessageReceived event
+            await Task.Delay((tempMessage.offsetSeconds - timeElapsed) * 1000);     // Delay wants times in milliseconds but we're measuring by seconds, so multiply by 1000
+            timeElapsed += tempMessage.offsetSeconds - timeElapsed;                 // Update playback time elapsed for future message timing
         }
 
         Console.WriteLine("Attempting Test 2");
@@ -68,7 +68,7 @@ public class ChatReplayProvider : IChatProvider
         {
             tempMessage = ParseData(testMessages2[i]);
             MessageReceived(tempMessage);
-            Thread.Sleep((tempMessage.offsetSeconds - timeElapsed) * 1000);
+            await Task.Delay((tempMessage.offsetSeconds - timeElapsed) * 1000);
             timeElapsed += tempMessage.offsetSeconds - timeElapsed;
         }
     }
@@ -79,8 +79,8 @@ public class ChatReplayProvider : IChatProvider
         // Convert the raw JSON string into meaningful data
         TwitchJSONData? DataJSON = JsonSerializer.Deserialize<TwitchJSONData>(raw);
         DateTime JSONTime = DateTime.Parse(DataJSON.created_at, null, System.Globalization.DateTimeStyles.RoundtripKind);
-        // TODO: Deserialization error testing, try/catchk
-        Console.WriteLine($"Captured {DataJSON.content_offset_seconds} offset seconds.");
+        // TODO: Deserialization error testing, try/catch
+        
         // Return a ChatMessage bearing the JSON data
         return new ChatMessage(DataJSON.commenter.display_name, DataJSON.message.body, JSONTime, DataJSON.content_offset_seconds);
     }

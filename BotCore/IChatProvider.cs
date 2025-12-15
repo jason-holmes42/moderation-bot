@@ -11,6 +11,7 @@ namespace BotCore;
 public interface IChatProvider
 {
     Task SendMessage(string message);               // Stub for sending messages to the given platform. Not (meaningfully) implemented in this project.
+    Task StartAsync();                              // The asynchronous processing of incoming messages.
 
     event Action<ChatMessage> OnMessageReceived;    // Event for handling incoming data
 }
