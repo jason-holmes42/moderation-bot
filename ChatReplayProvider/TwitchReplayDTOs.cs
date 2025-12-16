@@ -11,11 +11,11 @@ namespace ChatReplayProvider
     {
         // The VOD replay chat log root/top-level JSON structure:
 
-        // FileInfo - Version and creation information; not relevant.
-        // streamer - Streamer information; name, login, id. Not currently relevant, but might be useful for expanded functionality.
-        // clipper - null; only used for clips, not full VOD replays. Not relevant.
-        // video - VOD details; title, description (written by streamer), ID, length in seconds, game, chapter information. Not relevant.
-        public List<TwitchCommentsData> comments { get; init; }   // All comments are stored here.
+        // FileInfo - Object containing version and creation information; not relevant.
+        // streamer - Object containing streamer information; name, login, id. Not currently relevant, but might be useful for expanded functionality.
+        // clipper - null (but probably an object containing user information); only used for clips, not full VOD replays. Not relevant.
+        // video - Object containing VOD details; title, description (written by streamer), ID, length in seconds, game, chapter information. Not relevant.
+        public List<TwitchCommentsData> comments { get; init; }   // Object containing all chat comments recorded in a VOD.
         // embeddedData - null; not relevant.
     }
 
@@ -23,6 +23,7 @@ namespace ChatReplayProvider
     public class TwitchCommentsData
     {
         // The 'comments' object is a simple time-sorted (by content_offset_seconds) list of all comments throughout the VOD.
+        // Each comment contains a variety of information regarding the user and the message contents.
 
         // _id - unique ID (UID) string for the comment. Not currently relevant.
         // created_at - ISO8601 date/time for when the comment was added to the generated log file. Not relevant.
@@ -38,6 +39,8 @@ namespace ChatReplayProvider
     // Receptacle for the nested commenter information within the comments data.
     public class TwitchCommenterData
     {
+        // The 'commenter' object contains a variety of information relating to the user that sent a message in chat.
+
         public string display_name { get; init; }               // The display name of the commenter. Necessary for proper display and for issuing reactions / punishments.
         // _id - UID for the commenter. Not currently relevant.
         // name - The commenter's Twitch-public name string; same as display_name, but lowercase. Not currently relevant.
@@ -50,6 +53,8 @@ namespace ChatReplayProvider
     // Receptacle for the nested message information within the comments data.
     public class TwitchMessageData
     {
+        // The 'message' object contains a variety of information about the message; the body of the message, bits spent, emoticons, etc.
+
         public string body { get; init; }                       // The contents of the chat message
         // bits_spent - The amount of bits spent in the message. Not currently relevant, but some chats allow users to spend bits to highlight their message, so might be useful for expansion.
         // fragments - An object containing the body of the message divided into multiple objects by every emoticon used. Sub-objects include the 'text' for the fragment and 'emoticon' which is an object containing 'emoticon_id' the UID for the Twitch emoticon.

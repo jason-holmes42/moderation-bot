@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,11 +13,13 @@ public class ChatMessage
     public string username;
     public string message;
     public int offsetSeconds;
+    public string timestamp = "";
 
-    public ChatMessage(string user, string msg, int offset = 0)
+    public ChatMessage(string user, string msg, int offset = 0, string time = "")
     {
         username = user;
         message = msg;
         offsetSeconds = offset;
+        timestamp = time;
     }
 }

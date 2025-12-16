@@ -21,6 +21,6 @@ internal class ConsoleHost
     // Take a ChatMessage and display it in the console.
     static void ShowMessage(ChatMessage data)
     {
-        Console.WriteLine(data.username + ": " + data.message);
+        Console.WriteLine($"[{data.timestamp}] {data.username}: {data.message}");
     }
 }

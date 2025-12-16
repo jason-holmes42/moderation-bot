@@ -10,4 +10,10 @@
     <ProjectReference Include="..\BotCore\BotCore.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="replayLogs\Full Log.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
