@@ -11,14 +11,12 @@ public class ChatMessage
 {
     public string username;
     public string message;
-    public DateTime timestamp;
     public int offsetSeconds;
 
-    public ChatMessage(string user, string msg, DateTime msgTime, int offset = 0)
+    public ChatMessage(string user, string msg, int offset = 0)
     {
         username = user;
         message = msg;
-        timestamp = msgTime;
         offsetSeconds = offset;
     }
 }
