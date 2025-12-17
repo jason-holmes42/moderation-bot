@@ -5,21 +5,46 @@ using ChatReplayProvider;
 // The console host and driver for the bot. Used to display incoming data once it has been converted. Primarily for early testing and designed to be supplanted by a more feature-rich WPF console display.
 internal class ConsoleHost
 {
+    IChatProvider chatProvider;
+    BotCore botCore;
+
     static async Task Main(string[] args)
     {
+        ConsoleHost consoleHost = new ConsoleHost();
+        
+        await consoleHost.Run();        
+    }
+
+    async Task Run()
+    {
         // Initialize bot
+        botCore = InitializeBot();
 
         // Initialize chat provider. This is where you'd insert Chat Provider selection logic
         ChatReplayProvider chatReplay = new ChatReplayProvider();
-        chatReplay.OnMessageReceived += ShowMessage;
+        chatReplay.OnMessageReceived += ProcessMessage;
 
         // Enter processing loop
         await chatReplay.StartAsync();
+    }
 
+    // Instantiate a BotCore object and return it. Separated as its own function for future-proofing.
+    BotCore InitializeBot()
+    {
+        return new BotCore();
+    }
+
+    // Send the message to the bot for processing, then display it
+    void ProcessMessage(ChatMessage data)
+    {
+        // send to bot for processing (filtering, command reactions, etc.)
+        botCore.ProcessMessage(data);
+
+        ShowMessage(data);
     }
 
     // Take a ChatMessage and display it in the console.
-    static void ShowMessage(ChatMessage data)
+    void ShowMessage(ChatMessage data)
     {
         Console.WriteLine($"[{data.timestamp}] {data.username}: {data.message}");
     }
