@@ -10,8 +10,13 @@ namespace BotCore;
 // Additionally, they convert any outgoing communications to platform-specific commands.
 public interface IChatProvider
 {
-    void SendMessage(string message);               // Stub for sending messages to the given platform. Not (meaningfully) implemented in this project.
     Task StartAsync();                              // The asynchronous processing of incoming messages.
 
-    event Action<MessageContext> OnMessageReceived;    // Event for handling incoming data
+    event Action<MessageContext> OnMessageReceived; // Event for handling incoming data
+
+    void SendMessage(string message);               // Stub for sending messages to the given platform. Not (meaningfully) implemented in this project.
+
+    // API Functions - requesting information from the platform.
+
+    TimeSpan QueryUptimeAsync();                    // Get the duration that the stream has been live
 }

@@ -40,10 +40,11 @@ internal class ConsoleHost
     // Send the message to the bot for processing, then display it
     void ProcessMessage(MessageContext data)
     {
+        // Display message first to accurately reflect what a live chat would look like
+        ShowMessage(data);
+
         // send to bot for processing (filtering, command reactions, etc.)
         botCore.ProcessMessage(data);
-
-        ShowMessage(data);
     }
 
     // Take a ChatMessage and display it in the console.

@@ -7,6 +7,8 @@ namespace ChatReplayProvider;
 // A Chat Provider for treating saved chat log files as if live chat streams. Only designed to support Twitch VOD chat replays which contain all of the necessary content and timing data.
 public class ChatReplayProvider : IChatProvider
 {
+    int timeElapsed; 
+
     public event Action<MessageContext>? OnMessageReceived;
 
     // Temporary display test, to be replaced with actual functionality once complete.
@@ -47,19 +49,20 @@ public class ChatReplayProvider : IChatProvider
     // Handle the timing of each message by iterating through the list of messages received from ParseData
     async Task PlaybackData(List<ChatMessage> replayData)
     {
-        int timeElapsed = 0;
+        timeElapsed = 0;
 
         // Initial delay to match up with the first message's delay.
         await Task.Delay(replayData[0].offsetSeconds * 1000);
 
         for (int i = 0; i < replayData.Count; i++)
         {
+            timeElapsed += replayData[i].offsetSeconds - timeElapsed;
+
             MessageReceived(replayData[i]);
 
             if (i + 1 < replayData.Count)
             {
                 // Handle the wait until the next message using the next message's offset time.
-                timeElapsed += replayData[i].offsetSeconds - timeElapsed;
                 await Task.Delay((replayData[i + 1].offsetSeconds - timeElapsed) * 1000);
 
             } else
@@ -92,6 +95,15 @@ public class ChatReplayProvider : IChatProvider
     public void SendMessage(string outMessage)
     {
         Console.WriteLine("Sending: " + outMessage);
+    }
+
+    // ======= API FUNCTIONS =======
+
+    // Request the duration that the stream has been live from the platform.
+    public TimeSpan QueryUptimeAsync()
+    {
+        // Since ChatReplay is not live, we will use the timeElapsed parameter from the Playback function to mimic the typical result.
+        return TimeSpan.FromSeconds(timeElapsed);
     }
 
 }

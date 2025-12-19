@@ -20,6 +20,10 @@ public class BotCore
 
         // Assess message for commands, process any identified commands
         Command.Evaluate(message);
+        if (message.reactionType == ReactionType.Command)
+        {
+            SendMessage(message.reactionString);
+        }
     }
 
     // When a message needs to be issued to a chat provider--like a ban message or a command reaction message--this is what to send. For now, it will just send a string to be displayed, but later it will send commands.

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BotCore.commands;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,7 +8,12 @@ using System.Threading.Tasks;
 namespace BotCore;
 internal class Command
 {
-    public static void Evaluate(ChatMessage messageData)
+    static Dictionary<string, ICommand> coreCommands = new Dictionary<string, ICommand>
+    {
+        { "uptime", new UptimeCommand() }
+    };
+
+    public static async Task Evaluate(MessageContext messageData)
     {
         // Trim any whitespace characters for simple tokenization.
         string input = messageData.message.Trim();
@@ -24,6 +30,17 @@ internal class Command
         // Elsewise, tokenize and parse as a command.
         string[] tokens = Tokenize(input);
         Console.WriteLine($"Command identified: {String.Join(", ", tokens)}");
+        
+        // Check registered core commands for a match
+        if (coreCommands.TryGetValue(tokens[0], out ICommand command))
+        {
+            if (command != null)
+            {
+                await command.ExecuteAsync(messageData);
+            }
+        }
+        // Check registered custom commands for a match
+
     }
 
     // Convert incoming string into a collection of actionable tokens delimited by the space (' ') character.
@@ -35,4 +52,6 @@ internal class Command
             .Substring(1)                                           // Remove the command character
             .Split(' ', StringSplitOptions.RemoveEmptyEntries);     // Split the string on ' ' characters into a string array of tokens
     }
+
+
 }
