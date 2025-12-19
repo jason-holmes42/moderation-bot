@@ -23,6 +23,7 @@ internal class ConsoleHost
         // Initialize chat provider. This is where you'd insert Chat Provider selection logic
         ChatReplayProvider chatReplay = new ChatReplayProvider();
 
+        // Register cross-communication events
         chatReplay.OnMessageReceived += ProcessMessage;
         botCore.OnMessageSent += chatReplay.SendMessage;
 

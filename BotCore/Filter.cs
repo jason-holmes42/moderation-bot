@@ -12,22 +12,20 @@ internal class Filter
     public static void Evaluate(ChatMessage messageData)
     {
         // Test phrases
-        string[] filteredPhrases =
-        [
-            "honk",
-            "evoker",
-            "\bsummon\b"
-        ];
+        Dictionary<string, ReactionType> filteredPhrases = new Dictionary<string, ReactionType>();
+
+        filteredPhrases.Add("honk", ReactionType.Ban);
+        filteredPhrases.Add("\\bevoker\\b", ReactionType.Timeout);
+        filteredPhrases.Add("summon", ReactionType.Ban);
 
         // Assess message body for filtered phrases
-        foreach (string pattern in filteredPhrases)
+        foreach (var pattern in filteredPhrases)
         {
-            if (Regex.IsMatch(messageData.message, pattern, RegexOptions.IgnoreCase))
+            if (Regex.IsMatch(messageData.message, pattern.Key, RegexOptions.IgnoreCase))
             {
                 // If message contains a filtered phrase, mark its reaction type and reaction string. Based on this, the punishment will be triggered elsewhere.
-                // Different reaction severities will be handled in a future commit. For now, we'll just mark them as ban.
-                messageData.reactionType = ReactionType.Ban;
-                messageData.reactionString = $"BAN {messageData.username} REASON: Matched '{pattern}' filter.";
+                messageData.reactionType = pattern.Value;
+                messageData.reactionString = $"{messageData.reactionType.ToString().ToUpper()} {messageData.username} REASON: Matched '{pattern.Key}' filter.";
             }
         }
     }
