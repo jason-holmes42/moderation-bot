@@ -4,7 +4,7 @@
 public class BotCore
 {
     public event Action<string>? OnMessageSent;
-    public void ProcessMessage(ChatMessage message)
+    public void ProcessMessage(MessageContext message)
     {
         // Send message through filtering, apply any necessary reaction information
         Filter.Evaluate(message);

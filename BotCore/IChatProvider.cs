@@ -13,5 +13,5 @@ public interface IChatProvider
     void SendMessage(string message);               // Stub for sending messages to the given platform. Not (meaningfully) implemented in this project.
     Task StartAsync();                              // The asynchronous processing of incoming messages.
 
-    event Action<ChatMessage> OnMessageReceived;    // Event for handling incoming data
+    event Action<MessageContext> OnMessageReceived;    // Event for handling incoming data
 }

@@ -7,7 +7,7 @@ namespace ChatReplayProvider;
 // A Chat Provider for treating saved chat log files as if live chat streams. Only designed to support Twitch VOD chat replays which contain all of the necessary content and timing data.
 public class ChatReplayProvider : IChatProvider
 {
-    public event Action<ChatMessage>? OnMessageReceived;
+    public event Action<MessageContext>? OnMessageReceived;
 
     // Temporary display test, to be replaced with actual functionality once complete.
     public async Task StartAsync()
@@ -84,7 +84,8 @@ public class ChatReplayProvider : IChatProvider
     // Invoke the OnMessageReceived event
     void MessageReceived(ChatMessage message)
     {
-        OnMessageReceived?.Invoke(message);
+        MessageContext messageData = new MessageContext(message, this);
+        OnMessageReceived?.Invoke(messageData);
     }
 
     // Send a message from the bot to the platform in question. Not implemented in this version; stub only.

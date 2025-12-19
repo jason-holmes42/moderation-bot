@@ -7,25 +7,13 @@ using System.Threading.Tasks;
 
 namespace BotCore;
 
-public enum ReactionType
-{
-    None,
-    Command,
-    Warning,
-    Timeout,
-    Ban
-}
-
-// Defines a data container for incoming chat messages for use by the bot. ChatProviders convert incoming data into a ChatMessage before passing it on to the BotCore for processing.
+// Defines a data container for incoming chat messages for use by the bot. This is a record of the incoming message; MessageContext contains additional data for how the bot is handling the message.
 public class ChatMessage
 {
     public string username { get; set; }
     public string message { get; init; }
     public int offsetSeconds { get; init; }
-    public string? timestamp { get; init; }
-
-    public ReactionType reactionType { get; set; }
-    public string? reactionString { get; set; }
+    public string timestamp { get; init; }
 
     public ChatMessage(string user, string msg, int offset = 0, string time = "")
     {
@@ -33,6 +21,5 @@ public class ChatMessage
         message = msg;
         offsetSeconds = offset;
         timestamp = time;
-        reactionType = ReactionType.None;
     }
 }

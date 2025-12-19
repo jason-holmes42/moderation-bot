@@ -38,7 +38,7 @@ internal class ConsoleHost
     }
 
     // Send the message to the bot for processing, then display it
-    void ProcessMessage(ChatMessage data)
+    void ProcessMessage(MessageContext data)
     {
         // send to bot for processing (filtering, command reactions, etc.)
         botCore.ProcessMessage(data);
@@ -47,7 +47,7 @@ internal class ConsoleHost
     }
 
     // Take a ChatMessage and display it in the console.
-    void ShowMessage(ChatMessage data)
+    void ShowMessage(MessageContext data)
     {
         Console.WriteLine($"[{data.timestamp}] {data.username}: {data.message}");
     }

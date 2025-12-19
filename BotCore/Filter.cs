@@ -9,7 +9,7 @@ namespace BotCore;
 
 internal class Filter
 {
-    public static void Evaluate(ChatMessage messageData)
+    public static void Evaluate(MessageContext messageData)
     {
         // Test phrases
         Dictionary<string, ReactionType> filteredPhrases = new Dictionary<string, ReactionType>();
