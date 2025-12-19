@@ -88,7 +88,7 @@ public class ChatReplayProvider : IChatProvider
     }
 
     // Send a message from the bot to the platform in question. Not implemented in this version; stub only.
-    public async Task SendMessage(string outMessage)
+    public void SendMessage(string outMessage)
     {
         Console.WriteLine("Sending: " + outMessage);
     }

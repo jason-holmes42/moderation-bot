@@ -22,7 +22,9 @@ internal class ConsoleHost
 
         // Initialize chat provider. This is where you'd insert Chat Provider selection logic
         ChatReplayProvider chatReplay = new ChatReplayProvider();
+
         chatReplay.OnMessageReceived += ProcessMessage;
+        botCore.OnMessageSent += chatReplay.SendMessage;
 
         // Enter processing loop
         await chatReplay.StartAsync();
