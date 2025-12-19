@@ -6,6 +6,8 @@ public class BotCore
     public event Action<string>? OnMessageSent;
     public void ProcessMessage(MessageContext message)
     {
+        // Identify the user's permissions level (if any)
+        
         // Send message through filtering, apply any necessary reaction information
         Filter.Evaluate(message);
         
@@ -16,7 +18,8 @@ public class BotCore
             SendMessage(message.reactionString);
         }
 
-        // Assess message for commands, process any identified commands        
+        // Assess message for commands, process any identified commands
+        Command.Evaluate(message);
     }
 
     // When a message needs to be issued to a chat provider--like a ban message or a command reaction message--this is what to send. For now, it will just send a string to be displayed, but later it will send commands.
