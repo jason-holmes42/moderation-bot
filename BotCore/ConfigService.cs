@@ -11,7 +11,7 @@ internal class ConfigService
 {
     string filepath = "config/";
 
-    public IEnumerable<FilterRule> RetrieveFilterRules()
+    public async Task<IEnumerable<FilterRule>> RetrieveFilterRules()
     {
         List<FilterRule> filterRules = new List<FilterRule>();
 
@@ -21,7 +21,7 @@ internal class ConfigService
     }
 
     // Stub function for future Custom Commands feature
-    public IEnumerable<CustomCommand> RetrieveCustomCommands()
+    public async Task<IEnumerable<CustomCommand>> RetrieveCustomCommands()
     {
         List<CustomCommand> commandsList = new List<CustomCommand>();
 
@@ -31,12 +31,12 @@ internal class ConfigService
     }
 
     // Stub function for future Permissions feature.
-    public void RetrievePermissionsList()
+    public async void RetrievePermissionsList()
     {
         // read and deserialize from JSON file
     }
 
-    public void StoreFilterRules(IEnumerable<FilterRule> filterRules)
+    public async Task StoreFilterRules(IEnumerable<FilterRule> filterRules)
     {
         List<FilterRule> rulesToStore = filterRules.ToList();
 
@@ -44,7 +44,7 @@ internal class ConfigService
     }
 
     // Stub function for future Custom Commands feature
-    public void StoreCustomCommands(IEnumerable<CustomCommand> customCommands)
+    public async Task StoreCustomCommands(IEnumerable<CustomCommand> customCommands)
     {
         List<CustomCommand> commandsToStore = customCommands.ToList();
 
@@ -52,7 +52,7 @@ internal class ConfigService
     }
 
     // Stub function for future Permissions feature.
-    public void StorePermissionsList()
+    public async Task StorePermissionsList()
     {
         // serialize and save to JSON file
     }
