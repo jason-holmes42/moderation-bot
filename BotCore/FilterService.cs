@@ -11,14 +11,21 @@ internal class FilterService
 {
     Dictionary<string, ReactionType> filteredPhrases;
 
-    public FilterService()
+    private FilterService(Dictionary<string, ReactionType> filterRules)
+    {
+        filteredPhrases = filterRules;
+    }
+
+    public static async Task<FilterService> CreateAsync()
     {
         // Test phrases
-        filteredPhrases = new Dictionary<string, ReactionType>();
+        Dictionary<string, ReactionType> filteredPhrases = new Dictionary<string, ReactionType>();
 
         filteredPhrases.Add("honk", ReactionType.Ban);
         filteredPhrases.Add("\\bevoker\\b", ReactionType.Timeout);
         filteredPhrases.Add("summon", ReactionType.Ban);
+
+        return new FilterService(filteredPhrases);
     }
 
     public void Evaluate(MessageContext messageData)

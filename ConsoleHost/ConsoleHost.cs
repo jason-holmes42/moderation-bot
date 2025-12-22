@@ -34,7 +34,9 @@ internal class ConsoleHost
     // Instantiate a BotCore object and return it. Separated as its own function for future-proofing.
     BotCore InitializeBot()
     {
-        return new BotCore();
+        BotCore botCore = new BotCore();
+        botCore.Initialize();
+        return botCore;
     }
 
     // Send the message to the bot for processing, then display it

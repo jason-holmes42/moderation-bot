@@ -14,9 +14,18 @@ internal class CommandService
         { "uptime", new UptimeCommand() }
     };
 
-    public CommandService()
+    private CommandService()
     {
-        // Dictionary customCommands
+        // Dictionary customCommands = new Dictionary<string, CustomCommand>();
+        // foreach (CustomCommand command in storedCommands) customCommands.Add(command.commandString, command);
+    }
+
+    public static async Task<CommandService> CreateAsync()
+    {
+        // List<CustomCommand> storedCommands = await ConfigService.RetrieveCustomCommands
+
+        // return new CommandService(storedCommands);
+        return new CommandService();
     }
 
     public async Task Evaluate(MessageContext messageData)

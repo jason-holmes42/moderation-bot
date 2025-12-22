@@ -3,15 +3,14 @@
 // Core functionality for the moderation bot.
 public class BotCore
 {
-    FilterService filterService;
-    CommandService commandService;
+    FilterService? filterService;
+    CommandService? commandService;
     // ConfigService configService;
 
-    public BotCore()
+    public async void Initialize()
     {
-        filterService = new FilterService();
-        commandService = new CommandService();
-        // configService = new ConfigService();
+        filterService = await FilterService.CreateAsync();
+        commandService = await CommandService.CreateAsync();
     }
 
     public event Action<string>? OnMessageSent;
