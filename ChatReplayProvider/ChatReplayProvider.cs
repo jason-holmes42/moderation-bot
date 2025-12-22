@@ -73,7 +73,7 @@ public class ChatReplayProvider : IChatProvider
     }
 
     // Convert the content_offset_seconds information into a time-since-VOD-began timestamp
-    public string ConvertTimestamp(int offsetSeconds)
+    string ConvertTimestamp(int offsetSeconds)
     {
         TimeSpan elapsedTime = TimeSpan.FromSeconds(offsetSeconds);
         string timeString;

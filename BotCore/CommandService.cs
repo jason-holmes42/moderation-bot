@@ -8,10 +8,16 @@ using System.Threading.Tasks;
 namespace BotCore;
 internal class CommandService
 {
+    // Commands all bots may access. customCommands will need to be built in the constructor due to loading requirement.
     Dictionary<string, ICommand> coreCommands = new Dictionary<string, ICommand>
     {
         { "uptime", new UptimeCommand() }
     };
+
+    public CommandService()
+    {
+        // Dictionary customCommands
+    }
 
     public async Task Evaluate(MessageContext messageData)
     {

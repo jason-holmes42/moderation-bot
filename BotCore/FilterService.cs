@@ -9,15 +9,20 @@ namespace BotCore;
 
 internal class FilterService
 {
-    public void Evaluate(MessageContext messageData)
+    Dictionary<string, ReactionType> filteredPhrases;
+
+    public FilterService()
     {
         // Test phrases
-        Dictionary<string, ReactionType> filteredPhrases = new Dictionary<string, ReactionType>();
+        filteredPhrases = new Dictionary<string, ReactionType>();
 
         filteredPhrases.Add("honk", ReactionType.Ban);
         filteredPhrases.Add("\\bevoker\\b", ReactionType.Timeout);
         filteredPhrases.Add("summon", ReactionType.Ban);
+    }
 
+    public void Evaluate(MessageContext messageData)
+    {
         // Assess message body for filtered phrases
         foreach (var pattern in filteredPhrases)
         {
