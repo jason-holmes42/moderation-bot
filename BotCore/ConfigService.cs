@@ -9,9 +9,9 @@ namespace BotCore;
 // Responsible for loading bot-specific information from storage and saving to storage. Currently designed for simple JSON storage, but can be converted for database storage without affecting other modules.
 internal class ConfigService
 {
-    string filepath = "config/";
+    static string filepath = "config/";
 
-    public async Task<IEnumerable<FilterRule>> RetrieveFilterRules()
+    public static async Task<IEnumerable<FilterRule>> RetrieveFilterRules()
     {
         List<FilterRule> filterRules = new List<FilterRule>();
 
@@ -21,7 +21,7 @@ internal class ConfigService
     }
 
     // Stub function for future Custom Commands feature
-    public async Task<IEnumerable<CustomCommand>> RetrieveCustomCommands()
+    public static async Task<IEnumerable<CustomCommand>> RetrieveCustomCommands()
     {
         List<CustomCommand> commandsList = new List<CustomCommand>();
 
@@ -31,12 +31,12 @@ internal class ConfigService
     }
 
     // Stub function for future Permissions feature.
-    public async void RetrievePermissionsList()
+    public static async void RetrievePermissionsList()
     {
         // read and deserialize from JSON file
     }
 
-    public async Task StoreFilterRules(IEnumerable<FilterRule> filterRules)
+    public static async Task StoreFilterRules(IEnumerable<FilterRule> filterRules)
     {
         List<FilterRule> rulesToStore = filterRules.ToList();
 
@@ -44,7 +44,7 @@ internal class ConfigService
     }
 
     // Stub function for future Custom Commands feature
-    public async Task StoreCustomCommands(IEnumerable<CustomCommand> customCommands)
+    public static async Task StoreCustomCommands(IEnumerable<CustomCommand> customCommands)
     {
         List<CustomCommand> commandsToStore = customCommands.ToList();
 
@@ -52,7 +52,7 @@ internal class ConfigService
     }
 
     // Stub function for future Permissions feature.
-    public async Task StorePermissionsList()
+    public static async Task StorePermissionsList()
     {
         // serialize and save to JSON file
     }
