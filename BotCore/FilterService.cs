@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace BotCore;
 
-internal class Filter
+internal class FilterService
 {
-    public static void Evaluate(MessageContext messageData)
+    public void Evaluate(MessageContext messageData)
     {
         // Test phrases
         Dictionary<string, ReactionType> filteredPhrases = new Dictionary<string, ReactionType>();

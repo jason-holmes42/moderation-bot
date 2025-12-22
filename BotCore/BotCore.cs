@@ -3,13 +3,24 @@
 // Core functionality for the moderation bot.
 public class BotCore
 {
+    FilterService filterService;
+    CommandService commandService;
+    // ConfigService configService;
+
+    public BotCore()
+    {
+        filterService = new FilterService();
+        commandService = new CommandService();
+        // configService = new ConfigService();
+    }
+
     public event Action<string>? OnMessageSent;
     public void ProcessMessage(MessageContext message)
     {
         // Identify the user's permissions level (if any)
         
         // Send message through filtering, apply any necessary reaction information
-        Filter.Evaluate(message);
+        filterService.Evaluate(message);
         
         // Based on the filter's evaluation, identify whether the message needs to be punished.
         if (message.reactionType != ReactionType.None)  // Since commands have not yet been processed, it will be none unless a punishment is needed.
@@ -19,7 +30,7 @@ public class BotCore
         }
 
         // Assess message for commands, process any identified commands
-        Command.Evaluate(message);
+        commandService.Evaluate(message);
         if (message.reactionType == ReactionType.Command)
         {
             SendMessage(message.reactionString);

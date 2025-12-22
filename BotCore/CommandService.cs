@@ -6,14 +6,14 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace BotCore;
-internal class Command
+internal class CommandService
 {
-    static Dictionary<string, ICommand> coreCommands = new Dictionary<string, ICommand>
+    Dictionary<string, ICommand> coreCommands = new Dictionary<string, ICommand>
     {
         { "uptime", new UptimeCommand() }
     };
 
-    public static async Task Evaluate(MessageContext messageData)
+    public async Task Evaluate(MessageContext messageData)
     {
         // Trim any whitespace characters for simple tokenization.
         string input = messageData.message.Trim();
@@ -27,8 +27,8 @@ internal class Command
             return;
         }
 
-        // Elsewise, tokenize and parse as a command.
-        string[] tokens = Tokenize(input);
+        // Elsewise, tokenize by space character ' ' and parse as a command.
+        string[] tokens = TokenizeCommand(' ', input);
         Console.WriteLine($"Command identified: {String.Join(", ", tokens)}");
         
         // Check registered core commands for a match
@@ -43,15 +43,13 @@ internal class Command
 
     }
 
-    // Convert incoming string into a collection of actionable tokens delimited by the space (' ') character.
-    static string[] Tokenize(string input)
+    // Convert incoming string (previously identified as a command) into a collection of actionable tokens delimited by the splitChar character.
+    private static string[] TokenizeCommand(char splitChar, string input)
     {
         // The input will already be trimmed at front and back, so we just need to trim the command character as well so that the first token is the command string or alias.
         // Since this is a simple string manipulation, we can chain them into a single return statement and split the line to make it easier to read.
         return input
             .Substring(1)                                           // Remove the command character
-            .Split(' ', StringSplitOptions.RemoveEmptyEntries);     // Split the string on ' ' characters into a string array of tokens
+            .Split(splitChar, StringSplitOptions.RemoveEmptyEntries);     // Split the string on ' ' characters into a string array of tokens
     }
-
-
 }
