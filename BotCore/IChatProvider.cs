@@ -18,5 +18,5 @@ public interface IChatProvider
 
     // API Functions - requesting information from the platform.
 
-    TimeSpan QueryUptimeAsync();                    // Get the duration that the stream has been live
+    Task<TimeSpan> QueryUptimeAsync();              // Get the duration that the stream has been live
 }

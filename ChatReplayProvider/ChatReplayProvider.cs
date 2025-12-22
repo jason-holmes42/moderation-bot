@@ -100,7 +100,7 @@ public class ChatReplayProvider : IChatProvider
     // ======= API FUNCTIONS =======
 
     // Request the duration that the stream has been live from the platform.
-    public TimeSpan QueryUptimeAsync()
+    public async Task<TimeSpan> QueryUptimeAsync()
     {
         // Since ChatReplay is not live, we will use the timeElapsed parameter from the Playback function to mimic the typical result.
         return TimeSpan.FromSeconds(timeElapsed);
