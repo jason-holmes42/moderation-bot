@@ -36,7 +36,7 @@ internal class Command
         {
             if (command != null)
             {
-                await command.ExecuteAsync(messageData);
+                await command.ExecuteAsync(messageData, tokens);
             }
         }
         // Check registered custom commands for a match

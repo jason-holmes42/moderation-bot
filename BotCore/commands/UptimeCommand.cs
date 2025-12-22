@@ -10,7 +10,7 @@ internal class UptimeCommand : ICommand
     public string commandString { get; set; } = "uptime";
     public string[]? commandAliases { get; set; } = [];
 
-    public async Task ExecuteAsync(MessageContext messageData)
+    public async Task ExecuteAsync(MessageContext messageData, string[] tokens)
     {
         TimeSpan uptime = await messageData.Provider.QueryUptimeAsync();
 
