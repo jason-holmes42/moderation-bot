@@ -12,25 +12,26 @@ internal class FilterService
     List<FilterRule> filterRules;
     Dictionary<string, FilterRule> filteredPhrases;
 
-    private FilterService(Dictionary<string, FilterRule> filterRules)
+    private FilterService(Dictionary<string, FilterRule> filterPhrases, List<FilterRule> filterRules)
     {
-        filteredPhrases = filterRules;
+        this.filteredPhrases = filterPhrases;
+        this.filterRules = filterRules;
+
+        // ConfigService.StoreFilterRules(this.filterRules);
     }
 
     public static async Task<FilterService> CreateAsync()
     {
         // Test phrases
-        List<FilterRule> filterRules = new List<FilterRule>();
+        List<FilterRule> filterRules = (await ConfigService.RetrieveFilterRules()).ToList();
 
-        filterRules.Add(new FilterRule("honk", ReactionType.Ban));
-        filterRules.Add(new FilterRule("\\bevoker\\b", ReactionType.Timeout));
-        filterRules.Add(new FilterRule("summon", ReactionType.Ban));
-
+        // Create a matchable dictionary out of the filter rules
         Dictionary<string, FilterRule> filteredPhrases = new Dictionary<string, FilterRule>();
 
         foreach (FilterRule rule in filterRules) filteredPhrases.Add(rule.filterPhrase, rule);
 
-        return new FilterService(filteredPhrases);
+        // Pass both the match dictionary and the list of rules to the constructor.
+        return new FilterService(filteredPhrases, filterRules);
     }
 
     public void Evaluate(MessageContext messageData)

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace BotCore;
@@ -9,13 +11,29 @@ namespace BotCore;
 // Responsible for loading bot-specific information from storage and saving to storage. Currently designed for simple JSON storage, but can be converted for database storage without affecting other modules.
 internal class ConfigService
 {
-    static string filepath = "config/";
+    // Create and cache the Json Serializer Options object used for all serialization/deserialization needs.
+    private static readonly JsonSerializerOptions jsonOptions =
+        new JsonSerializerOptions
+        {
+            WriteIndented = true,
+            Converters = { new JsonStringEnumConverter() }      // Converts enums from integers to strings and vice-versa.
+        };
 
     public static async Task<IEnumerable<FilterRule>> RetrieveFilterRules()
     {
         List<FilterRule> filterRules = new List<FilterRule>();
 
-        // read and deserialize from JSON file
+        // read and deserialize from JSON file. Since the config files will not be especially large, we can skip StreamReader for this.
+        string jsonData = File.ReadAllText(GetFilePath("filterRules.json"));
+        // TODO: Deserialization error testing, try/catch
+        if (jsonData == null)
+        {
+            Console.WriteLine("JSON deserialization failed; object not populated.");
+            return null;
+        }
+
+        // Deserialize from JSON into a List of FilterRule objects. Options ensure that the reactionType strings from the JSON convert properly.
+        filterRules = JsonSerializer.Deserialize<List<FilterRule>>(jsonData, jsonOptions);
 
         return filterRules;
     }
@@ -40,6 +58,11 @@ internal class ConfigService
     {
         List<FilterRule> rulesToStore = filterRules.ToList();
 
+        // Serialize the List of FilterRule objects to JSON. The options ensure both that the reactionType enum converts to legible strings and that the file includes indentation so it isn't just one long nightmare JSON string.
+        string json = JsonSerializer.Serialize(rulesToStore, jsonOptions);
+        File.WriteAllText(GetFilePath("filterRules.json"), json);
+        Console.WriteLine($"Saved filter rules to {GetFilePath("filterRules.json")}");
+
         // serialize and save to JSON file
     }
 
@@ -55,5 +78,14 @@ internal class ConfigService
     public static async Task StorePermissionsList()
     {
         // serialize and save to JSON file
+    }
+
+    // Smooth out the process of relative filepaths and avoid having to Path.Combine in every function.
+    private static string GetFilePath(string filename)
+    {
+        string configDir = Path.Combine(AppContext.BaseDirectory, "config");
+        Directory.CreateDirectory(configDir);       // Safely create the directory referenced above if it does not exist.
+
+        return Path.Combine(configDir, filename);
     }
 }
