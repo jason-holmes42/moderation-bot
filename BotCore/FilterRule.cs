@@ -9,4 +9,10 @@ public class FilterRule
 {
     public string filterPhrase { get; init; }
     public ReactionType reactionType { get; set; }
+
+    public FilterRule(string filterPhrase, ReactionType reactionType)
+    {
+        this.filterPhrase = filterPhrase;
+        this.reactionType = reactionType;
+    }
 }

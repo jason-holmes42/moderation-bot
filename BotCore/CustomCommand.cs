@@ -9,4 +9,10 @@ public class CustomCommand
 {
     public string commandString { get; init; }
     public string reactionString { get; set; }
+
+    public CustomCommand(string commandString, string reactionString)
+    {
+        this.commandString = commandString;
+        this.reactionString = reactionString;
+    }
 }
