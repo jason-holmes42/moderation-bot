@@ -9,9 +9,10 @@ namespace BotCore;
 
 internal class FilterService
 {
-    Dictionary<string, ReactionType> filteredPhrases;
+    List<FilterRule> filterRules;
+    Dictionary<string, FilterRule> filteredPhrases;
 
-    private FilterService(Dictionary<string, ReactionType> filterRules)
+    private FilterService(Dictionary<string, FilterRule> filterRules)
     {
         filteredPhrases = filterRules;
     }
@@ -19,11 +20,15 @@ internal class FilterService
     public static async Task<FilterService> CreateAsync()
     {
         // Test phrases
-        Dictionary<string, ReactionType> filteredPhrases = new Dictionary<string, ReactionType>();
+        List<FilterRule> filterRules = new List<FilterRule>();
 
-        filteredPhrases.Add("honk", ReactionType.Ban);
-        filteredPhrases.Add("\\bevoker\\b", ReactionType.Timeout);
-        filteredPhrases.Add("summon", ReactionType.Ban);
+        filterRules.Add(new FilterRule("honk", ReactionType.Ban));
+        filterRules.Add(new FilterRule("\\bevoker\\b", ReactionType.Timeout));
+        filterRules.Add(new FilterRule("summon", ReactionType.Ban));
+
+        Dictionary<string, FilterRule> filteredPhrases = new Dictionary<string, FilterRule>();
+
+        foreach (FilterRule rule in filterRules) filteredPhrases.Add(rule.filterPhrase, rule);
 
         return new FilterService(filteredPhrases);
     }
@@ -36,7 +41,7 @@ internal class FilterService
             if (Regex.IsMatch(messageData.message, pattern.Key, RegexOptions.IgnoreCase))
             {
                 // If message contains a filtered phrase, mark its reaction type and reaction string. Based on this, the punishment will be triggered elsewhere.
-                messageData.reactionType = pattern.Value;
+                messageData.reactionType = pattern.Value.reactionType;
                 messageData.reactionString = $"{messageData.reactionType.ToString().ToUpper()} {messageData.username} REASON: Matched '{pattern.Key}' filter.";
             }
         }
