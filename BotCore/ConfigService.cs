@@ -29,13 +29,7 @@ internal class ConfigService
         List<FilterRule> filterRules = new List<FilterRule>();
 
         // read and deserialize from JSON file. Since the config files will not be especially large, we can skip StreamReader for this.
-        string jsonData = File.ReadAllText(GetFilePath(filterRulesFilename));
-        // TODO: Deserialization error testing, try/catch
-        if (jsonData == null)
-        {
-            Console.WriteLine("JSON deserialization failed; object not populated.");
-            return null;
-        }
+        string jsonData = GetJSONData(filterRulesFilename);
 
         // Deserialize from JSON into a List of FilterRule objects. Options ensure that the reactionType strings from the JSON convert properly.
         filterRules = JsonSerializer.Deserialize<List<FilterRule>>(jsonData, jsonOptions);
@@ -59,9 +53,15 @@ internal class ConfigService
         // read and deserialize from JSON file
     }
 
-    public static async Task<int> RetrieveDefaultSettings(string setting, int defaultValue)
+    public static async Task<Dictionary<string, int>> RetrieveDefaultSettings(string setting, int defaultValue)
     {
+        Dictionary<string, int> defaultSettings = new Dictionary<string, int>();
+
         // read and deserialize from JSON file
+        string jsonData = GetJSONData(defaultSettingsFilename);
+
+        defaultSettings = JsonSerializer.Deserialize<Dictionary<string, int>>(jsonData, jsonOptions);
+        return defaultSettings;
     }
 
     public static async Task StoreFilterRules(IEnumerable<FilterRule> filterRules)
@@ -90,7 +90,7 @@ internal class ConfigService
         // serialize and save to JSON file
     }
 
-    public static async Task StoreDefaultSettings(string setting, int updateValue)
+    public static async Task StoreDefaultSettings(Dictionary<string, int> defaultSettings)
     {
         // serialize and save to JSON file
     }
@@ -102,5 +102,18 @@ internal class ConfigService
         Directory.CreateDirectory(configDir);       // Safely create the directory referenced above if it does not exist.
 
         return Path.Combine(configDir, filename);
+    }
+
+    private static string GetJSONData(string filename)
+    {
+        string jsonData = File.ReadAllText(GetFilePath(filename));
+        // TODO: Deserialization error testing, try/catch
+        if (jsonData == null)
+        {
+            Console.WriteLine("JSON deserialization failed; object not populated.");
+            return null;
+        }
+
+        return jsonData;
     }
 }
