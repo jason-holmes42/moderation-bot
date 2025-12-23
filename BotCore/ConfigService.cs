@@ -46,6 +46,8 @@ internal class ConfigService
         // read and deserialize from JSON file. Since the config files will not be especially large, we can skip StreamReader for this.
         string jsonData = GetJSONData(filterRulesFilename);
 
+        if (jsonData == null) return null;
+
         // Deserialize from JSON into a List of FilterRule objects. Options ensure that the reactionType strings from the JSON convert properly.
         filterRules = JsonSerializer.Deserialize<List<FilterRule>>(jsonData, jsonOptions);
 
@@ -75,8 +77,25 @@ internal class ConfigService
         // read and deserialize from JSON file
         string jsonData = GetJSONData(defaultSettingsFilename);
 
-        defaultSettings = JsonSerializer.Deserialize<Dictionary<string, int>>(jsonData, jsonOptions);
+        if (jsonData == null) return null;
+
+        // If the file did not exist and jsonData contains the default, populate the dictionary with any rule to make it valid. Otherwise, parse as normal.
+        if (jsonData == """[]""") defaultSettings.Add("filterStatus", 1);
+        else defaultSettings = JsonSerializer.Deserialize<Dictionary<string, int>>(jsonData, jsonOptions);
+
         return defaultSettings;
+    }
+
+    public async void UpdateDefaultSettings(string setting, int value)
+    {
+        if (defaultSettings.ContainsKey(setting))
+        {
+            defaultSettings[setting] = value;
+            Console.WriteLine($"Updated `{setting}` setting with default value of `{value}`.");
+        }
+        else Console.WriteLine($"Setting '{setting}' not found.");
+
+        await StoreDefaultSettings();
     }
 
     public static async Task StoreFilterRules(IEnumerable<FilterRule> filterRules)
@@ -105,9 +124,12 @@ internal class ConfigService
         // serialize and save to JSON file
     }
 
-    public static async Task StoreDefaultSettings(Dictionary<string, int> defaultSettings)
+    public async Task StoreDefaultSettings()
     {
         // serialize and save to JSON file
+        string json = JsonSerializer.Serialize(defaultSettings, jsonOptions);
+        File.WriteAllText(GetFilePath(defaultSettingsFilename), json);
+        Console.WriteLine($"Default settings saved to {GetFilePath(defaultSettingsFilename)}");
     }
 
     // Smooth out the process of relative filepaths and avoid having to Path.Combine in every function.
@@ -121,9 +143,16 @@ internal class ConfigService
 
     private static string GetJSONData(string filename)
     {
+        if (!File.Exists(GetFilePath(filename)))
+        {
+            Console.WriteLine($"File at {GetFilePath(filename)} does not exist. Creating default file.");
+            File.AppendAllText(GetFilePath(filename), """[]""");
+            return """[]""";
+        }
+        
         string jsonData = File.ReadAllText(GetFilePath(filename));
         // TODO: Deserialization error testing, try/catch
-        if (jsonData == null)
+        if (jsonData == null | jsonData == "")
         {
             Console.WriteLine("JSON deserialization failed; object not populated.");
             return null;
