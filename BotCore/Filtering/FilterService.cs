@@ -46,8 +46,8 @@ internal class FilterService
             if (Regex.IsMatch(messageData.message, pattern.Key, RegexOptions.IgnoreCase))
             {
                 // If message contains a filtered phrase, mark its reaction type and reaction string. Based on this, the punishment will be triggered elsewhere.
-                // The cast from PunishmentType to ReactionType is safe without TryParse or other protections because PunishmentType is a subset of ReactionType. The boolean sets whether parsing should be case-insensitive or not.
-                messageData.reactionType = (ReactionType) Enum.Parse(typeof(ReactionType), pattern.Value.punishType.ToString(), true);
+                // The cast from PunishmentType to ReactionType is safe without TryParse or other protections because PunishmentType is a subset of ReactionType.
+                messageData.reactionType = (ReactionType) Enum.Parse(typeof(ReactionType), pattern.Value.punishType.ToString(), ignoreCase: true);
                 messageData.reactionString = $"{messageData.reactionType.ToString().ToUpper()} {messageData.username} REASON: Matched '{pattern.Key}' filter.";
 
                 // An expansion of the Punishment functionality would want to be called directly here.
@@ -71,11 +71,11 @@ internal class FilterService
         string filteredPhrase = tokens[2];
         PunishmentType reaction;
 
-        // Since specifying the reaction is optional and we need to validate the input anyhow, we'll use TryParse. The boolean ensures it parses as case-insensitive.
+        // Since specifying the reaction is optional and we need to validate the input anyhow, we'll use TryParse.
         // On a success, reaction will already hold the new value, so there's no special need to assign it.
         // On a failure (if there's no match, or if there's no argument at all), assign Timeout as a default punishment.
         if (tokens.Length <= 3) reaction = PunishmentType.Timeout;
-        else reaction = Enum.TryParse(tokens[3], true, out reaction) ? reaction : PunishmentType.Timeout;
+        else reaction = Enum.TryParse(tokens[3], ignoreCase: true, out reaction) ? reaction : PunishmentType.Timeout;
 
         // Add the new FilterRule to the phrase dictionary
         if (filteredPhrases.ContainsKey(filteredPhrase))
@@ -119,7 +119,7 @@ internal class FilterService
 
         // Verify the new punishment type
         PunishmentType reaction;
-        Enum.TryParse(tokens[3], true, out reaction);     // No default results here; if there is an error in the new punishment type, leave the current type as it is.
+        Enum.TryParse(tokens[3], ignoreCase: true, out reaction);     // No default results here; if there is an error in the new punishment type, leave the current type as it is.
 
         // Locate the filteredPhrase from the phrase dictionary and, if it exists, update it.
         if (filteredPhrases.ContainsKey(filteredPhrase))
