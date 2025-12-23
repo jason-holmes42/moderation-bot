@@ -11,6 +11,8 @@ namespace BotCore;
 // Responsible for loading bot-specific information from storage and saving to storage. Currently designed for simple JSON storage, but can be converted for database storage without affecting other modules.
 internal class ConfigService
 {
+    Dictionary<string, int> defaultSettings;
+
     static readonly string filterRulesFilename = "filterRules.json";
     static readonly string customCommandsFilename = "customCommands.json";
     static readonly string defaultSettingsFilename = "defaultSettings.json";
@@ -23,6 +25,19 @@ internal class ConfigService
             WriteIndented = true,
             Converters = { new JsonStringEnumConverter() }      // Converts enums from integers to strings and vice-versa.
         };
+
+    ConfigService(Dictionary<string, int> defaultSettings)
+    {
+        this.defaultSettings = defaultSettings;
+    }
+
+    public static async Task<ConfigService> CreateAsync()
+    {
+        Dictionary<string, int> defaultSettings = new Dictionary<string, int>();
+        defaultSettings = await RetrieveDefaultSettings();
+
+        return new ConfigService(defaultSettings);
+    }
 
     public static async Task<IEnumerable<FilterRule>> RetrieveFilterRules()
     {
@@ -53,7 +68,7 @@ internal class ConfigService
         // read and deserialize from JSON file
     }
 
-    public static async Task<Dictionary<string, int>> RetrieveDefaultSettings(string setting, int defaultValue)
+    public static async Task<Dictionary<string, int>> RetrieveDefaultSettings()
     {
         Dictionary<string, int> defaultSettings = new Dictionary<string, int>();
 

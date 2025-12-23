@@ -5,12 +5,13 @@ public class BotCore
 {
     FilterService? filterService;
     CommandService? commandService;
-    // ConfigService configService;
+    ConfigService? configService;
 
     public async void Initialize()
     {
         filterService = await FilterService.CreateAsync();
         commandService = await CommandService.CreateAsync();
+        configService = await ConfigService.CreateAsync();
     }
 
     public event Action<string>? OnMessageSent;
