@@ -8,11 +8,11 @@ namespace BotCore;
 public class FilterRule
 {
     public string filterPhrase { get; init; }
-    public ReactionType reactionType { get; set; }
+    public PunishmentType punishType { get; set; }
 
-    public FilterRule(string filterPhrase, ReactionType reactionType)
+    public FilterRule(string filterPhrase, PunishmentType punishType)
     {
         this.filterPhrase = filterPhrase;
-        this.reactionType = reactionType;
+        this.punishType = punishType;
     }
 }
