@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BotCore;
+namespace BotCore.Core;
 
 // Interface for providers of incoming data streams from chats. Chat Providers are responsible for converting incoming platform-specific data to internal ChatMessage data and sending it on for BotCore to process.
 // Additionally, they convert any outgoing communications to platform-specific commands.

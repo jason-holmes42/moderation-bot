@@ -5,8 +5,10 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using BotCore.Filtering;
+using BotCore.Commands;
 
-namespace BotCore;
+namespace BotCore.Configuration;
 
 // Responsible for loading bot-specific information from storage and saving to storage. Currently designed for simple JSON storage, but can be converted for database storage without affecting other modules.
 internal class ConfigService

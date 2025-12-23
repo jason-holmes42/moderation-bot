@@ -1,11 +1,12 @@
-﻿using BotCore.commands;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BotCore.Core;
+using BotCore.Commands.Implementations;
 
-namespace BotCore;
+namespace BotCore.Commands;
 internal class CommandService
 {
     // Commands all bots may access. customCommands will need to be built in the constructor due to loading requirement.

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BotCore;
+namespace BotCore.Filtering;
 internal class FilterConfig
 {
     public List<FilterRule> filterRules {  get; set; }

@@ -4,8 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using BotCore.Core;
+using BotCore.Configuration;
 
-namespace BotCore;
+namespace BotCore.Filtering;
 
 internal class FilterService
 {

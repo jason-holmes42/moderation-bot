@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BotCore.Core;
 
-namespace BotCore.commands;
+namespace BotCore.Commands.Implementations;
 internal class UptimeCommand : ICommand
 {
     public string commandString { get; set; } = "uptime";

@@ -1,4 +1,8 @@
-﻿namespace BotCore;
+﻿using BotCore.Core;
+using BotCore.Filtering;
+using BotCore.Commands;
+
+namespace BotCore;
 
 // Core functionality for the moderation bot.
 public class BotCore

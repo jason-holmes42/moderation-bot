@@ -1,5 +1,6 @@
 ﻿namespace ConsoleHost;
 using BotCore;
+using BotCore.Core;
 using ChatReplayProvider;
 
 // The console host and driver for the bot. Used to display incoming data once it has been converted. Primarily for early testing and designed to be supplanted by a more feature-rich WPF console display.

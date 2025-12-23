@@ -1,4 +1,4 @@
-﻿using BotCore;
+﻿using BotCore.Core;
 using System.Reflection.Metadata.Ecma335;
 using System.Text.Json;
 

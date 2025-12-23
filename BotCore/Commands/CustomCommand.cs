@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BotCore;
+namespace BotCore.Commands;
 public class CustomCommand
 {
     public string commandString { get; init; }

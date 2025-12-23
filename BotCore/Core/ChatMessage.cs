@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BotCore;
+namespace BotCore.Core;
 
 // Defines a data container for incoming chat messages for use by the bot. This is a record of the incoming message; MessageContext contains additional data for how the bot is handling the message.
 public class ChatMessage
