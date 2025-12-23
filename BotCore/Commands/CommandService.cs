@@ -5,28 +5,39 @@ using System.Text;
 using System.Threading.Tasks;
 using BotCore.Core;
 using BotCore.Commands.Implementations;
+using BotCore.Filtering;
+using BotCore.Configuration;
 
 namespace BotCore.Commands;
 internal class CommandService
 {
-    // Commands all bots may access. customCommands will need to be built in the constructor due to loading requirement.
-    Dictionary<string, ICommand> coreCommands = new Dictionary<string, ICommand>
-    {
-        { "uptime", new UptimeCommand() }
-    };
+    Dictionary<string, ICommand> coreCommands;
+    // Dictionary<string, CustomCommand> customCommands;
 
-    private CommandService()
+    FilterService filterService;
+
+    private CommandService(FilterService filterService)
     {
-        // Dictionary customCommands = new Dictionary<string, CustomCommand>();
-        // foreach (CustomCommand command in storedCommands) customCommands.Add(command.commandString, command);
+        // Commands all bots may access. customCommands will need to be built in the constructor due to loading requirement.
+        coreCommands = new Dictionary<string, ICommand>
+        {
+            {"uptime", new UptimeCommand() },
+            {"filter", new FilterCommand(filterService) }
+        };
+
+        // CommandConfig commandConfig = ConfigService.RetrieveCommandConfig();
+        // customCommands = new Dictionary<string, CustomCommand>();
+        // foreach (CustomCommand command in commandConfig.storedCommands) customCommands.Add(command.commandString, command);
+
+        this.filterService = filterService;
     }
 
-    public static async Task<CommandService> CreateAsync()
+    public static async Task<CommandService> CreateAsync(FilterService filterService)
     {
         // List<CustomCommand> storedCommands = await ConfigService.RetrieveCustomCommands
 
         // return new CommandService(storedCommands);
-        return new CommandService();
+        return new CommandService(filterService);
     }
 
     public async Task Evaluate(MessageContext messageData)

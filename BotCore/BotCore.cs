@@ -13,7 +13,7 @@ public class BotCore
     public async void Initialize()
     {
         filterService = await FilterService.CreateAsync();
-        commandService = await CommandService.CreateAsync();
+        commandService = await CommandService.CreateAsync(filterService);
     }
 
     public event Action<string>? OnMessageSent;
