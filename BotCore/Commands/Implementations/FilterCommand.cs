@@ -49,18 +49,23 @@ internal class FilterCommand : ICommand
         switch (args.filterAction)
         {
             case FilterCommandAction.On:
+                filterService.ToggleFilter(true);
                 break;
 
             case FilterCommandAction.Off:
+                filterService.ToggleFilter(false);
                 break;
 
             case FilterCommandAction.Add:
+                filterService.AddFilterRule(args.filterPhrase, args.filterPunishment);
                 break;
 
             case FilterCommandAction.Remove:
+                filterService.RemoveFilterRule(args.filterPhrase);
                 break;
 
             case FilterCommandAction.Update:
+                filterService.UpdateFilterRule(args.filterPhrase, args.filterPunishment);
                 break;
 
             default:
