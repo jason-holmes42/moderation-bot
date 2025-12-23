@@ -10,25 +10,27 @@ namespace BotCore;
 internal class FilterService
 {
     Dictionary<string, FilterRule> filteredPhrases;
+    FilterSettings settings;
     bool activeState = true;
 
-    private FilterService(Dictionary<string, FilterRule> filterPhrases)
+    private FilterService(FilterSettings settings, Dictionary<string, FilterRule> filterPhrases)
     {
+        this.settings = settings;
         this.filteredPhrases = filterPhrases;
     }
 
     public static async Task<FilterService> CreateAsync()
     {
         // Retrieve filter rules from storage
-        List<FilterRule> filterRules = (await ConfigService.RetrieveFilterRules()).ToList();
+        FilterConfig config = await ConfigService.RetrieveFilterConfig();
 
         // Create an easily-matchable dictionary out of the filter rules
         Dictionary<string, FilterRule> filteredPhrases = new Dictionary<string, FilterRule>();
 
-        foreach (FilterRule rule in filterRules) filteredPhrases.Add(rule.filterPhrase, rule);
+        foreach (FilterRule rule in config.filterRules) filteredPhrases.Add(rule.filterPhrase, rule);
 
         // Pass the new phrase dictionary to the constructor.
-        return new FilterService(filteredPhrases);
+        return new FilterService(config.filterSettings, filteredPhrases);
     }
 
     public void Evaluate(MessageContext messageData)
@@ -55,6 +57,8 @@ internal class FilterService
     public void ToggleFilter()
     {
         activeState = !activeState;
+        settings.filterStatus = activeState;
+        StoreFilterConfig();
     }
 
     // Rule management functions. Add and Update could be safely combined, but keeping them distinct will help users keep the impact of accidental commands minimal.
@@ -83,7 +87,7 @@ internal class FilterService
         }
 
         // Save the updated dictionary.
-        StoreFilterRules();
+        StoreFilterConfig();
     }
 
     public void RemoveFilterRule(string[] tokens)
@@ -103,7 +107,7 @@ internal class FilterService
         }
 
         // Save the updated dictionary.
-        StoreFilterRules();
+        StoreFilterConfig();
     }
 
     public void UpdateFilterRule(string[] tokens)
@@ -131,12 +135,12 @@ internal class FilterService
         else Console.WriteLine($"{filteredPhrase} filter not found. You can add a new phrase to the filter by using `!filter add <phrase> <punishment>`.");
 
         // Save the updated dictionary.
-        StoreFilterRules();
+        StoreFilterConfig();
     }
 
     // Handle converting the phrase dictionary to a List of FilterRules and sending it off for storage.
-    async void StoreFilterRules()
+    async void StoreFilterConfig()
     {
-        await ConfigService.StoreFilterRules(filteredPhrases.Values.ToList());
+        await ConfigService.StoreFilterConfig(new FilterConfig(settings, filteredPhrases.Values.ToList()));
     }
 }

@@ -13,9 +13,8 @@ internal class ConfigService
 {
     Dictionary<string, int> defaultSettings;
 
-    static readonly string filterRulesFilename = "filterRules.json";
-    static readonly string customCommandsFilename = "customCommands.json";
-    static readonly string defaultSettingsFilename = "defaultSettings.json";
+    static readonly string filterConfigFilename = "filterConfig.json";
+    static readonly string commandConfigFilename = "commandConfig.json";
     static readonly string configDirectoryName = "config";
 
     // Create and cache the Json Serializer Options object used for all serialization/deserialization needs.
@@ -26,36 +25,23 @@ internal class ConfigService
             Converters = { new JsonStringEnumConverter() }      // Converts enums from integers to strings and vice-versa.
         };
 
-    ConfigService(Dictionary<string, int> defaultSettings)
+    public static async Task<FilterConfig> RetrieveFilterConfig()
     {
-        this.defaultSettings = defaultSettings;
-    }
+        FilterConfig config = new FilterConfig();
 
-    public static async Task<ConfigService> CreateAsync()
-    {
-        Dictionary<string, int> defaultSettings = new Dictionary<string, int>();
-        defaultSettings = await RetrieveDefaultSettings();
-
-        return new ConfigService(defaultSettings);
-    }
-
-    public static async Task<IEnumerable<FilterRule>> RetrieveFilterRules()
-    {
-        List<FilterRule> filterRules = new List<FilterRule>();
-
-        // read and deserialize from JSON file. Since the config files will not be especially large, we can skip StreamReader for this.
-        string jsonData = GetJSONData(filterRulesFilename);
+        // read and deserialize from JSON file
+        string jsonData = GetJSONData(filterConfigFilename);
 
         if (jsonData == null) return null;
 
         // Deserialize from JSON into a List of FilterRule objects. Options ensure that the reactionType strings from the JSON convert properly.
-        filterRules = JsonSerializer.Deserialize<List<FilterRule>>(jsonData, jsonOptions);
+        config = JsonSerializer.Deserialize<FilterConfig>(jsonData, jsonOptions);
 
-        return filterRules;
+        return config;
     }
 
     // Stub function for future Custom Commands feature
-    public static async Task<IEnumerable<CustomCommand>> RetrieveCustomCommands()
+    public static async Task<IEnumerable<CustomCommand>> RetrieveCommandConfig()
     {
         List<CustomCommand> commandsList = new List<CustomCommand>();
 
@@ -65,53 +51,24 @@ internal class ConfigService
     }
 
     // Stub function for future Permissions feature.
-    public static async void RetrievePermissionsList()
+    public static async void RetrievePermissionsConfig()
     {
         // read and deserialize from JSON file
     }
 
-    public static async Task<Dictionary<string, int>> RetrieveDefaultSettings()
+    public static async Task StoreFilterConfig(FilterConfig filterConfig)
     {
-        Dictionary<string, int> defaultSettings = new Dictionary<string, int>();
-
-        // read and deserialize from JSON file
-        string jsonData = GetJSONData(defaultSettingsFilename);
-
-        if (jsonData == null) return null;
-
-        // If the file did not exist and jsonData contains the default, populate the dictionary with any rule to make it valid. Otherwise, parse as normal.
-        if (jsonData == """[]""") defaultSettings.Add("filterStatus", 1);
-        else defaultSettings = JsonSerializer.Deserialize<Dictionary<string, int>>(jsonData, jsonOptions);
-
-        return defaultSettings;
-    }
-
-    public async void UpdateDefaultSettings(string setting, int value)
-    {
-        if (defaultSettings.ContainsKey(setting))
-        {
-            defaultSettings[setting] = value;
-            Console.WriteLine($"Updated `{setting}` setting with default value of `{value}`.");
-        }
-        else Console.WriteLine($"Setting '{setting}' not found.");
-
-        await StoreDefaultSettings();
-    }
-
-    public static async Task StoreFilterRules(IEnumerable<FilterRule> filterRules)
-    {
-        List<FilterRule> rulesToStore = filterRules.ToList();
+        // List<FilterRule> rulesToStore = filterConfig.filterRules.ToList();
 
         // Serialize the List of FilterRule objects to JSON. The options ensure both that the reactionType enum converts to legible strings and that the file includes indentation so it isn't just one long nightmare JSON string.
-        string json = JsonSerializer.Serialize(rulesToStore, jsonOptions);
-        File.WriteAllText(GetFilePath(filterRulesFilename), json);
-        Console.WriteLine($"Saved filter rules to {GetFilePath(filterRulesFilename)}");
+        string json = JsonSerializer.Serialize(filterConfig, jsonOptions);
+        File.WriteAllText(GetFilePath(filterConfigFilename), json);
 
         // serialize and save to JSON file
     }
 
     // Stub function for future Custom Commands feature
-    public static async Task StoreCustomCommands(IEnumerable<CustomCommand> customCommands)
+    public static async Task StoreCommandConfig(IEnumerable<CustomCommand> customCommands)
     {
         List<CustomCommand> commandsToStore = customCommands.ToList();
 
@@ -119,17 +76,9 @@ internal class ConfigService
     }
 
     // Stub function for future Permissions feature.
-    public static async Task StorePermissionsList()
+    public static async Task StorePermissionsConfig()
     {
         // serialize and save to JSON file
-    }
-
-    public async Task StoreDefaultSettings()
-    {
-        // serialize and save to JSON file
-        string json = JsonSerializer.Serialize(defaultSettings, jsonOptions);
-        File.WriteAllText(GetFilePath(defaultSettingsFilename), json);
-        Console.WriteLine($"Default settings saved to {GetFilePath(defaultSettingsFilename)}");
     }
 
     // Smooth out the process of relative filepaths and avoid having to Path.Combine in every function.
@@ -143,6 +92,7 @@ internal class ConfigService
 
     private static string GetJSONData(string filename)
     {
+        // Since the config files will not be especially large, we can skip StreamReader for this
         if (!File.Exists(GetFilePath(filename)))
         {
             Console.WriteLine($"File at {GetFilePath(filename)} does not exist. Creating default file.");
