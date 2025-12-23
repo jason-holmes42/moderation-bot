@@ -11,6 +11,11 @@ namespace BotCore;
 // Responsible for loading bot-specific information from storage and saving to storage. Currently designed for simple JSON storage, but can be converted for database storage without affecting other modules.
 internal class ConfigService
 {
+    static readonly string filterRulesFilename = "filterRules.json";
+    static readonly string customCommandsFilename = "customCommands.json";
+    static readonly string defaultSettingsFilename = "defaultSettings.json";
+    static readonly string configDirectoryName = "config";
+
     // Create and cache the Json Serializer Options object used for all serialization/deserialization needs.
     private static readonly JsonSerializerOptions jsonOptions =
         new JsonSerializerOptions
@@ -24,7 +29,7 @@ internal class ConfigService
         List<FilterRule> filterRules = new List<FilterRule>();
 
         // read and deserialize from JSON file. Since the config files will not be especially large, we can skip StreamReader for this.
-        string jsonData = File.ReadAllText(GetFilePath("filterRules.json"));
+        string jsonData = File.ReadAllText(GetFilePath(filterRulesFilename));
         // TODO: Deserialization error testing, try/catch
         if (jsonData == null)
         {
@@ -54,14 +59,19 @@ internal class ConfigService
         // read and deserialize from JSON file
     }
 
+    public static async Task<int> RetrieveDefaultSettings(string setting, int defaultValue)
+    {
+        // read and deserialize from JSON file
+    }
+
     public static async Task StoreFilterRules(IEnumerable<FilterRule> filterRules)
     {
         List<FilterRule> rulesToStore = filterRules.ToList();
 
         // Serialize the List of FilterRule objects to JSON. The options ensure both that the reactionType enum converts to legible strings and that the file includes indentation so it isn't just one long nightmare JSON string.
         string json = JsonSerializer.Serialize(rulesToStore, jsonOptions);
-        File.WriteAllText(GetFilePath("filterRules.json"), json);
-        Console.WriteLine($"Saved filter rules to {GetFilePath("filterRules.json")}");
+        File.WriteAllText(GetFilePath(filterRulesFilename), json);
+        Console.WriteLine($"Saved filter rules to {GetFilePath(filterRulesFilename)}");
 
         // serialize and save to JSON file
     }
@@ -80,10 +90,15 @@ internal class ConfigService
         // serialize and save to JSON file
     }
 
+    public static async Task StoreDefaultSettings(string setting, int updateValue)
+    {
+        // serialize and save to JSON file
+    }
+
     // Smooth out the process of relative filepaths and avoid having to Path.Combine in every function.
     private static string GetFilePath(string filename)
     {
-        string configDir = Path.Combine(AppContext.BaseDirectory, "config");
+        string configDir = Path.Combine(AppContext.BaseDirectory, configDirectoryName);
         Directory.CreateDirectory(configDir);       // Safely create the directory referenced above if it does not exist.
 
         return Path.Combine(configDir, filename);
