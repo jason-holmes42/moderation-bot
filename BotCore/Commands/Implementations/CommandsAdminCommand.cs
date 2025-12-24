@@ -1,4 +1,5 @@
 ﻿using BotCore.Core;
+using BotCore.Filtering;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,8 +12,117 @@ internal class CommandsAdminCommand : ICommand
     public string commandString { get; init; } = "command";
     public string[]? commandAliases { get; set; } = [];
 
-    public Task ExecuteAsync(MessageContext messageData, string[] tokens)
+    enum CommandsAdminAction
     {
-        throw new NotImplementedException();
+        Add,
+        Remove,
+        Update
+    }
+
+    class CommandsAdminArgs()
+    {
+        public CommandsAdminAction commandAction { get; init; }
+        public string commandPhrase { get; init; }
+        public string commandResponse { get; init; }
+    }
+
+    CommandService commandService;
+
+    public CommandsAdminCommand(CommandService commandService)
+    {
+        this.commandService = commandService;
+    }
+
+    public async Task ExecuteAsync(MessageContext messageData, string[] tokens)
+    {
+        // Parse the tokens into usable details
+        if (!TryParseCommandArgs(tokens, out CommandsAdminArgs args, out string error))
+        {
+            Console.WriteLine($"Error: {error}");
+            return;
+        }
+
+        // Switch on the action enum to issue requests to the commandService.
+        switch (args.commandAction)
+        {
+            case CommandsAdminAction.Add:
+                await commandService.AddCustomCommand(args.commandPhrase, args.commandResponse);
+                break;
+
+            case CommandsAdminAction.Remove:
+                await commandService.RemoveCustomCommand(args.commandPhrase);
+                break;
+
+            case CommandsAdminAction.Update:
+                await commandService.UpdateCustomCommand(args.commandPhrase, args.commandResponse);
+                break;
+
+            default:
+                // Should never get here because TryParseCommandArgs should fail and return if there's any issue.
+                Console.WriteLine("Error: Custom command parsing unsuccessful.");
+                break;
+        }
+    }
+
+    // TryParse functions to keep core processing clean.
+    static bool TryParseCommandArgs(string[] tokens, out CommandsAdminArgs args, out string error)
+    {
+        // !command <add/remove/update> <commandString> <reactionString>
+        // token[0] = command
+        // token[1] = <add/remove/update>
+        // token[2] = commandString
+        // token[3] = Message to post upon detection.
+
+        CommandsAdminAction action;
+        string commandString;
+        string commandResponse;
+
+        args = null!;
+        error = string.Empty;
+
+        if (tokens.Length < 2)
+        {
+            error = "Error: Missing command action.";
+            return false;
+        }
+
+        // Parse the subcommand into an action enum for switching. A success outputs the result into 'action' so we only need to act on a failure.
+        if (!TryParseCommandAction(tokens[1], out action))
+        {
+            error = "Error: Command action not recognized. Try 'add', 'update', or 'remove'.";
+            return false;
+        }
+
+        if (tokens.Length < 3)
+        {
+            error = "Error: Missing command phrase.";
+            return false;
+        }
+
+        // Collect the commandString
+        commandString = tokens[2];
+
+        if (tokens.Length < 4)
+        {
+            error = "Error: Missing command response.";
+            return false;
+        }
+
+        // Collect the commandResponse.
+        commandResponse = tokens[3];
+
+        args = new CommandsAdminArgs
+        {
+            commandAction = action,
+            commandPhrase = commandString,
+            commandResponse = commandResponse
+        };
+
+        return true;
+    }
+
+    static bool TryParseCommandAction(string token, out CommandsAdminAction action)
+    {
+        return Enum.TryParse(token, ignoreCase: true, out action);
     }
 }

@@ -39,43 +39,40 @@ internal class FilterAdminCommand : ICommand
     public async Task ExecuteAsync(MessageContext messageData, string[] tokens)
     {
         // Parse the tokens into usable details
-
         if (!TryParseFilterArgs(tokens, out FilterCommandArgs args, out string error))
         {
             Console.WriteLine($"Error: {error}");
             return;
         }
 
+        // Switch on the action enum to issue requests to the FilterService.
         switch (args.filterAction)
         {
             case FilterCommandAction.On:
-                filterService.ToggleFilter(true);
+                await filterService.ToggleFilter(true);
                 break;
 
             case FilterCommandAction.Off:
-                filterService.ToggleFilter(false);
+                await filterService.ToggleFilter(false);
                 break;
 
             case FilterCommandAction.Add:
-                filterService.AddFilterRule(args.filterPhrase, args.filterPunishment);
+                await filterService.AddFilterRule(args.filterPhrase, args.filterPunishment);
                 break;
 
             case FilterCommandAction.Remove:
-                filterService.RemoveFilterRule(args.filterPhrase);
+                await filterService.RemoveFilterRule(args.filterPhrase);
                 break;
 
             case FilterCommandAction.Update:
-                filterService.UpdateFilterRule(args.filterPhrase, args.filterPunishment);
+                await filterService.UpdateFilterRule(args.filterPhrase, args.filterPunishment);
                 break;
 
             default:
-                // Should never get here.
+                // Should never get here because TryParseFilterArgs should fail and return if there's any issue.
                 Console.WriteLine("Error: Filter command parsing unsuccessful.");
                 break;
         }
- 
-        
-        // Switch on the action enum to issue requests to the FilterService.
     }
 
     // TryParse functions to keep core processing clean.

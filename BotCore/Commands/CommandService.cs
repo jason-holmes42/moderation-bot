@@ -23,7 +23,8 @@ internal class CommandService
         coreCommands = new Dictionary<string, ICommand>
         {
             {"uptime", new UptimeCommand() },
-            {"filter", new FilterAdminCommand(filterService) }
+            {"filter", new FilterAdminCommand(filterService) },
+            {"command", new CommandsAdminCommand(this) }
         };
 
         this.settings = settings;
