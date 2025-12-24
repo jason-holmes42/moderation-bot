@@ -61,7 +61,8 @@ internal class CommandService
 
         // Elsewise, tokenize by space character ' ' and parse as a command.
         string[] tokens = TokenizeCommand(' ', input);
-        Console.WriteLine($"Command identified: {String.Join(", ", tokens)}");
+        messageData.reactionType = ReactionType.Command;
+        messageData.reactionString = $"Command {tokens[0]} identified!";
         
         // Check registered core commands for a match
         if (coreCommands.TryGetValue(tokens[0], out ICommand coreCommand))

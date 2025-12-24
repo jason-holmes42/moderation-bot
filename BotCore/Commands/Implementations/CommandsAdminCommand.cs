@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Collections.Specialized.BitVector32;
 
 namespace BotCore.Commands.Implementations;
 internal class CommandsAdminCommand : ICommand
@@ -103,14 +104,14 @@ internal class CommandsAdminCommand : ICommand
         // Collect the commandString
         commandString = tokens[2];
 
-        if (tokens.Length < 4)
+        if (tokens.Length < 4 && action != CommandsAdminAction.Remove)
         {
             error = "Error: Missing command response.";
             return false;
         }
 
-        // Collect the commandResponse.
-        commandResponse = tokens[3];
+        // Collect the commandResponse if present.
+        commandResponse = tokens.Length > 3 ? tokens[3] : "";
 
         args = new CommandsAdminArgs
         {
