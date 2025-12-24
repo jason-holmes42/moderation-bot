@@ -11,33 +11,40 @@ using BotCore.Configuration;
 namespace BotCore.Commands;
 internal class CommandService
 {
+    CommandSettings settings;
     Dictionary<string, ICommand> coreCommands;
-    // Dictionary<string, CustomCommand> customCommands;
+    Dictionary<string, CustomCommand> customCommands;
 
     FilterService filterService;
 
-    private CommandService(FilterService filterService)
+    private CommandService(CommandSettings settings, Dictionary<string, CustomCommand> customCommands, FilterService filterService)
     {
-        // Commands all bots may access. customCommands will need to be built in the constructor due to loading requirement.
+        // Commands all bots may access.
         coreCommands = new Dictionary<string, ICommand>
         {
             {"uptime", new UptimeCommand() },
             {"filter", new FilterCommand(filterService) }
         };
 
-        // CommandConfig commandConfig = ConfigService.RetrieveCommandConfig();
-        // customCommands = new Dictionary<string, CustomCommand>();
-        // foreach (CustomCommand command in commandConfig.storedCommands) customCommands.Add(command.commandString, command);
-
+        this.settings = settings;
+        this.customCommands = customCommands;
         this.filterService = filterService;
     }
 
     public static async Task<CommandService> CreateAsync(FilterService filterService)
     {
-        // List<CustomCommand> storedCommands = await ConfigService.RetrieveCustomCommands
+        // Retrieve command config from storage. Failing that, generate a new one and save it to storage.
+        CommandConfig config;
+        config = await ConfigService.RetrieveCommandConfig();
+        if (config == null) config = await GenerateDefaultConfig();
 
-        // return new CommandService(storedCommands);
-        return new CommandService(filterService);
+        // Create an easily-matchable dictionary out of the custom commands
+        Dictionary<string, CustomCommand> storedCommands = new Dictionary<string, CustomCommand>();
+
+        foreach (CustomCommand command in config.customCommands) storedCommands.Add(command.commandString, command);
+
+        // Pass the settings, custom commands, and filter service to the constructor
+        return new CommandService(config.commandSettings, storedCommands, filterService);
     }
 
     public async Task Evaluate(MessageContext messageData)
@@ -48,7 +55,7 @@ internal class CommandService
         // Establish the command character that should precede commands. Custom command characters would be defined here.
         char commandChar = '!';
 
-        // If the first character of the trimmed string is not the command character, skip. 
+        // If the first character of the trimmed string is not the command character, no need to parse. 
         if (input[0] != commandChar)
         {
             return;
@@ -66,6 +73,7 @@ internal class CommandService
                 await command.ExecuteAsync(messageData, tokens);
             }
         }
+
         // Check registered custom commands for a match
 
     }
@@ -78,5 +86,21 @@ internal class CommandService
         return input
             .Substring(1)                                           // Remove the command character
             .Split(splitChar, StringSplitOptions.RemoveEmptyEntries);     // Split the string on ' ' characters into a string array of tokens
+    }
+
+    static async Task<CommandConfig> GenerateDefaultConfig()
+    {
+        CommandSettings commandSettings = new CommandSettings()
+        {
+            // globalCooldown = 3
+        };
+
+        List<CustomCommand> customCommands = new List<CustomCommand>();
+
+        CommandConfig config = new CommandConfig(commandSettings, customCommands);
+
+        await ConfigService.StoreCommandConfig(config);
+
+        return config;
     }
 }

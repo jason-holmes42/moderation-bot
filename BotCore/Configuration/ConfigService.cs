@@ -35,10 +35,9 @@ internal class ConfigService
     }
 
     // Stub function for future Custom Commands feature
-    public static async Task<IEnumerable<CustomCommand>> RetrieveCommandConfig()
+    public static Task<CommandConfig> RetrieveCommandConfig()
     {
-        // return RetrieveConfigAsync<CommandConfig>(commandConfigFilename);
-        return default;
+        return RetrieveConfigAsync<CommandConfig>(commandConfigFilename);
     }
 
     // Stub function for future Permissions feature.
@@ -53,11 +52,9 @@ internal class ConfigService
     }
 
     // Stub function for future Custom Commands feature
-    public static async Task StoreCommandConfig(IEnumerable<CustomCommand> customCommands)
+    public static Task StoreCommandConfig(CommandConfig commandConfig)
     {
-        List<CustomCommand> commandsToStore = customCommands.ToList();
-
-        // serialize and save to JSON file
+        return StoreConfigAsync<CommandConfig>(commandConfig, commandConfigFilename);
     }
 
     // Stub function for future Permissions feature.
