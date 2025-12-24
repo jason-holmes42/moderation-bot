@@ -31,9 +31,11 @@ internal class FilterService
 
     public static async Task<FilterService> CreateAsync()
     {
-        // Retrieve filter rules from storage
-        FilterConfig config = await ConfigService.RetrieveFilterConfig();
-
+        // Retrieve filter config from storage. Failing that, generate a new one and save it to storage.
+        FilterConfig config;
+        config = await ConfigService.RetrieveFilterConfig();
+        if (config == null) config = await GenerateDefaultConfig();
+        
         // Create an easily-matchable dictionary out of the filter rules
         Dictionary<string, FilterRule> filteredPhrases = new Dictionary<string, FilterRule>();
 
@@ -145,5 +147,20 @@ internal class FilterService
     async Task StoreFilterConfig()
     {
         await ConfigService.StoreFilterConfig(new FilterConfig(settings, phraseDictionary.Values.ToList()));
+    }
+
+    static async Task<FilterConfig> GenerateDefaultConfig()
+    {
+        FilterSettings filterSettings = new FilterSettings()
+        {
+            filterStatus = true
+        };
+
+        List<FilterRule> filterRules = new List<FilterRule>();
+        FilterConfig config = new FilterConfig(filterSettings, filterRules);
+
+        await ConfigService.StoreFilterConfig(config);
+
+        return config;
     }
 }
