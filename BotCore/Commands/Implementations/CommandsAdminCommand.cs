@@ -113,6 +113,7 @@ internal class CommandsAdminCommand : ICommand
         // Collect the commandResponse if present.
         commandResponse = tokens.Length > 3 ? tokens[3] : "";
 
+        // Construct the args and send them back for processing.
         args = new CommandsAdminArgs
         {
             commandAction = action,

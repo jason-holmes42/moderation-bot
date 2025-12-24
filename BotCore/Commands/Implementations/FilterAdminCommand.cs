@@ -120,6 +120,7 @@ internal class FilterAdminCommand : ICommand
             }
         }
 
+        // Construct the args and send them back for processing.
         args = new FilterCommandArgs
         {
             filterAction = action,
