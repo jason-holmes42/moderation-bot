@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 namespace BotCore.Filtering;
 internal class FilterConfig
 {
-    public List<FilterRule> filterRules {  get; set; }
-    public FilterSettings filterSettings { get; set; }
+    public List<FilterRule> filterRules {  get; init; }
+    public FilterSettings filterSettings { get; init; }
 
     public FilterConfig()
     {
