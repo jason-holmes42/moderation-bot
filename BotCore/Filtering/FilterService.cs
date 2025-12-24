@@ -70,9 +70,9 @@ internal class FilterService
         // The command string's tokens will be parsed by FilterCommand, so there is no need to parse them here.
 
         // Add the new FilterRule to the phrase dictionary
-        if (phraseDictionary.ContainsKey(filteredPhrase))
+        if (phraseDictionary.TryGetValue(filteredPhrase, out FilterRule filterRule))
         {
-            Console.WriteLine($"{filteredPhrase} is already marked for {phraseDictionary[filteredPhrase].punishType.ToString().ToUpper()}! You can change the punishment type with `!filter update <phrase> <new punishment>`.");
+            Console.WriteLine($"{filteredPhrase} is already marked for {filterRule.punishType.ToString().ToUpper()}.");
         }
         else
         {
@@ -108,19 +108,19 @@ internal class FilterService
         // The command string's tokens will be parsed and verified by FilterCommand, so there is no need to parse them here.
 
         // Locate the filteredPhrase from the phrase dictionary and, if it exists, update it.
-        if (phraseDictionary.ContainsKey(filteredPhrase))
+        if (phraseDictionary.TryGetValue(filteredPhrase, out FilterRule filterRule))
         {
-            if (phraseDictionary[filteredPhrase].punishType == updatedReaction)
+            if (filterRule.punishType == updatedReaction)
             {
-                Console.WriteLine($"{filteredPhrase} is already marked for {phraseDictionary[filteredPhrase].punishType.ToString().ToUpper()}!");
+                Console.WriteLine($"{filteredPhrase} is already marked for {filterRule.punishType.ToString().ToUpper()}!");
             }
             else
             {
-                phraseDictionary[filteredPhrase].punishType = updatedReaction;
-                Console.WriteLine($"{filteredPhrase} filter updated to apply {phraseDictionary[filteredPhrase].punishType.ToString().ToUpper()}.");
+                filterRule.punishType = updatedReaction;
+                Console.WriteLine($"{filteredPhrase} filter updated to apply {filterRule.punishType.ToString().ToUpper()}.");
             }
         }
-        else Console.WriteLine($"{filteredPhrase} filter not found. You can add a new phrase to the filter by using `!filter add <phrase> <punishment>`.");
+        else Console.WriteLine($"{filteredPhrase} filter not found.");
 
         // Save the updated dictionary.
         await StoreFilterConfig();
