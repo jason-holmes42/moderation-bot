@@ -36,7 +36,7 @@ internal class CommandsAdminCommand : ICommand
     public async Task ExecuteAsync(MessageContext messageData, string[] tokens)
     {
         // Parse the tokens into usable details
-        if (!TryParseCommandArgs(tokens, out CommandsAdminArgs args, out string error))
+        if (!TryParseCommandArgs(messageData.message, out CommandsAdminArgs args, out string error))
         {
             Console.WriteLine($"Error: {error}");
             return;
@@ -65,13 +65,14 @@ internal class CommandsAdminCommand : ICommand
     }
 
     // TryParse functions to keep core processing clean.
-    static bool TryParseCommandArgs(string[] tokens, out CommandsAdminArgs args, out string error)
+    static bool TryParseCommandArgs(string message, out CommandsAdminArgs args, out string error)
     {
         // !command <add/remove/update> <commandString> <reactionString>
-        // token[0] = command
-        // token[1] = <add/remove/update>
-        // token[2] = commandString
-        // token[3] = Message to post upon detection.
+        // This command wants a different arrangement of tokens than other commands, so it must do its own tokenizing.
+
+        string[] tokens = message
+            .Substring(1)       // Remove the command character.
+            .Split(' ', count: 4, StringSplitOptions.RemoveEmptyEntries);   // Split into 4 units; the first three are subcommands, while the 4th is the full command response.
 
         CommandsAdminAction action;
         string commandString;
