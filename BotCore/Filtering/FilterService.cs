@@ -15,6 +15,14 @@ internal class FilterService
     FilterSettings settings;
     bool activeState = true;
 
+    // Explicit conversion dictionary to avoid messy, unsafe enum casts or Enum.Parse usages
+    static readonly Dictionary<PunishmentType, ReactionType> PunishmentToReaction = new Dictionary<PunishmentType, ReactionType>()
+    {
+        { PunishmentType.Warning, ReactionType.Warning },
+        { PunishmentType.Timeout, ReactionType.Timeout },
+        { PunishmentType.Ban, ReactionType.Ban },
+    };
+
     private FilterService(FilterSettings settings, Dictionary<string, FilterRule> filterPhrases)
     {
         this.settings = settings;
@@ -46,8 +54,7 @@ internal class FilterService
             if (rule.regexPattern.IsMatch(messageData.message))
             {
                 // If message contains a filtered phrase, mark its reaction type and reaction string. Based on this, the punishment will be triggered elsewhere.
-                // The cast from PunishmentType to ReactionType is safe without TryParse or other protections because PunishmentType is a subset of ReactionType.
-                messageData.reactionType = (ReactionType) Enum.Parse(typeof(ReactionType), rule.punishType.ToString(), ignoreCase: true);
+                messageData.reactionType = PunishmentToReaction[rule.punishType];
                 messageData.reactionString = $"{messageData.reactionType.ToString().ToUpper()} {messageData.username} REASON: Matched '{rule.filterPhrase}' filter.";
 
                 // An expansion of the Punishment functionality would want to be called directly here.
