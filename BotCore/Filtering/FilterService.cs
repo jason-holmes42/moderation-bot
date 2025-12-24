@@ -41,14 +41,14 @@ internal class FilterService
         if (!activeState) return;
 
         // Assess message body for filtered phrases
-        foreach (var pattern in phraseDictionary)
+        foreach (var rule in phraseDictionary.Values)
         {
-            if (Regex.IsMatch(messageData.message, pattern.Key, RegexOptions.IgnoreCase))
+            if (rule.regexPattern.IsMatch(messageData.message))
             {
                 // If message contains a filtered phrase, mark its reaction type and reaction string. Based on this, the punishment will be triggered elsewhere.
                 // The cast from PunishmentType to ReactionType is safe without TryParse or other protections because PunishmentType is a subset of ReactionType.
-                messageData.reactionType = (ReactionType) Enum.Parse(typeof(ReactionType), pattern.Value.punishType.ToString(), ignoreCase: true);
-                messageData.reactionString = $"{messageData.reactionType.ToString().ToUpper()} {messageData.username} REASON: Matched '{pattern.Key}' filter.";
+                messageData.reactionType = (ReactionType) Enum.Parse(typeof(ReactionType), rule.punishType.ToString(), ignoreCase: true);
+                messageData.reactionString = $"{messageData.reactionType.ToString().ToUpper()} {messageData.username} REASON: Matched '{rule.filterPhrase}' filter.";
 
                 // An expansion of the Punishment functionality would want to be called directly here.
             }
