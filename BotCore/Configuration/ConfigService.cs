@@ -7,6 +7,7 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using BotCore.Filtering;
 using BotCore.Commands;
+using System.Reflection.Metadata;
 
 namespace BotCore.Configuration;
 
@@ -18,6 +19,7 @@ internal class ConfigService
     static readonly string filterConfigFilename = "filterConfig.json";
     static readonly string commandConfigFilename = "commandConfig.json";
     static readonly string configDirectoryName = "config";
+    static readonly string backupDirectoryName = "backup";
 
     // Create and cache the Json Serializer Options object used for all serialization/deserialization needs.
     private static readonly JsonSerializerOptions jsonOptions =
@@ -27,46 +29,27 @@ internal class ConfigService
             Converters = { new JsonStringEnumConverter() }      // Converts enums from integers to strings and vice-versa.
         };
 
-    public static async Task<FilterConfig> RetrieveFilterConfig()
+    public static Task<FilterConfig> RetrieveFilterConfig()
     {
-        FilterConfig config = new FilterConfig();
-
-        // read and deserialize from JSON file
-        string jsonData = GetJSONData(filterConfigFilename);
-
-        if (jsonData == null) return null;
-
-        // Deserialize from JSON into a List of FilterRule objects. Options ensure that the reactionType strings from the JSON convert properly.
-        config = JsonSerializer.Deserialize<FilterConfig>(jsonData, jsonOptions);
-
-        return config;
+        return RetrieveConfigAsync<FilterConfig>(filterConfigFilename);
     }
 
     // Stub function for future Custom Commands feature
     public static async Task<IEnumerable<CustomCommand>> RetrieveCommandConfig()
     {
-        List<CustomCommand> commandsList = new List<CustomCommand>();
-
-        // read and deserialize from JSON file
-
-        return commandsList;
+        // return RetrieveConfigAsync<CommandConfig>(commandConfigFilename);
+        return default;
     }
 
     // Stub function for future Permissions feature.
     public static async Task RetrievePermissionsConfig()
     {
-        // read and deserialize from JSON file
+        // return RetrieveConfigAsync<PermissionsConfig>(permissionsConfigFilename);
     }
 
-    public static async Task StoreFilterConfig(FilterConfig filterConfig)
+    public static Task StoreFilterConfig(FilterConfig filterConfig)
     {
-        // List<FilterRule> rulesToStore = filterConfig.filterRules.ToList();
-
-        // Serialize the List of FilterRule objects to JSON. The options ensure both that the reactionType enum converts to legible strings and that the file includes indentation so it isn't just one long nightmare JSON string.
-        string json = JsonSerializer.Serialize(filterConfig, jsonOptions);
-        File.WriteAllText(GetFilePath(filterConfigFilename), json);
-
-        // serialize and save to JSON file
+        return StoreConfigAsync<FilterConfig>(filterConfig, filterConfigFilename);
     }
 
     // Stub function for future Custom Commands feature
@@ -83,7 +66,78 @@ internal class ConfigService
         // serialize and save to JSON file
     }
 
-    // Smooth out the process of relative filepaths and avoid having to Path.Combine in every function.
+    // Generalized retrieval/storage functions to centralize error-handling, mitigate serialization/deserialization reuse, and make future replacement straightforward.
+    private static async Task<T> RetrieveConfigAsync<T>(string filename)
+    {
+        string filepath = GetFilePath(filename);
+
+        // Since the config files will not be especially large, we can skip StreamReader for this
+        // Check if a config file exists. If not, return a value to the caller to indicate the service needs to generate one.
+        if (!File.Exists(filepath))
+        {
+            Console.WriteLine($"File at {filepath} does not exist. Generating default config file.");
+            return default;
+        }
+
+        // Otherwise, collect the data from the file and deserialize it.
+        try
+        {
+            string jsonData = await File.ReadAllTextAsync(filepath);
+
+            if (string.IsNullOrWhiteSpace(jsonData))
+            {
+                Console.WriteLine("Error: JSON loading failed. Generating default config file.");
+                return default;
+            }
+
+            return JsonSerializer.Deserialize<T>(jsonData, jsonOptions);
+        }
+        catch (JsonException ex)
+        {
+            Console.WriteLine($"Config file {filename} contains invalid JSON: {ex.Message}");
+            string backupLoc = BackupFile(filepath);
+            Console.WriteLine($"Storing invalid file to {backupLoc}.");
+            return default;
+        }
+        catch (IOException ex)
+        {
+            Console.WriteLine($"Could not read config file {filename}: {ex.Message}");
+            string backupLoc = BackupFile(filepath);
+            Console.WriteLine($"Storing invalid file to {backupLoc}.");
+            return default;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Unexpected error loading {filename} config: {ex.Message}");
+            string backupLoc = BackupFile(filepath);
+            Console.WriteLine($"Storing invalid file to {backupLoc}.");
+            return default;
+        }
+    }
+
+    private static async Task StoreConfigAsync<T>(T config, string filename)
+    {
+        try
+        {
+            // Serialize the config object to JSON. The options ensure that enums convert to legible strings and that the file includes indentation so it isn't just one long nightmare JSON string.
+            string json = JsonSerializer.Serialize(config, jsonOptions);
+            await File.WriteAllTextAsync(GetFilePath(filename), json);
+        }
+        catch (JsonException ex)
+        {
+            Console.WriteLine($"Error while serializing {filename} to JSON: {ex.Message}");
+        }
+        catch (IOException ex)
+        {
+            Console.WriteLine($"Error while writing {filename} to file: {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Unexpected error encountered while storing {filename}: {ex.Message}");
+        }
+    }
+
+    // Smooth out the process of relative filepaths and avoid having to Path.Combine everywhere
     private static string GetFilePath(string filename)
     {
         string configDir = Path.Combine(AppContext.BaseDirectory, configDirectoryName);
@@ -92,24 +146,23 @@ internal class ConfigService
         return Path.Combine(configDir, filename);
     }
 
-    private static string GetJSONData(string filename)
+    // Store invalid configuration files in a backup location for reference.
+    private static string BackupFile(string filepath)
     {
-        // Since the config files will not be especially large, we can skip StreamReader for this
-        if (!File.Exists(GetFilePath(filename)))
-        {
-            Console.WriteLine($"File at {GetFilePath(filename)} does not exist. Creating default file.");
-            File.AppendAllText(GetFilePath(filename), """[]""");
-            return """[]""";
-        }
-        
-        string jsonData = File.ReadAllText(GetFilePath(filename));
-        // TODO: Deserialization error testing, try/catch
-        if (jsonData == null | jsonData == "")
-        {
-            Console.WriteLine("JSON deserialization failed; object not populated.");
-            return null;
-        }
+        // The backup directory should be a subdirectory of the config directory, so make it if it doesn't exist.
+        string backupDir = Path.Combine(AppContext.BaseDirectory, configDirectoryName, backupDirectoryName);
+        Directory.CreateDirectory(backupDir);
 
-        return jsonData;
+        // Append the current datetime to the filename, add .bak, mark it for the backup directory
+        string filename = Path.GetFileName(filepath);
+        string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+        string backupFilename = $"{filename}.{timestamp}.bak";
+        string backupFilepath = Path.Combine(backupDir, backupFilename);
+
+        // Perform the copy
+        File.Copy(filepath, backupFilepath);
+
+        // Return the path for exception handling
+        return backupFilepath;
     }
 }
