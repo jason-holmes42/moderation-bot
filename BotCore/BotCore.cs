@@ -10,7 +10,7 @@ public class BotCore
     FilterService? filterService;
     CommandService? commandService;
 
-    public async void Initialize()
+    public async Task Initialize()
     {
         filterService = await FilterService.CreateAsync();
         commandService = await CommandService.CreateAsync(filterService);

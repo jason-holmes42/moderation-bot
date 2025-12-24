@@ -53,7 +53,7 @@ internal class ConfigService
     }
 
     // Stub function for future Permissions feature.
-    public static async void RetrievePermissionsConfig()
+    public static async Task RetrievePermissionsConfig()
     {
         // read and deserialize from JSON file
     }

@@ -56,16 +56,16 @@ internal class FilterService
     }
 
     // Switch the filter from on to off or vice versa.
-    public void ToggleFilter(bool newState)
+    public async Task ToggleFilter(bool newState)
     {
         activeState = newState;                 // Active state of the filter
         Console.WriteLine($"Filter {(newState ? "" : "de")}activated.");
         settings.filterStatus = activeState;    // Default state of the filter
-        StoreFilterConfig();
+        await StoreFilterConfig();
     }
 
     // Rule management functions. Add and Update could be safely combined, but keeping them distinct will help users keep the impact of accidental commands minimal.
-    public void AddFilterRule(string filteredPhrase, PunishmentType reaction)
+    public async Task AddFilterRule(string filteredPhrase, PunishmentType reaction)
     {
         // The command string's tokens will be parsed by FilterCommand, so there is no need to parse them here.
 
@@ -81,10 +81,10 @@ internal class FilterService
         }
 
         // Save the updated dictionary.
-        StoreFilterConfig();
+        await StoreFilterConfig();
     }
 
-    public void RemoveFilterRule(string filteredPhrase)
+    public async Task RemoveFilterRule(string filteredPhrase)
     {
         // The command string's tokens will be parsed by FilterCommand, so there is no need to parse them here.
 
@@ -100,10 +100,10 @@ internal class FilterService
         }
 
         // Save the updated dictionary.
-        StoreFilterConfig();
+        await StoreFilterConfig();
     }
 
-    public void UpdateFilterRule(string filteredPhrase, PunishmentType updatedReaction)
+    public async Task UpdateFilterRule(string filteredPhrase, PunishmentType updatedReaction)
     {
         // The command string's tokens will be parsed and verified by FilterCommand, so there is no need to parse them here.
 
@@ -123,11 +123,11 @@ internal class FilterService
         else Console.WriteLine($"{filteredPhrase} filter not found. You can add a new phrase to the filter by using `!filter add <phrase> <punishment>`.");
 
         // Save the updated dictionary.
-        StoreFilterConfig();
+        await StoreFilterConfig();
     }
 
     // Handle converting the phrase dictionary to a List of FilterRules and sending it off for storage.
-    async void StoreFilterConfig()
+    async Task StoreFilterConfig()
     {
         await ConfigService.StoreFilterConfig(new FilterConfig(settings, phraseDictionary.Values.ToList()));
     }
