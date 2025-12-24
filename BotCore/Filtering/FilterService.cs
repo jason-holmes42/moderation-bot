@@ -48,14 +48,22 @@ internal class FilterService
         // If the filter has been disabled, do not evaluate a message.
         if (!activeState) return;
 
+        // In the case of multiple matches in a single message, the strongest punishment should be prioritized.
+        PunishmentType? strongestPunishment = null;
+
         // Assess message body for filtered phrases
         foreach (var rule in phraseDictionary.Values)
         {
             if (rule.regexPattern.IsMatch(messageData.message))
             {
                 // If message contains a filtered phrase, mark its reaction type and reaction string. Based on this, the punishment will be triggered elsewhere.
-                messageData.reactionType = PunishmentToReaction[rule.punishType];
-                messageData.reactionString = $"{messageData.reactionType.ToString().ToUpper()} {messageData.username} REASON: Matched '{rule.filterPhrase}' filter.";
+
+                if (strongestPunishment == null || rule.punishType > strongestPunishment)
+                {
+                    strongestPunishment = rule.punishType;
+                    messageData.reactionType = PunishmentToReaction[rule.punishType];
+                    messageData.reactionString = $"{messageData.reactionType.ToString().ToUpper()} {messageData.username} REASON: Matched '{rule.filterPhrase}' filter.";
+                }
 
                 // An expansion of the Punishment functionality would want to be called directly here.
             }

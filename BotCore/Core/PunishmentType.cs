@@ -7,7 +7,8 @@ using System.Threading.Tasks;
 namespace BotCore.Core;
 public enum PunishmentType
 {
-    Warning,
-    Timeout,
-    Ban
+    // PunishmentTypes are given explicit integer values for comparison when prioritizing the severity of the punishment and should be assigned consistent with this intent, rather than implicit assumptions.
+    Warning = 0,
+    Timeout = 1,
+    Ban = 2
 }
