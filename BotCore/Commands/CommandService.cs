@@ -13,17 +13,17 @@ internal class CommandService
 {
     CommandSettings settings;
     Dictionary<string, ICommand> coreCommands;
-    Dictionary<string, CustomCommand> customCommands;
+    Dictionary<string, CommandDefinition> customCommands;
 
     FilterService filterService;
 
-    private CommandService(CommandSettings settings, Dictionary<string, CustomCommand> customCommands, FilterService filterService)
+    private CommandService(CommandSettings settings, Dictionary<string, CommandDefinition> customCommands, FilterService filterService)
     {
         // Commands all bots may access.
         coreCommands = new Dictionary<string, ICommand>
         {
             {"uptime", new UptimeCommand() },
-            {"filter", new FilterCommand(filterService) }
+            {"filter", new FilterAdminCommand(filterService) }
         };
 
         this.settings = settings;
@@ -39,9 +39,9 @@ internal class CommandService
         if (config == null) config = await GenerateDefaultConfig();
 
         // Create an easily-matchable dictionary out of the custom commands
-        Dictionary<string, CustomCommand> storedCommands = new Dictionary<string, CustomCommand>();
+        Dictionary<string, CommandDefinition> storedCommands = new Dictionary<string, CommandDefinition>();
 
-        foreach (CustomCommand command in config.customCommands) storedCommands.Add(command.commandString, command);
+        foreach (CommandDefinition command in config.customCommands) storedCommands.Add(command.commandString, command);
 
         // Pass the settings, custom commands, and filter service to the constructor
         return new CommandService(config.commandSettings, storedCommands, filterService);
@@ -69,7 +69,7 @@ internal class CommandService
         }
 
         // Check registered custom commands for a match
-        if (customCommands.TryGetValue(tokens[0], out CustomCommand customCommand))
+        if (customCommands.TryGetValue(tokens[0], out CommandDefinition customCommand))
         {
             Console.WriteLine(customCommand.reactionString);
         }
@@ -82,13 +82,13 @@ internal class CommandService
         // The command string's tokens will be parsed by the time it arrives here, so there is no need to do so again.
 
         // Add the new CustomCommand to the phrase dictionary
-        if (customCommands.TryGetValue(commandString, out CustomCommand customCommand))
+        if (customCommands.TryGetValue(commandString, out CommandDefinition customCommand))
         {
             Console.WriteLine($"{settings.commandChar}{commandString} already exists.");
         }
         else
         {
-            customCommands.Add(commandString, new CustomCommand(commandString, reactionString));
+            customCommands.Add(commandString, new CommandDefinition(commandString, reactionString));
             Console.WriteLine($"Command added for {settings.commandChar}{commandString}.");
         }
 
@@ -117,7 +117,7 @@ internal class CommandService
         // The command string's tokens will be parsed by the time it arrives here, so there is no need to do so again.
 
         // Locate the commandString in the customCommands dictionary and, if it exists, update it.
-        if (customCommands.TryGetValue(commandString, out CustomCommand customCommand))
+        if (customCommands.TryGetValue(commandString, out CommandDefinition customCommand))
         {
             customCommand.reactionString = updatedReaction;
             Console.WriteLine($"{settings.commandChar}{commandString} command updated.");
@@ -152,7 +152,7 @@ internal class CommandService
             commandChar = ' '
         };
 
-        List<CustomCommand> customCommands = new List<CustomCommand>();
+        List<CommandDefinition> customCommands = new List<CommandDefinition>();
 
         CommandConfig config = new CommandConfig(commandSettings, customCommands);
 

@@ -8,7 +8,7 @@ using BotCore.Filtering;
 using static System.Collections.Specialized.BitVector32;
 
 namespace BotCore.Commands;
-internal class FilterCommand : ICommand
+internal class FilterAdminCommand : ICommand
 {
     enum FilterCommandAction
     {
@@ -26,12 +26,12 @@ internal class FilterCommand : ICommand
         public PunishmentType filterPunishment { get; init; }
     }
 
-    public string commandString { get; set; } = "filter";
+    public string commandString { get; init; } = "filter";
     public string[]? commandAliases { get; set; } = [];
 
     FilterService filterService;
 
-    public FilterCommand(FilterService filterService)
+    public FilterAdminCommand(FilterService filterService)
     {
         this.filterService = filterService;
     }

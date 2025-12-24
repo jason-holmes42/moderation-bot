@@ -8,7 +8,7 @@ using BotCore.Core;
 namespace BotCore.Commands.Implementations;
 internal class UptimeCommand : ICommand
 {
-    public string commandString { get; set; } = "uptime";
+    public string commandString { get; init; } = "uptime";
     public string[]? commandAliases { get; set; } = [];
 
     public async Task ExecuteAsync(MessageContext messageData, string[] tokens)
