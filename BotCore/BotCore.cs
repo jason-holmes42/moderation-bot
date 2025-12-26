@@ -7,13 +7,18 @@ namespace BotCore;
 // Core functionality for the moderation bot.
 public class BotCore
 {
-    FilterService? filterService;
-    CommandService? commandService;
+    FilterService filterService;
+    CommandService commandService;
+    BotTimeProvider timeProvider;
+    CooldownTracker cooldownTracker;
 
     public async Task Initialize()
     {
+        timeProvider = new BotTimeProvider();
+        cooldownTracker = new CooldownTracker(timeProvider);
+
         filterService = await FilterService.CreateAsync();
-        commandService = await CommandService.CreateAsync(filterService);
+        commandService = await CommandService.CreateAsync(filterService, cooldownTracker);
     }
 
     public event Action<string>? OnMessageSent;

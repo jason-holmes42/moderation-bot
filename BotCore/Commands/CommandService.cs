@@ -15,12 +15,14 @@ internal class CommandService
     Dictionary<string, ICommand> commandRegistry = new Dictionary<string, ICommand>();
 
     FilterService filterService;
+    CooldownTracker cooldownTracker;
 
-    private CommandService(CommandConfig config, FilterService filterService)
+    private CommandService(CommandConfig config, FilterService filterService, CooldownTracker cooldownTracker)
     {
         // Cache settings and service providers
         this.settings = config.commandSettings;
         this.filterService = filterService;
+        this.cooldownTracker = cooldownTracker;
 
         // Register core commands -- commands that all bots may access.
         RegisterCommandInternal(new UptimeCommand());
@@ -31,7 +33,7 @@ internal class CommandService
         foreach (CustomCommandDefinition customCommand in config.customCommands) RegisterCommandInternal(customCommand);
     }
 
-    public static async Task<CommandService> CreateAsync(FilterService filterService)
+    public static async Task<CommandService> CreateAsync(FilterService filterService, CooldownTracker cooldownTracker)
     {
         // Retrieve command config from storage. Failing that, generate a new one and save it to storage.
         CommandConfig config;
@@ -39,7 +41,7 @@ internal class CommandService
         if (config == null) config = await GenerateDefaultConfig();
 
         // Pass the config (which contains settings and custom commands) and filter service to the constructor
-        return new CommandService(config, filterService);
+        return new CommandService(config, filterService, cooldownTracker);
     }
 
     public async Task Evaluate(MessageContext messageData)
@@ -61,15 +63,24 @@ internal class CommandService
         // Check registered commands for a match and, upon success, execute the command.
         if (commandRegistry.TryGetValue(tokens[0], out ICommand command))
         {
-            // If it's a core command, execute its functionality.
+            // Check if the command is on cooldown and, if it is, skip processing.
+            if (!cooldownTracker.IsOffCooldown(command))
+            {
+                Console.WriteLine($"{settings.commandChar}{command.commandString} identified but skipped due to cooldown.");        // Debug-only message
+                return;
+            }
+
+            // If it's a core command, execute its functionality and trigger the cooldown.
             if (command is ICoreCommand executable)
             {
                 await executable.ExecuteAsync(messageData, tokens);
+                cooldownTracker.StartCooldown(command.commandString);
             }
-            // Otherwise if it's a custom command, issue its response.
+            // Otherwise if it's a custom command, issue its response and trigger the cooldown.
             else if (command is CustomCommandDefinition custom)
             {
                 Console.WriteLine(custom.commandResponse);
+                cooldownTracker.StartCooldown(command.commandString);
             }
             // This should never execute because all commands fit into one of the above categories.
             else Console.WriteLine($"Unable to identify {settings.commandChar}{command.commandString} command type.");
