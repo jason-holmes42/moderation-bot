@@ -8,10 +8,11 @@ using System.Threading.Tasks;
 using static System.Collections.Specialized.BitVector32;
 
 namespace BotCore.Commands.Implementations;
-internal class CommandsAdminCommand : ICommand
+internal class CommandsAdminCommand : ICoreCommand
 {
     public string commandString { get; init; } = "command";
     public string[]? commandAliases { get; set; } = [];
+    public bool isMutable { get; init; } = false;
 
     enum CommandsAdminAction
     {
@@ -47,15 +48,18 @@ internal class CommandsAdminCommand : ICommand
         switch (args.commandAction)
         {
             case CommandsAdminAction.Add:
-                await commandService.AddCustomCommand(args.commandPhrase, args.commandResponse);
+                commandService.RegisterCommand(new CustomCommandDefinition(args.commandPhrase, args.commandResponse));
+                await commandService.StoreCommandConfig();
                 break;
 
             case CommandsAdminAction.Remove:
-                await commandService.RemoveCustomCommand(args.commandPhrase);
+                commandService.UnregisterCommand(args.commandPhrase);
+                await commandService.StoreCommandConfig();
                 break;
 
             case CommandsAdminAction.Update:
-                await commandService.UpdateCustomCommand(args.commandPhrase, args.commandResponse);
+                commandService.UpdateCommand(new CustomCommandDefinition(args.commandPhrase, args.commandResponse));
+                await commandService.StoreCommandConfig();
                 break;
 
             default:

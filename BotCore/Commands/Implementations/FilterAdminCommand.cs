@@ -8,8 +8,12 @@ using BotCore.Filtering;
 using static System.Collections.Specialized.BitVector32;
 
 namespace BotCore.Commands;
-internal class FilterAdminCommand : ICommand
+internal class FilterAdminCommand : ICoreCommand
 {
+    public string commandString { get; init; } = "filter";
+    public string[]? commandAliases { get; set; } = [];
+    public bool isMutable { get; init; } = false;
+
     enum FilterCommandAction
     {
         On,
@@ -25,9 +29,6 @@ internal class FilterAdminCommand : ICommand
         public string filterPhrase { get; init; } = string.Empty;
         public PunishmentType filterPunishment { get; init; }
     }
-
-    public string commandString { get; init; } = "filter";
-    public string[]? commandAliases { get; set; } = [];
 
     FilterService filterService;
 

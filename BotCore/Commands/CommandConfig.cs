@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 namespace BotCore.Commands;
 internal class CommandConfig
 {
-    public List<CommandDefinition> customCommands { get; init; }
+    public List<CustomCommandDefinition> customCommands { get; init; }
     public CommandSettings commandSettings {  get; init; }
 
-    public CommandConfig(CommandSettings commandSettings, List<CommandDefinition> customCommands)
+    public CommandConfig(CommandSettings commandSettings, List<CustomCommandDefinition> customCommands)
     {
         this.customCommands = customCommands;
         this.commandSettings = commandSettings;

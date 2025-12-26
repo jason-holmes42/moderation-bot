@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 using BotCore.Core;
 
 namespace BotCore.Commands.Implementations;
-internal class UptimeCommand : ICommand
+internal class UptimeCommand : ICoreCommand
 {
     public string commandString { get; init; } = "uptime";
     public string[]? commandAliases { get; set; } = [];
+    public bool isMutable { get; init; } = false;
 
     public async Task ExecuteAsync(MessageContext messageData, string[] tokens)
     {

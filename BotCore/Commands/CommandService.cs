@@ -12,24 +12,23 @@ namespace BotCore.Commands;
 internal class CommandService
 {
     CommandSettings settings;
-    Dictionary<string, ICommand> coreCommands;
-    Dictionary<string, CommandDefinition> customCommands;
+    Dictionary<string, ICommand> commandRegistry = new Dictionary<string, ICommand>();
 
     FilterService filterService;
 
-    private CommandService(CommandSettings settings, Dictionary<string, CommandDefinition> customCommands, FilterService filterService)
+    private CommandService(CommandConfig config, FilterService filterService)
     {
-        // Commands all bots may access.
-        coreCommands = new Dictionary<string, ICommand>
-        {
-            {"uptime", new UptimeCommand() },
-            {"filter", new FilterAdminCommand(filterService) },
-            {"command", new CommandsAdminCommand(this) }
-        };
-
-        this.settings = settings;
-        this.customCommands = customCommands;
+        // Cache settings and service providers
+        this.settings = config.commandSettings;
         this.filterService = filterService;
+
+        // Register core commands -- commands that all bots may access.
+        RegisterCommandInternal(new UptimeCommand());
+        RegisterCommandInternal(new FilterAdminCommand(filterService));
+        RegisterCommandInternal(new CommandsAdminCommand(this));
+
+        // Register custom commands -- commands unique to this configuration of the bot.
+        foreach (CustomCommandDefinition customCommand in config.customCommands) RegisterCommandInternal(customCommand);
     }
 
     public static async Task<CommandService> CreateAsync(FilterService filterService)
@@ -39,13 +38,8 @@ internal class CommandService
         config = await ConfigService.RetrieveCommandConfig();
         if (config == null) config = await GenerateDefaultConfig();
 
-        // Create an easily-matchable dictionary out of the custom commands
-        Dictionary<string, CommandDefinition> storedCommands = new Dictionary<string, CommandDefinition>();
-
-        foreach (CommandDefinition command in config.customCommands) storedCommands.Add(command.commandString, command);
-
-        // Pass the settings, custom commands, and filter service to the constructor
-        return new CommandService(config.commandSettings, storedCommands, filterService);
+        // Pass the config (which contains settings and custom commands) and filter service to the constructor
+        return new CommandService(config, filterService);
     }
 
     public async Task Evaluate(MessageContext messageData)
@@ -64,70 +58,88 @@ internal class CommandService
         messageData.reactionType = ReactionType.Command;
         messageData.reactionString = $"Command {tokens[0]} identified!";
         
-        // Check registered core commands for a match
-        if (coreCommands.TryGetValue(tokens[0], out ICommand coreCommand))
+        // Check registered commands for a match and, upon success, execute the command.
+        if (commandRegistry.TryGetValue(tokens[0], out ICommand command))
         {
-            await coreCommand.ExecuteAsync(messageData, tokens);
+            // If it's a core command, execute its functionality.
+            if (command is ICoreCommand executable)
+            {
+                await executable.ExecuteAsync(messageData, tokens);
+            }
+            // Otherwise if it's a custom command, issue its response.
+            else if (command is CustomCommandDefinition custom)
+            {
+                Console.WriteLine(custom.commandResponse);
+            }
+            // This should never execute because all commands fit into one of the above categories.
+            else Console.WriteLine($"Unable to identify {settings.commandChar}{command.commandString} command type.");
         }
-
-        // Check registered custom commands for a match
-        if (customCommands.TryGetValue(tokens[0], out CommandDefinition customCommand))
-        {
-            Console.WriteLine(customCommand.reactionString);
-        }
-
+        // If a message starts with a command character but is not a valid command, there is no need to respond.
     }
 
-    // Custom command management functions. Add and Update could be safely combined, but keeping them distinct will help users keep the impact of accidental commands minimal.
-    public async Task AddCustomCommand(string commandString, string reactionString)
+    // RegisterCommand handles the user-facing aspects of registration, calling RegisterCommandInternal to handle the rest. These functions are distinct from UpdateCommand to minimize potential user issues.
+    public void RegisterCommand(ICommand command)
     {
-        // The command string's tokens will be parsed by the time it arrives here, so there is no need to do so again.
-
-        // Add the new CustomCommand to the phrase dictionary
-        if (customCommands.TryGetValue(commandString, out CommandDefinition customCommand))
+        if (RegisterCommandInternal(command))
         {
-            Console.WriteLine($"{settings.commandChar}{commandString} already exists.");
+            Console.WriteLine($"Command added for {settings.commandChar}{command.commandString}.");
         }
-        else
-        {
-            customCommands.Add(commandString, new CommandDefinition(commandString, reactionString));
-            Console.WriteLine($"Command added for {settings.commandChar}{commandString}.");
-        }
-
-        // Save the updated dictionary.
-        await StoreCommandConfig();
+        else Console.WriteLine($"{settings.commandChar}{command.commandString} already exists.");
     }
 
-    public async Task RemoveCustomCommand(string commandString)
+    // RegisterCommandInternal acts as the single authoritative path for command registration, verifying and registering incoming commands, with success or failure being reported to the caller. Validation is performed by the CommandAdminCommand prior to reaching this point.
+    bool RegisterCommandInternal(ICommand command)
     {
-        // The command string's tokens will be parsed by the time it arrives here, so there is no need to do so again.
+        // Identify whether a command exists or not. Since core commands are registered during setup, this prevents users from adding custom commands using the same strings.
 
-        // Locate the commandString from the phrase dictionary and remove it.
-        if (customCommands.ContainsKey(commandString))
+        // If it doesn't exist already, add it.
+        if (!commandRegistry.ContainsKey(command.commandString))
         {
-            customCommands.Remove(commandString);
+            commandRegistry.Add(command.commandString, command);
+            return true;
+        }
+        else return false;
+    }
+
+    // RemoveCommand removes eligible commands while protecting immutable commands (which typically represent core functionality).
+    public void UnregisterCommand(string commandString)
+    {
+        // Locate the command in the command registry.
+        if (commandRegistry.TryGetValue(commandString, out ICommand registeredCommand))
+        {
+            // If the command is present, identify whether it is mutable. If it is not mutable, the user may not remove it.
+            if (!registeredCommand.isMutable)
+            {
+                Console.WriteLine($"{settings.commandChar}{registeredCommand.commandString} may not be removed.");
+                return;
+            }
+
+            // Otherwise, remove the registered command.
+            commandRegistry.Remove(commandString);
             Console.WriteLine($"{settings.commandChar}{commandString} command removed.");
         }
         else Console.WriteLine($"No command for {settings.commandChar}{commandString} found.");
-
-        // Save the updated dictionary.
-        await StoreCommandConfig();
     }
 
-    public async Task UpdateCustomCommand(string commandString, string updatedReaction)
+    // UpdateCommand updates eligible commands while protecting immutable commands (which typically represent core functionality). The passed command argument should be the new version of the command.
+    public void UpdateCommand(ICommand command)
     {
-        // The command string's tokens will be parsed by the time it arrives here, so there is no need to do so again.
-
-        // Locate the commandString in the customCommands dictionary and, if it exists, update it.
-        if (customCommands.TryGetValue(commandString, out CommandDefinition customCommand))
+        // Locate the command in the command registry.
+        if (commandRegistry.TryGetValue(command.commandString, out ICommand registeredCommand))
         {
-            customCommand.reactionString = updatedReaction;
-            Console.WriteLine($"{settings.commandChar}{commandString} command updated.");
-        }
-        else Console.WriteLine($"{settings.commandChar}{commandString} command not found.");
+            // If the command is present, identify whether it is mutable. If it is not mutable, the user may not change it.
+            // By checking the currently registered command for mutability instead of the incoming command, it prevents updates from trying to trick the registry into allowing it to change a mutable command.
+            if (!registeredCommand.isMutable)
+            {
+                Console.WriteLine($"{settings.commandChar}{registeredCommand.commandString} may not be changed.");
+                return;
+            }
 
-        // Save the updated dictionary.
-        await StoreCommandConfig();
+            // Otherwise, update the registered command.
+            commandRegistry[command.commandString] = command;
+            Console.WriteLine($"{settings.commandChar}{command.commandString} command updated.");
+        }
+        else Console.WriteLine($"No command for {settings.commandChar}{command.commandString} found.");
     }
 
     // Convert incoming string (previously identified as a command) into a collection of actionable tokens delimited by the splitChar character.
@@ -141,9 +153,17 @@ internal class CommandService
     }
 
     // Handle sending the command settings and custom commands as a CommandConfig off for storage.
-    async Task StoreCommandConfig()
+    public async Task StoreCommandConfig()
     {
-        await ConfigService.StoreCommandConfig(new CommandConfig(settings, customCommands.Values.ToList()));
+        // Since the commandRegistry contains both core commands (which should not be stored) and custom commands (which should), we first need to extract the custom commands from the command registry.
+        List<CustomCommandDefinition> customCommands = commandRegistry
+            .Values
+            .OfType<CustomCommandDefinition>()
+            .ToList();
+
+        // Future extensions of mutable command types will need to extract their commands separately, or adjust the above LINQ statement to handle it accordingly.
+
+        await ConfigService.StoreCommandConfig(new CommandConfig(settings, customCommands));
     }
 
     static async Task<CommandConfig> GenerateDefaultConfig()
@@ -154,7 +174,7 @@ internal class CommandService
             commandChar = ' '
         };
 
-        List<CommandDefinition> customCommands = new List<CommandDefinition>();
+        List<CustomCommandDefinition> customCommands = new List<CustomCommandDefinition>();
 
         CommandConfig config = new CommandConfig(commandSettings, customCommands);
 

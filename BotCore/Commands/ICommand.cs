@@ -6,10 +6,16 @@ using System.Threading.Tasks;
 using BotCore.Core;
 
 namespace BotCore.Commands;
+
+// The ICommand interface ensures that all commands have the necessary data for control functions; command strings and aliases, cooldown details, permissions levels, etc.
 internal interface ICommand
 {
-    string commandString { get; init; }                  // The string that requests the command; 'uptime' for !uptime, etc.
-    string[]? commandAliases { get; set; }
-    // PermissionLevel? permissions { get; set; }     // Permissions level required
-    Task ExecuteAsync(MessageContext messageData, string[] tokens);     // Asynchronous processing of command event. Execution logic; what does the command do?
+    string commandString { get; init; }                 // The string that invokes the command; 'uptime' for !uptime, etc.
+    string[]? commandAliases { get; set; }              // Alternate strings that can be used to invoke the command.
+
+    bool isMutable { get; init; }                       // Whether a command can be edited or removed.
+
+    // CooldownType cooldownType { get; init; }         // The base cooldown category the command belongs to.
+    // TimeSpan? cooldownOverride { get; }              // Optional per-command cooldown override. Currently not configurable; reserved for future extension.
+    // PermissionLevel? requiredPermission { get; set; }// Permissions level required for a user to invoke the command.
 }
