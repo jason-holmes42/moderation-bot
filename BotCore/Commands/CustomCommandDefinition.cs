@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BotCore.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,6 +13,9 @@ internal class CustomCommandDefinition : ICommand
     public string commandString { get; init; }
     public string[]? commandAliases { get; set; }
     public bool isMutable { get; init; } = true;
+
+    public CooldownType cooldownType { get; init; } = CooldownType.CustomCommand;
+    public TimeSpan? cooldownOverride { get; } = null;
 
     public string commandResponse { get; set; }
 

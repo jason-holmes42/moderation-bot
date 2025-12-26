@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BotCore.Commands;
 
 namespace BotCore.Core;
 internal class CooldownTracker
@@ -10,7 +11,14 @@ internal class CooldownTracker
     Dictionary<string, DateTime> cooldownRegistry = new Dictionary<string, DateTime>();
     ITimeProvider timeProvider;
 
-    TimeSpan cooldown = TimeSpan.FromSeconds(3);       // Stub cooldown duration of 3 seconds.
+    // This dictionary dictates the cooldown of each command by the cooldown type defined in the command itself.
+    static readonly Dictionary<CooldownType, TimeSpan> typeCooldowns = new Dictionary<CooldownType, TimeSpan>()
+    {
+        { CooldownType.None, TimeSpan.FromSeconds(0) },             // Used for admin commands usually restricted by permissions
+        { CooldownType.CoreCommand, TimeSpan.FromSeconds(5)  },     // Used for functional commands such as !uptime
+        { CooldownType.CustomCommand, TimeSpan.FromSeconds(15)  },  // Used for user-defined response commands.
+        { CooldownType.API, TimeSpan.FromSeconds(30)  }             // Used for commands resulting in external API calls. Not currently implemented; reserved for future extension.
+    };
 
     public CooldownTracker(ITimeProvider timeProvider)
     {
@@ -18,20 +26,23 @@ internal class CooldownTracker
     }
 
     // Function that only answers the question "Is this item on cooldown?"
-    public bool IsOffCooldown(string entry)
+    public bool IsOffCooldown(ICommand command)
     {
         // CooldownTracker uses lazy query tracking, meaning it only updates when asked.
         DateTime lastUsedTimestamp;
 
         // If the entry is registered, check when it was last used.
-        if (cooldownRegistry.TryGetValue(entry, out lastUsedTimestamp))
+        if (cooldownRegistry.TryGetValue(command.commandString, out lastUsedTimestamp))
         {
-            // If it has been beyond the cooldown time, it's ready for use and should be removed from the registry.
             DateTime currentTime = timeProvider.Now;
-            
+
+            // If the command has defined a custom cooldown override, use that as the cooldown. Otherwise, base the cooldown on the registered cooldown type.
+            TimeSpan cooldown = command.cooldownOverride ?? typeCooldowns[command.cooldownType];
+
+            // If it has been beyond the cooldown time, it's ready for use and should be removed from the registry.   
             if (currentTime - lastUsedTimestamp >= cooldown)
             {
-                cooldownRegistry.Remove(entry);
+                cooldownRegistry.Remove(command.commandString);
                 return true;
             }
             // Otherwise it isn't off cooldown yet.

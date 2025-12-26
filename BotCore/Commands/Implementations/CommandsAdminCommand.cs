@@ -14,6 +14,9 @@ internal class CommandsAdminCommand : ICoreCommand
     public string[]? commandAliases { get; set; } = [];
     public bool isMutable { get; init; } = false;
 
+    public CooldownType cooldownType { get; init; } = CooldownType.None;
+    public TimeSpan? cooldownOverride { get; } = null;
+
     enum CommandsAdminAction
     {
         Add,

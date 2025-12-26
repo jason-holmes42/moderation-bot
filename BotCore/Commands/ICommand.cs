@@ -15,7 +15,7 @@ internal interface ICommand
 
     bool isMutable { get; init; }                       // Whether a command can be edited or removed.
 
-    // CooldownType cooldownType { get; init; }         // The base cooldown category the command belongs to.
-    // TimeSpan? cooldownOverride { get; }              // Optional per-command cooldown override. Currently not configurable; reserved for future extension.
+    CooldownType cooldownType { get; init; }            // The base cooldown category the command belongs to.
+    TimeSpan? cooldownOverride { get; }                 // Optional per-command cooldown override. Currently not configurable; reserved for future extension.
     // PermissionLevel? requiredPermission { get; set; }// Permissions level required for a user to invoke the command.
 }

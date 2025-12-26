@@ -12,6 +12,9 @@ internal class UptimeCommand : ICoreCommand
     public string[]? commandAliases { get; set; } = [];
     public bool isMutable { get; init; } = false;
 
+    public CooldownType cooldownType { get; init; } = CooldownType.CoreCommand;
+    public TimeSpan? cooldownOverride { get; } = null;
+
     public async Task ExecuteAsync(MessageContext messageData, string[] tokens)
     {
         TimeSpan uptime = await messageData.Provider.QueryUptimeAsync();
