@@ -10,6 +10,8 @@ namespace BotCore.Core;
 // Additionally, they convert any outgoing communications to platform-specific commands.
 public interface IChatProvider
 {
+    string channelIdentity { get; init; }           // Broadcaster name
+
     Task StartAsync();                              // The asynchronous processing of incoming messages.
 
     event Action<MessageContext> OnMessageReceived; // Event for handling incoming data

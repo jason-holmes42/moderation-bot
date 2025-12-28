@@ -9,6 +9,8 @@ internal class ConsoleHost
     IChatProvider chatProvider;
     BotCore botCore;
 
+    string fullLogFilepath = "replayLogs/Full Log.json";
+
     static async Task Main(string[] args)
     {
         ConsoleHost consoleHost = new ConsoleHost();
@@ -21,8 +23,9 @@ internal class ConsoleHost
         // Initialize bot
         botCore = InitializeBot();
 
-        // Initialize chat provider. This is where you'd insert Chat Provider selection logic
-        ChatReplayProvider chatReplay = new ChatReplayProvider();
+        // Initialize chat provider. This is where you'd insert Chat Provider selection logic, but for now we're only using ChatReplayProvider.
+        ChatReplayProvider chatReplay = await ChatReplayProvider.CreateAsync(fullLogFilepath);
+        chatProvider = chatReplay;
 
         // Register cross-communication events
         chatReplay.OnMessageReceived += ProcessMessage;
@@ -36,7 +39,7 @@ internal class ConsoleHost
     BotCore InitializeBot()
     {
         BotCore botCore = new BotCore();
-        botCore.Initialize();
+        botCore.Initialize(chatProvider.channelIdentity);
         return botCore;
     }
 

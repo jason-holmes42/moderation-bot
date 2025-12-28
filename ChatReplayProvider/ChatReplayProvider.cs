@@ -7,33 +7,75 @@ namespace ChatReplayProvider;
 // A Chat Provider for treating saved chat log files as if live chat streams. Only designed to support Twitch VOD chat replays which contain all of the necessary content and timing data.
 public class ChatReplayProvider : IChatProvider
 {
-    int timeElapsed; 
+    public string channelIdentity { get; init; }
+
+    int timeElapsed;
+
+    List<ChatMessage> commentData;
 
     public event Action<MessageContext>? OnMessageReceived;
+
+    public ChatReplayProvider(string broadcaster, TwitchJSONData jsonData)
+    {
+        channelIdentity = broadcaster;
+        commentData = ParseComments(jsonData);
+    }
+
+    // Load data from file. Async due to the size of files potentially taking some time / allowing for loading from alternate sources.
+    public static async Task<ChatReplayProvider> CreateAsync(string filepath)
+    {
+        TwitchJSONData jsonData = await ParseData(filepath);
+        string broadcaster = jsonData.streamer["name"];
+
+        return new ChatReplayProvider(broadcaster, jsonData);
+    }
 
     // Temporary display test, to be replaced with actual functionality once complete.
     public async Task StartAsync()
     {
-        Console.WriteLine("Loading data...");
-        using StreamReader r = new StreamReader("replayLogs/Full Log.json");
-        string jsonData = r.ReadToEnd();
-
         Console.WriteLine("Begin Playback");
-        List<ChatMessage> commentData = ParseData(jsonData);
         await PlaybackData(commentData);
     }
 
-    // Convert incoming JSON data into an array of ChatMessages for sending to OnMessageReceived.
-    List<ChatMessage> ParseData(string raw)
+    // Parse the selected chat replay log file into Twitch JSON data transfer objects (DTOs).
+    static async Task<TwitchJSONData> ParseData(string filepath)
     {
-        TwitchJSONData? DataJSON = JsonSerializer.Deserialize<TwitchJSONData>(raw);     // Convert the raw JSON string into meaningful data
-        // TODO: Deserialization error testing, try/catch
-        if (DataJSON == null)
+        Console.WriteLine("Loading data...");
+
+        // Convert the raw JSON string into meaningful data
+        try
         {
-            Console.WriteLine("JSON deserialization failed; object not populated.");
-            return null;
+            using StreamReader r = new StreamReader(filepath);
+            string raw = await r.ReadToEndAsync();
+
+            if (string.IsNullOrWhiteSpace(raw))
+            {
+                Console.WriteLine("Error: JSON loading failed; chat replay object not populated.");
+                return default;
+            }
+
+            return JsonSerializer.Deserialize<TwitchJSONData>(raw);
         }
-        
+        catch (JsonException ex)
+        {
+            Console.WriteLine($"Chat replay file contains invalid JSON: {ex.Message}");
+            return default;
+        }
+        catch (IOException ex)
+        {
+            Console.WriteLine($"Could not read chat replay file at {filepath}: {ex.Message}");
+            return default;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Unexpected error loading {filepath} chat replay file: {ex.Message}");
+            return default;
+        }
+    }
+
+    // Take the raw JSON data and extract the comments as a list of ChatMessage objects for sending to OnMessageReceived
+    List<ChatMessage> ParseComments(TwitchJSONData DataJSON)
+    {   
         List<ChatMessage> messageData = new List<ChatMessage> { };
 
         // Convert every entry in JSON 'comments' into a ChatMessage, stored in the messageData list

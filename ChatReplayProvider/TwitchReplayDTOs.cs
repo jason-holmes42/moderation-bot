@@ -12,7 +12,7 @@ public class TwitchJSONData
     // The VOD replay chat log root/top-level JSON structure:
 
     // FileInfo - Object containing version and creation information; not relevant.
-    // streamer - Object containing streamer information; name, login, id. Not currently relevant, but might be useful for expanded functionality.
+    public Dictionary<string, string> streamer { get; init; } // Object containing streamer information; name, login, id. Not currently relevant, but might be useful for expanded functionality.
     // clipper - null (but probably an object containing user information); only used for clips, not full VOD replays. Not relevant.
     // video - Object containing VOD details; title, description (written by streamer), ID, length in seconds, game, chapter information. Not relevant.
     public List<TwitchCommentsData> comments { get; init; }   // Object containing all chat comments recorded in a VOD.
