@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BotCore.Core;
 using BotCore.Filtering;
+using BotCore.Permissions;
 using static System.Collections.Specialized.BitVector32;
 
 namespace BotCore.Commands;
@@ -16,6 +17,8 @@ internal class FilterAdminCommand : ICoreCommand
 
     public CooldownType cooldownType { get; init; } = CooldownType.None;
     public TimeSpan? cooldownOverride { get; } = null;
+
+    public PermissionsLevel requiredPermissions { get; set; } = PermissionsLevel.Moderator;
 
     enum FilterCommandAction
     {

@@ -15,7 +15,7 @@ internal class PermissionsService
     PermissionsService(PermissionsConfig permissionsConfig)
     {
         this.permissionsSettings = permissionsConfig.permissionsSettings;
-        this.permissionsList = permissionsConfig.permissionsList;
+        this.permissionsList = new Dictionary<string, PermissionsLevel>(permissionsConfig.permissionsList, StringComparer.OrdinalIgnoreCase);   // Necessary for case-insensitive username lookups
     }
 
     public static async Task<PermissionsService> CreateAsync()
@@ -113,7 +113,7 @@ internal class PermissionsService
     {
         // Construct the default config
         PermissionsSettings permissionsSettings = new PermissionsSettings();
-        Dictionary<string, PermissionsLevel> permissionsList = new Dictionary<string, PermissionsLevel>();
+        Dictionary<string, PermissionsLevel> permissionsList = new Dictionary<string, PermissionsLevel>(StringComparer.OrdinalIgnoreCase); // Necessary for case-insensitive username lookups
 
         PermissionsConfig permissionsConfig = new PermissionsConfig(permissionsSettings, permissionsList);
 

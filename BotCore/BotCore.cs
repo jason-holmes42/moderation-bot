@@ -1,6 +1,7 @@
 ﻿using BotCore.Core;
 using BotCore.Filtering;
 using BotCore.Commands;
+using BotCore.Permissions;
 
 namespace BotCore;
 
@@ -9,6 +10,7 @@ public class BotCore
 {
     FilterService filterService;
     CommandService commandService;
+    PermissionsService permissionsService;
     BotTimeProvider timeProvider;
     CooldownTracker cooldownTracker;
 
@@ -21,8 +23,9 @@ public class BotCore
         timeProvider = new BotTimeProvider();
         cooldownTracker = new CooldownTracker(timeProvider);
 
-        filterService = await FilterService.CreateAsync();
-        commandService = await CommandService.CreateAsync(filterService, cooldownTracker);
+        permissionsService = await PermissionsService.CreateAsync();
+        filterService = await FilterService.CreateAsync(permissionsService);
+        commandService = await CommandService.CreateAsync(filterService, permissionsService, cooldownTracker);
     }
 
     public event Action<string>? OnMessageSent;

@@ -13,7 +13,7 @@ namespace BotCore.Commands;
 internal class CommandService
 {
     CommandSettings settings;
-    Dictionary<string, ICommand> commandRegistry = new Dictionary<string, ICommand>();
+    Dictionary<string, ICommand> commandRegistry = new Dictionary<string, ICommand>(StringComparer.OrdinalIgnoreCase); // Necessary for case-insensitive command lookups
 
     FilterService filterService;
     PermissionsService permissionsService;
@@ -67,20 +67,27 @@ internal class CommandService
         // Check registered commands for a match and, upon success, execute the command.
         if (commandRegistry.TryGetValue(tokens[0], out ICommand command))
         {
-            // Check if the command is on cooldown and, if it is, skip processing.
-            if (!cooldownTracker.IsOffCooldown(command))
+            // Check if the command is on cooldown and, if it is, skip processing. However, if the user has cooldown-exemption permissions, carry on as normal.
+            if (!cooldownTracker.IsOffCooldown(command) && !permissionsService.HasPermission(messageData.username, settings.cooldownExemptionLevel))
             {
                 Console.WriteLine($"{settings.commandChar}{command.commandString} identified but skipped due to cooldown.");        // Debug-only message
                 return;
             }
 
-            // If it's a core command, execute its functionality and trigger the cooldown.
+            // Check if user has permission to use the command. If not, skip processing.
+            if (!permissionsService.HasPermission(messageData.username, command.requiredPermissions))
+            {
+                Console.WriteLine($"{messageData.username} lacks permission for {settings.commandChar}{command.commandString}: {permissionsService.GetPermissionsLevel(messageData.username)} vs {command.requiredPermissions}."); // Debug-only message
+                return;
+            }
+
+            // If it's a core command and user has permission, execute its functionality and trigger the cooldown.
             if (command is ICoreCommand executable)
             {
                 await executable.ExecuteAsync(messageData, tokens);
                 cooldownTracker.StartCooldown(command.commandString);
             }
-            // Otherwise if it's a custom command, issue its response and trigger the cooldown.
+            // Otherwise if it's a custom command and user has permission, issue its response and trigger the cooldown.
             else if (command is CustomCommandDefinition custom)
             {
                 Console.WriteLine(custom.commandResponse);

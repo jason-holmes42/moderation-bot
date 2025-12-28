@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BotCore.Core;
+using BotCore.Permissions;
 
 namespace BotCore.Commands.Implementations;
 internal class UptimeCommand : ICoreCommand
@@ -14,6 +15,8 @@ internal class UptimeCommand : ICoreCommand
 
     public CooldownType cooldownType { get; init; } = CooldownType.CoreCommand;
     public TimeSpan? cooldownOverride { get; } = null;
+
+    public PermissionsLevel requiredPermissions { get; set; } = PermissionsLevel.None;
 
     public async Task ExecuteAsync(MessageContext messageData, string[] tokens)
     {

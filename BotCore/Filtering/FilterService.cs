@@ -6,11 +6,14 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using BotCore.Core;
 using BotCore.Configuration;
+using BotCore.Permissions;
 
 namespace BotCore.Filtering;
 
 internal class FilterService
 {
+    PermissionsService permissionsService;
+
     Dictionary<string, FilterRule> phraseDictionary;
     FilterSettings settings;
     bool activeState = true;
@@ -23,13 +26,14 @@ internal class FilterService
         { PunishmentType.Ban, ReactionType.Ban },
     };
 
-    private FilterService(FilterSettings settings, Dictionary<string, FilterRule> filterPhrases)
+    private FilterService(FilterSettings settings, Dictionary<string, FilterRule> filterPhrases, PermissionsService permissionsService)
     {
         this.settings = settings;
         this.phraseDictionary = filterPhrases;
+        this.permissionsService = permissionsService;
     }
 
-    public static async Task<FilterService> CreateAsync()
+    public static async Task<FilterService> CreateAsync(PermissionsService permissionsService)
     {
         // Retrieve filter config from storage. Failing that, generate a new one and save it to storage.
         FilterConfig config;
@@ -42,7 +46,7 @@ internal class FilterService
         foreach (FilterRule rule in config.filterRules) filteredPhrases.Add(rule.filterPhrase, rule);
 
         // Pass the new phrase dictionary to the constructor.
-        return new FilterService(config.filterSettings, filteredPhrases);
+        return new FilterService(config.filterSettings, filteredPhrases, permissionsService);
     }
 
     public void Evaluate(MessageContext messageData)
@@ -58,8 +62,10 @@ internal class FilterService
         {
             if (rule.regexPattern.IsMatch(messageData.message))
             {
-                // If message contains a filtered phrase, mark its reaction type and reaction string. Based on this, the punishment will be triggered elsewhere.
+                // If message contains a filtered phrase, first check to see whether the user's permissions exempt them from the filter.
+                if (permissionsService.HasPermission(messageData.username, settings.filterExemptionLevel)) return;
 
+                // If not exempt, mark the message's reaction type and reaction string. Based on this, the punishment will be triggered elsewhere.
                 if (strongestPunishment == null || rule.punishType > strongestPunishment)
                 {
                     strongestPunishment = rule.punishType;

@@ -1,4 +1,5 @@
 ﻿using BotCore.Core;
+using BotCore.Permissions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +18,8 @@ internal class CustomCommandDefinition : ICommand
 
     [JsonIgnore]public CooldownType cooldownType { get; init; } = CooldownType.CustomCommand;
     [JsonIgnore]public TimeSpan? cooldownOverride { get; } = null;
+
+    public PermissionsLevel requiredPermissions { get; set; } = PermissionsLevel.None;
 
     public string commandResponse { get; set; }
 

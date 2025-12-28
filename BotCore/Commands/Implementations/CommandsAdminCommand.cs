@@ -1,5 +1,6 @@
 ﻿using BotCore.Core;
 using BotCore.Filtering;
+using BotCore.Permissions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,8 @@ internal class CommandsAdminCommand : ICoreCommand
 
     public CooldownType cooldownType { get; init; } = CooldownType.None;
     public TimeSpan? cooldownOverride { get; } = null;
+
+    public PermissionsLevel requiredPermissions { get; set; } = PermissionsLevel.Moderator;
 
     enum CommandsAdminAction
     {

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BotCore.Core;
+using BotCore.Permissions;
 
 namespace BotCore.Commands;
 
@@ -17,5 +18,5 @@ internal interface ICommand
 
     CooldownType cooldownType { get; init; }            // The base cooldown category the command belongs to.
     TimeSpan? cooldownOverride { get; }                 // Optional per-command cooldown override. Currently not configurable; reserved for future extension.
-    // PermissionLevel? requiredPermission { get; set; }// Permissions level required for a user to invoke the command.
+    PermissionsLevel requiredPermissions { get; set; }   // Permissions level required for a user to invoke the command.
 }

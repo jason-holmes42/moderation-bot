@@ -17,6 +17,8 @@ internal class PermissionsAdminCommand : ICoreCommand
     public CooldownType cooldownType { get; init; } = CooldownType.None;
     public TimeSpan? cooldownOverride { get; } = null;
 
+    public PermissionsLevel requiredPermissions { get; set; } = PermissionsLevel.Moderator;
+
     PermissionsService permissionsService;
 
     enum PermissionsCommandAction
