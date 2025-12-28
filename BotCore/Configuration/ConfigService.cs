@@ -7,6 +7,7 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using BotCore.Filtering;
 using BotCore.Commands;
+using BotCore.Permissions;
 using System.Reflection.Metadata;
 
 namespace BotCore.Configuration;
@@ -18,6 +19,7 @@ internal class ConfigService
 
     static readonly string filterConfigFilename = "filterConfig.json";
     static readonly string commandConfigFilename = "commandConfig.json";
+    static readonly string permissionsConfigFilename = "permissionsConfig.json";
     static readonly string configDirectoryName = "config";
     static readonly string backupDirectoryName = "backup";
 
@@ -29,21 +31,20 @@ internal class ConfigService
             Converters = { new JsonStringEnumConverter() }      // Converts enums from integers to strings and vice-versa.
         };
 
+    // Service-specific retrieval and storage functions. They are split to allow for each service to make requests to ConfigService without needing to know the implementation or storage details.
     public static Task<FilterConfig> RetrieveFilterConfig()
     {
         return RetrieveConfigAsync<FilterConfig>(filterConfigFilename);
     }
 
-    // Stub function for future Custom Commands feature
     public static Task<CommandConfig> RetrieveCommandConfig()
     {
         return RetrieveConfigAsync<CommandConfig>(commandConfigFilename);
     }
 
-    // Stub function for future Permissions feature.
-    public static async Task RetrievePermissionsConfig()
+    public static Task<PermissionsConfig> RetrievePermissionsConfig()
     {
-        // return RetrieveConfigAsync<PermissionsConfig>(permissionsConfigFilename);
+        return RetrieveConfigAsync<PermissionsConfig>(permissionsConfigFilename);
     }
 
     public static Task StoreFilterConfig(FilterConfig filterConfig)
@@ -51,16 +52,14 @@ internal class ConfigService
         return StoreConfigAsync<FilterConfig>(filterConfig, filterConfigFilename);
     }
 
-    // Stub function for future Custom Commands feature
     public static Task StoreCommandConfig(CommandConfig commandConfig)
     {
         return StoreConfigAsync<CommandConfig>(commandConfig, commandConfigFilename);
     }
 
-    // Stub function for future Permissions feature.
-    public static async Task StorePermissionsConfig()
+    public static Task StorePermissionsConfig(PermissionsConfig permissionConfig)
     {
-        // serialize and save to JSON file
+        return StoreConfigAsync<PermissionsConfig>(permissionConfig, permissionsConfigFilename);
     }
 
     // Generalized retrieval/storage functions to centralize error-handling, mitigate serialization/deserialization reuse, and make future replacement straightforward.
