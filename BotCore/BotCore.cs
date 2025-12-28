@@ -14,16 +14,12 @@ public class BotCore
     BotTimeProvider timeProvider;
     CooldownTracker cooldownTracker;
 
-    string broadcaster;
-
     public async Task Initialize(string broadcaster)
     {
-        this.broadcaster = broadcaster;
-
         timeProvider = new BotTimeProvider();
         cooldownTracker = new CooldownTracker(timeProvider);
 
-        permissionsService = await PermissionsService.CreateAsync();
+        permissionsService = await PermissionsService.CreateAsync(broadcaster);
         filterService = await FilterService.CreateAsync(permissionsService);
         commandService = await CommandService.CreateAsync(filterService, permissionsService, cooldownTracker);
     }

@@ -12,20 +12,27 @@ internal class PermissionsService
     PermissionsSettings permissionsSettings;
     Dictionary<string, PermissionsLevel> permissionsList;
 
-    PermissionsService(PermissionsConfig permissionsConfig)
+    PermissionsService(PermissionsConfig permissionsConfig, string broadcaster)
     {
         this.permissionsSettings = permissionsConfig.permissionsSettings;
         this.permissionsList = new Dictionary<string, PermissionsLevel>(permissionsConfig.permissionsList, StringComparer.OrdinalIgnoreCase);   // Necessary for case-insensitive username lookups
+
+        // The broadcaster should always have Broadcaster-level permissions, so confirm their presence in the permissions list.
+        if (!permissionsList.TryGetValue(broadcaster, out PermissionsLevel broadcasterPerms) || broadcasterPerms < PermissionsLevel.Broadcaster)
+        {
+            // If they are not present or their permissions are not Broadcaster, correct them.
+            permissionsList[broadcaster] = PermissionsLevel.Broadcaster;
+        }
     }
 
-    public static async Task<PermissionsService> CreateAsync()
+    public static async Task<PermissionsService> CreateAsync(string broadcaster)
     {
         // Retrieve config from storage and, failing that, generate a new one.
         PermissionsConfig permissionsConfig;
         permissionsConfig = await ConfigService.RetrievePermissionsConfig();
         if (permissionsConfig == null) permissionsConfig = await GenerateDefaultConfig();
 
-        return new PermissionsService(permissionsConfig);
+        return new PermissionsService(permissionsConfig, broadcaster);
     }
 
     // Answer what a given user's registered permissions level is.

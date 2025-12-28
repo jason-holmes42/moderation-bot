@@ -21,12 +21,12 @@ internal class ConsoleHost
 
     async Task Run()
     {
-        // Initialize bot
-        botCore = await InitializeBot();
-
         // Initialize chat provider. This is where you'd insert Chat Provider selection logic, but for now we're only using ChatReplayProvider.
         ChatReplayProvider chatReplay = await ChatReplayProvider.CreateAsync(fullLogFilepath);
         chatProvider = chatReplay;
+
+        // Initialize bot
+        botCore = await InitializeBot();
 
         // Register cross-communication events
         chatReplay.OnMessageReceived += OnMessageReceived;
