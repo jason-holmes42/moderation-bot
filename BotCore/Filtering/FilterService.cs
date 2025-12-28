@@ -16,7 +16,6 @@ internal class FilterService
 
     Dictionary<string, FilterRule> phraseDictionary;
     FilterSettings settings;
-    bool activeState = true;
 
     // Explicit conversion dictionary to avoid messy, unsafe enum casts or Enum.Parse usages
     static readonly Dictionary<PunishmentType, ReactionType> PunishmentToReaction = new Dictionary<PunishmentType, ReactionType>()
@@ -52,7 +51,7 @@ internal class FilterService
     public void Evaluate(MessageContext messageData)
     {
         // If the filter has been disabled, do not evaluate a message.
-        if (!activeState) return;
+        if (!settings.filterEnabled) return;
 
         // In the case of multiple matches in a single message, the strongest punishment should be prioritized.
         PunishmentType? strongestPunishment = null;
@@ -81,14 +80,12 @@ internal class FilterService
     // Switch the filter from on to off or vice versa.
     public async Task ToggleFilter(bool newState)
     {
-        activeState = newState;                 // Active state of the filter
+        settings.filterEnabled = newState;    // Default state of the filter
         Console.WriteLine($"Filter {(newState ? "" : "de")}activated.");
-        settings.filterStatus = activeState;    // Default state of the filter
-        await StoreFilterConfig();
     }
 
     // Rule management functions. Add and Update could be safely combined, but keeping them distinct will help users keep the impact of accidental commands minimal.
-    public async Task AddFilterRule(string filteredPhrase, PunishmentType reaction)
+    public void AddFilterRule(string filteredPhrase, PunishmentType reaction)
     {
         // The command string's tokens will be parsed by FilterCommand, so there is no need to parse them here.
 
@@ -102,12 +99,9 @@ internal class FilterService
             phraseDictionary.Add(filteredPhrase, new FilterRule(filteredPhrase, reaction));
             Console.WriteLine($"Filter added for {filteredPhrase} with punishment of {phraseDictionary[filteredPhrase].punishType.ToString().ToUpper()}.");
         }
-
-        // Save the updated dictionary.
-        await StoreFilterConfig();
     }
 
-    public async Task RemoveFilterRule(string filteredPhrase)
+    public void RemoveFilterRule(string filteredPhrase)
     {
         // The command string's tokens will be parsed by FilterCommand, so there is no need to parse them here.
 
@@ -121,12 +115,9 @@ internal class FilterService
         {
             Console.WriteLine($"No filter for {filteredPhrase} found.");
         }
-
-        // Save the updated dictionary.
-        await StoreFilterConfig();
     }
 
-    public async Task UpdateFilterRule(string filteredPhrase, PunishmentType updatedReaction)
+    public void UpdateFilterRule(string filteredPhrase, PunishmentType updatedReaction)
     {
         // The command string's tokens will be parsed and verified by FilterCommand, so there is no need to parse them here.
 
@@ -144,29 +135,29 @@ internal class FilterService
             }
         }
         else Console.WriteLine($"{filteredPhrase} filter not found.");
-
-        // Save the updated dictionary.
-        await StoreFilterConfig();
     }
 
     // Handle converting the phrase dictionary to a List of FilterRules and sending it off for storage.
-    async Task StoreFilterConfig()
+    public async Task StoreFilterConfig()
     {
         await ConfigService.StoreFilterConfig(new FilterConfig(settings, phraseDictionary.Values.ToList()));
     }
 
     static async Task<FilterConfig> GenerateDefaultConfig()
     {
+        // Construct the default config
         FilterSettings filterSettings = new FilterSettings()
         {
-            filterStatus = true
+            filterEnabled = true
         };
 
         List<FilterRule> filterRules = new List<FilterRule>();
         FilterConfig config = new FilterConfig(filterSettings, filterRules);
 
+        // Store it for future retrieval
         await ConfigService.StoreFilterConfig(config);
 
+        // Send it back for use
         return config;
     }
 }

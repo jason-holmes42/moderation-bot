@@ -94,20 +94,20 @@ internal class CommandsAdminCommand : ICoreCommand
 
         if (tokens.Length < 2)
         {
-            error = "Error: Missing command action.";
+            error = "Missing command action.";
             return false;
         }
 
         // Parse the subcommand into an action enum for switching. A success outputs the result into 'action' so we only need to act on a failure.
         if (!TryParseCommandAction(tokens[1], out action))
         {
-            error = "Error: Command action not recognized. Try 'add', 'update', or 'remove'.";
+            error = "Command action not recognized.";
             return false;
         }
 
         if (tokens.Length < 3)
         {
-            error = "Error: Missing command phrase.";
+            error = "Missing command phrase.";
             return false;
         }
 
@@ -116,7 +116,7 @@ internal class CommandsAdminCommand : ICoreCommand
 
         if (tokens.Length < 4 && action != CommandsAdminAction.Remove)
         {
-            error = "Error: Missing command response.";
+            error = "Missing command response.";
             return false;
         }
 

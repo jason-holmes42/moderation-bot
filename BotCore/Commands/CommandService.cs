@@ -190,9 +190,9 @@ internal class CommandService
 
     static async Task<CommandConfig> GenerateDefaultConfig()
     {
+        // Construct the default config
         CommandSettings commandSettings = new CommandSettings()
         {
-            // globalCooldown = 3
             commandChar = ' '
         };
 
@@ -200,8 +200,10 @@ internal class CommandService
 
         CommandConfig config = new CommandConfig(commandSettings, customCommands);
 
+        // Store it for future retrieval
         await ConfigService.StoreCommandConfig(config);
 
+        // Send it back for use
         return config;
     }
 }

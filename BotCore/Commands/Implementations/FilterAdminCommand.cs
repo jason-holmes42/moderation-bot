@@ -64,15 +64,18 @@ internal class FilterAdminCommand : ICoreCommand
                 break;
 
             case FilterCommandAction.Add:
-                await filterService.AddFilterRule(args.filterPhrase, args.filterPunishment);
+                filterService.AddFilterRule(args.filterPhrase, args.filterPunishment);
+                await filterService.StoreFilterConfig();
                 break;
 
             case FilterCommandAction.Remove:
-                await filterService.RemoveFilterRule(args.filterPhrase);
+                filterService.RemoveFilterRule(args.filterPhrase);
+                await filterService.StoreFilterConfig();
                 break;
 
             case FilterCommandAction.Update:
-                await filterService.UpdateFilterRule(args.filterPhrase, args.filterPunishment);
+                filterService.UpdateFilterRule(args.filterPhrase, args.filterPunishment);
+                await filterService.StoreFilterConfig();
                 break;
 
             default:
@@ -100,20 +103,20 @@ internal class FilterAdminCommand : ICoreCommand
 
         if (tokens.Length < 2)
         {
-            error = "Error: Missing filter action.";
+            error = "Missing filter action.";
             return false;
         }
 
         // Parse the subcommand into an action enum for switching. A success outputs the result into 'action' so we only need to act on a failure.
         if (!TryParseFilterAction(tokens[1], out action))
         {
-            error = "Error: Filter action not recognized. Try 'add', 'update', or 'remove'.";
+            error = "Filter action not recognized.";
             return false;
         }
 
         if (tokens.Length < 3)
         {
-            error = "Error: Missing filter phrase.";
+            error = "Missing filter phrase.";
             return false;
         }
 
@@ -122,7 +125,7 @@ internal class FilterAdminCommand : ICoreCommand
         {
             if (!TryParseFilterPunishment(tokens[3], out reaction))
             {
-                error = "Error: Punishment type not recognized. Try 'ban' or 'timeout'.";
+                error = "Punishment type not recognized.";
                 return false;
             }
         }
