@@ -28,18 +28,82 @@ internal class PermissionsService
         return new PermissionsService(permissionsConfig);
     }
 
-    // public GetPermissionsLevel(string user)
+    // Answer what a given user's registered permissions level is.
+    public PermissionsLevel GetPermissionsLevel(string user)
+    {
+        // If the user has a registered permissions level, return it. Otherwise, indicate none. A ternary conditional could be used here, but this is more legible.
+        if (permissionsList.TryGetValue(user, out PermissionsLevel registeredLevel))
+        {
+            return registeredLevel;
+        }
+        else return PermissionsLevel.None;
+    }
 
-    // public HasPermission(string user, PermissionsLevel requiredLevel)
+    // Answer whether a given user has registered permissions at or above the required level.
+    public bool HasPermission(string user, PermissionsLevel requiredLevel)
+    {
+        return GetPermissionsLevel(user) >= requiredLevel;
+    }
 
-    // public AddPermission(string user, PermissionsLevel level)
+    // Permissions management functions. Add/Update distinctions, while useful for commands and filters, are not relevant here.
+    public void SetPermissions(string user, string targetUser, PermissionsLevel targetLevel)
+    {
+        // A user must have higher permissions than both the target user and the target permissions level.
+        // e.g., Broadcasters can edit all permissions (except their own) and cannot elevate anyone to broadcaster, admins can edit moderator and regular permissions and cannot elevate anyone to admin, and so on.
+        // Broadcasters are automatically given a permissions level higher than admins. This allows them to manage their registered administrators without special case logic, being able to demote themselves, add other broadcasters, etc.
 
-    // public RemovePermission(string user)
+        PermissionsLevel userPermissions = GetPermissionsLevel(user);
+        PermissionsLevel targetPermissions = GetPermissionsLevel(targetUser);
 
-    // public UpdatePermission(string user, PermissionsLevel level)
+        if (userPermissions > targetPermissions && userPermissions > targetLevel)
+        {
+            // PermissionsLevel.None is functionally equivalent to having no registered permissions at all, so if that's the target use the RemovePermissions function for consistency and config cleanliness.
+            if (targetLevel == PermissionsLevel.None)
+            {
+                RemovePermissions(user, targetUser);
+                return;
+            }
+
+            permissionsList[targetUser] = targetLevel;    // This will safely add new entries or update existing entries.
+            Console.WriteLine($"{targetUser}'s permissions set to {targetLevel.ToString().ToUpper()}.");
+            return;
+        }
+        else
+        {
+            Console.WriteLine($"{user}'s permissions level is not high enough to set {targetUser}'s permissions to {targetLevel.ToString().ToUpper()}.");
+            return;
+        }
+    }
+
+    // Having a separate syntax explicitly for removal simplifies the user experience.
+    public void RemovePermissions(string user, string targetUser)
+    {
+        // Confirm whether the targetUser has permissions registered.
+        PermissionsLevel targetPermissions;
+        if (!permissionsList.TryGetValue(targetUser, out targetPermissions))
+        {
+            Console.WriteLine($"{targetUser} does not have any registered permissions.");
+            return;
+        }
+
+        // The initiating user must have higher permissions than the target user to remove their permissions.
+        PermissionsLevel userPermissions = GetPermissionsLevel(user);
+        if (userPermissions > targetPermissions)
+        {
+            permissionsList.Remove(targetUser);
+            Console.WriteLine($"{targetUser}'s permissions removed.");
+            return;
+        }
+        else
+        {
+            Console.WriteLine($"{user}'s permissions level not high enough to remove {targetUser}'s permissions.");
+            return;
+        }
+
+    }
 
     // Handle converting current settings and permissions state into PermissionsConfig and sending off for storage.
-    async Task StorePermissionsConfig()
+    public async Task StorePermissionsConfig()
     {
         await ConfigService.StorePermissionsConfig(new PermissionsConfig(permissionsSettings, permissionsList));
     }
