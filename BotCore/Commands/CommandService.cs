@@ -7,6 +7,7 @@ using BotCore.Core;
 using BotCore.Commands.Implementations;
 using BotCore.Filtering;
 using BotCore.Configuration;
+using BotCore.Permissions;
 
 namespace BotCore.Commands;
 internal class CommandService
@@ -15,25 +16,28 @@ internal class CommandService
     Dictionary<string, ICommand> commandRegistry = new Dictionary<string, ICommand>();
 
     FilterService filterService;
+    PermissionsService permissionsService;
     CooldownTracker cooldownTracker;
 
-    private CommandService(CommandConfig config, FilterService filterService, CooldownTracker cooldownTracker)
+    private CommandService(CommandConfig config, FilterService filterService, PermissionsService permissionsService, CooldownTracker cooldownTracker)
     {
         // Cache settings and service providers
         this.settings = config.commandSettings;
         this.filterService = filterService;
+        this.permissionsService = permissionsService;
         this.cooldownTracker = cooldownTracker;
 
         // Register core commands -- commands that all bots may access.
         RegisterCommandInternal(new UptimeCommand());
         RegisterCommandInternal(new FilterAdminCommand(filterService));
         RegisterCommandInternal(new CommandsAdminCommand(this));
+        RegisterCommandInternal(new PermissionsAdminCommand(permissionsService));
 
         // Register custom commands -- commands unique to this configuration of the bot.
         foreach (CustomCommandDefinition customCommand in config.customCommands) RegisterCommandInternal(customCommand);
     }
 
-    public static async Task<CommandService> CreateAsync(FilterService filterService, CooldownTracker cooldownTracker)
+    public static async Task<CommandService> CreateAsync(FilterService filterService, PermissionsService permissionsService, CooldownTracker cooldownTracker)
     {
         // Retrieve command config from storage. Failing that, generate a new one and save it to storage.
         CommandConfig config;
@@ -41,7 +45,7 @@ internal class CommandService
         if (config == null) config = await GenerateDefaultConfig();
 
         // Pass the config (which contains settings and custom commands) and filter service to the constructor
-        return new CommandService(config, filterService, cooldownTracker);
+        return new CommandService(config, filterService, permissionsService, cooldownTracker);
     }
 
     public async Task Evaluate(MessageContext messageData)
