@@ -12,8 +12,12 @@ public class BotCore
     BotTimeProvider timeProvider;
     CooldownTracker cooldownTracker;
 
-    public async Task Initialize()
+    string broadcaster;
+
+    public async Task Initialize(string broadcaster)
     {
+        this.broadcaster = broadcaster;
+
         timeProvider = new BotTimeProvider();
         cooldownTracker = new CooldownTracker(timeProvider);
 
@@ -22,7 +26,7 @@ public class BotCore
     }
 
     public event Action<string>? OnMessageSent;
-    public void ProcessMessage(MessageContext message)
+    public async Task ProcessMessage(MessageContext message)
     {
         // Identify the user's permissions level (if any)
         
@@ -37,7 +41,7 @@ public class BotCore
         }
 
         // Assess message for commands, process any identified commands
-        commandService.Evaluate(message);
+        await commandService.Evaluate(message);
         if (message.reactionType == ReactionType.Command)
         {
             SendMessage(message.reactionString);
