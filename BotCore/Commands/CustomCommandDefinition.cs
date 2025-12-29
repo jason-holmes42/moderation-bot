@@ -1,4 +1,4 @@
-﻿using BotCore.Core;
+﻿using BotCore.Core.Cooldowns;
 using BotCore.Permissions;
 using System;
 using System.Collections.Generic;

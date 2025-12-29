@@ -8,6 +8,8 @@ using BotCore.Commands.Implementations;
 using BotCore.Filtering;
 using BotCore.Configuration;
 using BotCore.Permissions;
+using BotCore.Core.Messaging;
+using BotCore.Core.Cooldowns;
 
 namespace BotCore.Commands;
 internal class CommandService

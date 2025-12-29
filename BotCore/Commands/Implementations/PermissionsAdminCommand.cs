@@ -1,4 +1,5 @@
-﻿using BotCore.Core;
+﻿using BotCore.Core.Cooldowns;
+using BotCore.Core.Messaging;
 using BotCore.Filtering;
 using BotCore.Permissions;
 using System;

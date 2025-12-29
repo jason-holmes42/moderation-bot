@@ -1,4 +1,5 @@
-﻿using BotCore.Core;
+﻿using BotCore.Core.Messaging;
+using BotCore.Core.Providers;
 using System.Reflection.Metadata.Ecma335;
 using System.Text.Json;
 

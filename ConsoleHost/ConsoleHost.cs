@@ -1,6 +1,7 @@
 ﻿namespace ConsoleHost;
 using BotCore;
-using BotCore.Core;
+using BotCore.Core.Messaging;
+using BotCore.Core.Providers;
 using ChatReplayProvider;
 using System.Linq.Expressions;
 

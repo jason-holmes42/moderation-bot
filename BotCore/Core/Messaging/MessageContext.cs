@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BotCore.Core.Providers;
 
-namespace BotCore.Core;
+namespace BotCore.Core.Messaging;
 
 // Defines a data container including the original ChatMessage that was received as well as other information useful for bot functions.
 public class MessageContext

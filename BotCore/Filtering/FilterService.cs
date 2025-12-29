@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using BotCore.Core;
 using BotCore.Configuration;
 using BotCore.Permissions;
+using BotCore.Core.Messaging;
 
 namespace BotCore.Filtering;
 

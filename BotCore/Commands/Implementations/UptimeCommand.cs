@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BotCore.Core;
+using BotCore.Core.Cooldowns;
+using BotCore.Core.Messaging;
 using BotCore.Permissions;
 
 namespace BotCore.Commands.Implementations;

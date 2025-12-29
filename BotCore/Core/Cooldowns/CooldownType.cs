@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BotCore.Core;
+namespace BotCore.Core.Cooldowns;
 
 // CooldownType is utilized by all commands as a classification of cooldown type that should be used.
 internal enum CooldownType

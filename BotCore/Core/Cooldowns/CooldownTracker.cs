@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BotCore.Commands;
+using BotCore.Core.Time;
 
-namespace BotCore.Core;
+namespace BotCore.Core.Cooldowns;
 internal class CooldownTracker
 {
     Dictionary<string, DateTime> cooldownRegistry = new Dictionary<string, DateTime>();
@@ -47,7 +48,7 @@ internal class CooldownTracker
             }
             // Otherwise it isn't off cooldown yet.
             else return false;
-        } 
+        }
         // If the entry is not registered, then it isn't on cooldown so it can be used.
         else return true;
     }

@@ -1,4 +1,4 @@
-﻿using BotCore.Core;
+﻿using BotCore.Core.Messaging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
