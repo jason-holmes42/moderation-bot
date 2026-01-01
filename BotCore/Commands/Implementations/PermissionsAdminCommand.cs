@@ -52,12 +52,12 @@ internal class PermissionsAdminCommand : ICoreCommand
         switch (args.permissionsAction)
         {
             case PermissionsCommandAction.Set:
-                permissionsService.SetPermissions(messageData.username, args.targetUser, args.targetLevel);
+                permissionsService.SetPermissions(messageData, args.targetUser, args.targetLevel);
                 await permissionsService.StorePermissionsConfig();
                 break;
 
             case PermissionsCommandAction.Remove:
-                permissionsService.RemovePermissions(messageData.username, args.targetUser);
+                permissionsService.RemovePermissions(messageData, args.targetUser);
                 await permissionsService.StorePermissionsConfig();
                 break;
 

@@ -1,4 +1,5 @@
 ﻿using BotCore.Configuration;
+using BotCore.Core.Messaging;
 using BotCore.Filtering;
 using System;
 using System.Collections.Generic;
@@ -53,13 +54,13 @@ internal class PermissionsService
     }
 
     // Permissions management functions. Add/Update distinctions, while useful for commands and filters, are not relevant here.
-    public void SetPermissions(string user, string targetUser, PermissionsLevel targetLevel)
+    public void SetPermissions(MessageContext messageData, string targetUser, PermissionsLevel targetLevel)
     {
         // A user must have higher permissions than both the target user and the target permissions level.
         // e.g., Broadcasters can edit all permissions (except their own) and cannot elevate anyone to broadcaster, admins can edit moderator and regular permissions and cannot elevate anyone to admin, and so on.
         // Broadcasters are automatically given a permissions level higher than admins. This allows them to manage their registered administrators without special case logic, being able to demote themselves, add other broadcasters, etc.
 
-        PermissionsLevel userPermissions = GetPermissionsLevel(user);
+        PermissionsLevel userPermissions = GetPermissionsLevel(messageData.username);
         PermissionsLevel targetPermissions = GetPermissionsLevel(targetUser);
 
         if (userPermissions > targetPermissions && userPermissions > targetLevel)
@@ -67,43 +68,44 @@ internal class PermissionsService
             // PermissionsLevel.None is functionally equivalent to having no registered permissions at all, so if that's the target use the RemovePermissions function for consistency and config cleanliness.
             if (targetLevel == PermissionsLevel.None)
             {
-                RemovePermissions(user, targetUser);
+                RemovePermissions(messageData, targetUser);
                 return;
             }
 
             permissionsList[targetUser] = targetLevel;    // This will safely add new entries or update existing entries.
-            Console.WriteLine($"{targetUser}'s permissions set to {targetLevel.ToString().ToUpper()}.");
+            messageData.reactionString = $"{targetUser}'s permissions set to {targetLevel.ToString().ToUpper()}.";
             return;
         }
         else
         {
-            Console.WriteLine($"{user}'s permissions level is not high enough to set {targetUser}'s permissions to {targetLevel.ToString().ToUpper()}.");
+            messageData.reactionString = $"{messageData.username}'s permissions level is not high enough to set {targetUser}'s permissions to {targetLevel.ToString().ToUpper()}.";
             return;
         }
     }
 
     // Having a separate syntax explicitly for removal simplifies the user experience.
-    public void RemovePermissions(string user, string targetUser)
+    public void RemovePermissions(MessageContext messageData, string targetUser)
     {
         // Confirm whether the targetUser has permissions registered.
         PermissionsLevel targetPermissions;
+
         if (!permissionsList.TryGetValue(targetUser, out targetPermissions))
         {
-            Console.WriteLine($"{targetUser} does not have any registered permissions.");
+            messageData.reactionString = $"{targetUser} does not have any registered permissions.";
             return;
         }
 
         // The initiating user must have higher permissions than the target user to remove their permissions.
-        PermissionsLevel userPermissions = GetPermissionsLevel(user);
+        PermissionsLevel userPermissions = GetPermissionsLevel(messageData.username);
         if (userPermissions > targetPermissions)
         {
             permissionsList.Remove(targetUser);
-            Console.WriteLine($"{targetUser}'s permissions removed.");
+            messageData.reactionString = $"{targetUser}'s permissions removed.";
             return;
         }
         else
         {
-            Console.WriteLine($"{user}'s permissions level not high enough to remove {targetUser}'s permissions.");
+            messageData.reactionString = $"{messageData.username}'s permissions level not high enough to remove {targetUser}'s permissions.";
             return;
         }
 
