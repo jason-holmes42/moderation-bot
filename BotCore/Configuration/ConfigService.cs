@@ -69,7 +69,7 @@ internal class ConfigService
         // Check if a config file exists. If not, return a value to the caller to indicate the service needs to generate one.
         if (!File.Exists(filepath))
         {
-            Console.WriteLine($"File at {filepath} does not exist. Generating default config.");
+            Console.WriteLine($"File at {filepath} does not exist. Generating default config for {filename}.");
             return default;
         }
 
@@ -80,7 +80,7 @@ internal class ConfigService
 
             if (string.IsNullOrWhiteSpace(jsonData))
             {
-                Console.WriteLine("Error: JSON loading failed. Generating default config.");
+                Console.WriteLine($"Error: JSON loading failed. Generating default config for {filename}.");
                 return default;
             }
 
@@ -90,21 +90,21 @@ internal class ConfigService
         {
             Console.WriteLine($"Config file {filename} contains invalid JSON: {ex.Message}");
             string backupLoc = BackupFile(filepath);
-            Console.WriteLine($"Storing invalid file to {backupLoc}. Generating default config.");
+            Console.WriteLine($"Storing invalid file to {backupLoc}. Generating default config for {filename}.");
             return default;
         }
         catch (IOException ex)
         {
             Console.WriteLine($"Could not read config file {filename}: {ex.Message}");
             string backupLoc = BackupFile(filepath);
-            Console.WriteLine($"Storing invalid file to {backupLoc}. Generating default config.");
+            Console.WriteLine($"Storing invalid file to {backupLoc}. Generating default config for {filename}.");
             return default;
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Unexpected error loading {filename} config: {ex.Message}");
             string backupLoc = BackupFile(filepath);
-            Console.WriteLine($"Storing invalid file to {backupLoc}. Generating default config.");
+            Console.WriteLine($"Storing invalid file to {backupLoc}. Generating default config for {filename}.");
             return default;
         }
     }
