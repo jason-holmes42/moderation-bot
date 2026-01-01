@@ -22,12 +22,12 @@ internal class ConsoleHost
 
     async Task Run()
     {
-        // Initialize chat provider. This is where you'd insert Chat Provider selection logic, but for now we're only using ChatReplayProvider.
+        // Initialize chat provider. This is where you'd insert both Chat Provider and Broadcaster selection logic, but for now we're only using ChatReplayProvider.
         ChatReplayProvider chatReplay = await ChatReplayProvider.CreateAsync(fullLogFilepath);
         chatProvider = chatReplay;
 
-        // Initialize bot
-        botCore = await InitializeBot();
+        // Initialize bot. Each user gets an individual bot instance that centralizes and handles their processing across whatever platforms they're using.
+        botCore = await BotCore.CreateAsync(chatProvider.channelIdentity);
         botCore.RegisterProvider(chatProvider);
 
         // Register cross-communication events
@@ -36,14 +36,6 @@ internal class ConsoleHost
 
         // Enter processing loop
         await chatReplay.StartAsync();
-    }
-
-    // Instantiate a BotCore object and return it. Separated as its own function for future-proofing.
-    async Task<BotCore> InitializeBot()
-    {
-        BotCore botCore = new BotCore();
-        await botCore.Initialize(chatProvider.channelIdentity.channelID);
-        return botCore;
     }
 
     // Display the message in the console, then send it to BotCore for processing.

@@ -12,24 +12,42 @@ namespace BotCore;
 // Core functionality for the moderation bot.
 public class BotCore
 {
-    FilterService filterService;
-    CommandService commandService;
-    PermissionsService permissionsService;
-    BotTimeProvider timeProvider;
-    CooldownTracker cooldownTracker;
+    BotTimeProvider _timeProvider;
+    CooldownTracker _cooldownTracker;
 
-    Dictionary<ChatEndpoint, IChatProvider> chatProviders;
+    PermissionsService _permissionsService;
+    FilterService _filterService;
+    CommandService _commandService;
 
-    public async Task Initialize(string broadcaster)
+    Dictionary<ChatEndpoint, IChatProvider> _chatProviders;
+
+    BotCore(
+        BotTimeProvider timeProvider,
+        CooldownTracker cooldownTracker,
+        PermissionsService permissionsService,
+        FilterService filterService,
+        CommandService commandService)
     {
-        timeProvider = new BotTimeProvider();
-        cooldownTracker = new CooldownTracker(timeProvider);
+        _timeProvider = timeProvider;
+        _cooldownTracker = cooldownTracker;
 
-        permissionsService = await PermissionsService.CreateAsync(broadcaster);
-        filterService = await FilterService.CreateAsync(permissionsService);
-        commandService = await CommandService.CreateAsync(filterService, permissionsService, cooldownTracker);
+        _permissionsService = permissionsService;
+        _filterService = filterService;
+        _commandService = commandService;
 
-        chatProviders = new Dictionary<ChatEndpoint, IChatProvider>();
+        _chatProviders = new Dictionary<ChatEndpoint, IChatProvider>();
+    }
+
+    public static async Task<BotCore> CreateAsync(ChatEndpoint channelIdentity)
+    {
+        BotTimeProvider timeProvider = new BotTimeProvider();
+        CooldownTracker cooldownTracker = new CooldownTracker(timeProvider);
+
+        PermissionsService permissionsService = await PermissionsService.CreateAsync(channelIdentity.channelID);
+        FilterService filterService = await FilterService.CreateAsync(permissionsService);
+        CommandService commandService = await CommandService.CreateAsync(filterService, permissionsService, cooldownTracker);
+
+        return new BotCore(timeProvider, cooldownTracker, permissionsService, filterService, commandService);
     }
 
     public event Action<string>? OnMessageSent;
@@ -41,19 +59,19 @@ public class BotCore
     public async Task ProcessMessage(MessageContext message)
     {        
         // Send message through filtering, apply any necessary reaction information
-        filterService.Evaluate(message);
+        _filterService.Evaluate(message);
         
         // If the filter identified a needed moderation action, send it to the provider for processing.
         if (message.modAction != null)
         {
-            chatProviders[message.Endpoint].IssuePunishment(message.modAction);
+            _chatProviders[message.Endpoint].IssuePunishment(message.modAction);
         }
 
         // Assess message for commands, process any identified commands
-        await commandService.Evaluate(message);
+        await _commandService.Evaluate(message);
         if (message.reactionString != null)
         {
-            chatProviders[message.Endpoint].PostMessage(message.reactionString);
+            _chatProviders[message.Endpoint].PostMessage(message.reactionString);
         }
 
         // Send MessageContext to UI for display
@@ -62,12 +80,12 @@ public class BotCore
     // Simple registry functions; to be enhanced with collision checks.
     public void RegisterProvider(IChatProvider provider)
     {
-        chatProviders[provider.channelIdentity] = provider;
+        _chatProviders[provider.channelIdentity] = provider;
     }
 
     public void UnregisterProvider(IChatProvider provider)
     {
-        chatProviders.Remove(provider.channelIdentity);
+        _chatProviders.Remove(provider.channelIdentity);
     }
 
     // When a message needs to be issued to a chat provider--like a ban message or a command reaction message--this is what to send. For now, it will just send a string to be displayed, but later it will send commands.
