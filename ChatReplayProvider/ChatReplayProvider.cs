@@ -1,5 +1,6 @@
 ﻿using BotCore.Core.Messaging;
 using BotCore.Core.Providers;
+using BotCore.Filtering;
 using System.Reflection.Metadata.Ecma335;
 using System.Text.Json;
 
@@ -146,6 +147,12 @@ public class ChatReplayProvider : IChatProvider
         MessageReceived(chatMessage);
     }
 
+    // Issue a punishment according to provided ModerationAction information using provider-specific functions.
+    public void IssuePunishment(ModerationAction modAction)
+    {
+        Console.WriteLine($"Punishing {modAction.targetUser} with {modAction.punishment.ToString().ToUpper()}. REASON: {modAction.reason}");
+    }
+
     // ======= API FUNCTIONS =======
 
     // Request the duration that the stream has been live from the platform.
@@ -154,5 +161,4 @@ public class ChatReplayProvider : IChatProvider
         // Since ChatReplay is not live, we will use the timeElapsed parameter from the Playback function to mimic the typical result.
         return TimeSpan.FromSeconds(timeElapsed);
     }
-
 }

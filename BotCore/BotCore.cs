@@ -46,9 +46,7 @@ public class BotCore
         // If the filter identified a needed moderation action, send it to the provider for processing.
         if (message.modAction != null)
         {
-            // Punish. For now, we'll just send a message for display.
-            SendMessage(message.modAction.reason);
-            // chatProviders[message.Endpoint].IssuePunishment(message.modAction);
+            chatProviders[message.Endpoint].IssuePunishment(message.modAction);
         }
 
         // Assess message for commands, process any identified commands
@@ -56,7 +54,6 @@ public class BotCore
         if (message.reactionString != null)
         {
             chatProviders[message.Endpoint].PostMessage(message.reactionString);
-            // SendMessage(message.reactionString);
         }
 
         // Send MessageContext to UI for display
