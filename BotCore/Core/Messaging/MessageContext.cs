@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BotCore.Core.Providers;
+using BotCore.Filtering;
 
 namespace BotCore.Core.Messaging;
 
@@ -12,8 +13,10 @@ public class MessageContext
 {
     public ChatMessage Message { get; init; }
     public IChatProvider Provider { get; init; }
+    public ChatEndpoint Endpoint { get; init; }
 
     // Permissions level
+    public ModerationAction? modAction { get; set; }
     public ReactionType reactionType { get; set; }
     public string? reactionString { get; set; }
 
@@ -22,10 +25,11 @@ public class MessageContext
     public string username => Message.username;
     public string timestamp => Message.timestamp;
 
-    public MessageContext(ChatMessage messageData, IChatProvider chatProvider)
+    public MessageContext(ChatMessage messageData, IChatProvider chatProvider, ChatEndpoint endpoint)
     {
         Message = messageData;
         Provider = chatProvider;
         reactionType = ReactionType.None;
+        Endpoint = endpoint;
     }
 }
