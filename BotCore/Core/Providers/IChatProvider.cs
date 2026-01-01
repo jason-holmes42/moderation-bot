@@ -11,13 +11,15 @@ namespace BotCore.Core.Providers;
 // Additionally, they convert any outgoing communications to platform-specific commands.
 public interface IChatProvider
 {
-    string channelIdentity { get; init; }           // Broadcaster name
+    ChatEndpoint channelIdentity { get; init; }     // Routing endpoint containing the platformID and channelID
 
     Task StartAsync();                              // The asynchronous processing of incoming messages.
 
     event Action<MessageContext> OnMessageReceived; // Event for handling incoming data
 
-    void SendMessage(string message);               // Stub for sending messages to the given platform. Not (meaningfully) implemented in this project.
+    void PostMessage(string message);               // Function for posting messages into the chat on the given platform. Not implemented for any live platforms on this project.
+
+    // void IssuePunishment(ModerationAction modAction) // Function for issuing punishments to a user based on a moderation decision by the bot
 
     // API Functions - requesting information from the platform.
 
