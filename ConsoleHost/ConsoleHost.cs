@@ -28,10 +28,11 @@ internal class ConsoleHost
 
         // Initialize bot
         botCore = await InitializeBot();
+        botCore.RegisterProvider(chatProvider);
 
         // Register cross-communication events
         chatReplay.OnMessageReceived += OnMessageReceived;
-        botCore.OnMessageSent += chatReplay.SendMessage;
+        botCore.OnMessageSent += chatReplay.PostMessage;
 
         // Enter processing loop
         await chatReplay.StartAsync();
@@ -41,7 +42,7 @@ internal class ConsoleHost
     async Task<BotCore> InitializeBot()
     {
         BotCore botCore = new BotCore();
-        await botCore.Initialize(chatProvider.channelIdentity);
+        await botCore.Initialize(chatProvider.channelIdentity.channelID);
         return botCore;
     }
 

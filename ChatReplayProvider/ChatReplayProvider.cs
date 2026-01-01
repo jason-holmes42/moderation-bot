@@ -8,9 +8,11 @@ namespace ChatReplayProvider;
 // A Chat Provider for treating saved chat log files as if live chat streams. Only designed to support Twitch VOD chat replays which contain all of the necessary content and timing data.
 public class ChatReplayProvider : IChatProvider
 {
-    public string channelIdentity { get; init; }
+    ProviderID platform = ProviderID.ChatReplay;
+    public ChatEndpoint channelIdentity { get; init; }      // Used to identify this specific provider for message routing from BotCore
 
-    int timeElapsed;
+    int timeElapsed;            // Used to keep track of the seconds elapsed as provided by replay log's offset seconds
+    DateTime replayStart;       // Used to track time since replay began for dynamic timestamp creation for PostMessage
 
     List<ChatMessage> commentData;
 
@@ -18,7 +20,7 @@ public class ChatReplayProvider : IChatProvider
 
     public ChatReplayProvider(string broadcaster, TwitchJSONData jsonData)
     {
-        channelIdentity = broadcaster;
+        channelIdentity = new ChatEndpoint(platform, broadcaster);
         commentData = ParseComments(jsonData);
     }
 
@@ -93,7 +95,8 @@ public class ChatReplayProvider : IChatProvider
     // Handle the timing of each message by iterating through the list of messages received from ParseData
     async Task PlaybackData(List<ChatMessage> replayData)
     {
-        timeElapsed = 0;
+        timeElapsed = 0;    // For tracking against log-provided offsetSeconds
+        replayStart = DateTime.Now; // For tracking against real time for use with PostMessage function
 
         // Initial delay to match up with the first message's delay.
         await Task.Delay(replayData[0].offsetSeconds * 1000);
@@ -131,14 +134,16 @@ public class ChatReplayProvider : IChatProvider
     // Invoke the OnMessageReceived event
     void MessageReceived(ChatMessage message)
     {
-        MessageContext messageData = new MessageContext(message, this);
+        MessageContext messageData = new MessageContext(message, this, channelIdentity);
         OnMessageReceived?.Invoke(messageData);
     }
 
-    // Send a message from the bot to the platform in question. Not implemented in this version; stub only.
-    public void SendMessage(string outMessage)
+    // Send a message from the bot to the platform in question. For ChatReplay, it processes the outgoing message as if it were an actual message within the log, allowing the bot to react accordingly.
+    public void PostMessage(string outMessage)
     {
-        Console.WriteLine("Sending: " + outMessage);
+        int secondsSinceStart = (int)(DateTime.Now - replayStart).TotalSeconds;
+        ChatMessage chatMessage = new ChatMessage("ModerationBot", outMessage, secondsSinceStart, ConvertTimestamp(secondsSinceStart));
+        MessageReceived(chatMessage);
     }
 
     // ======= API FUNCTIONS =======
