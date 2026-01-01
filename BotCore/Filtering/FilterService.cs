@@ -8,6 +8,8 @@ using BotCore.Core;
 using BotCore.Configuration;
 using BotCore.Permissions;
 using BotCore.Core.Messaging;
+using BotCore.Core.Providers;
+using System.Net;
 
 namespace BotCore.Filtering;
 
@@ -18,6 +20,8 @@ internal class FilterService
     Dictionary<string, FilterRule> phraseDictionary;
     FilterSettings settings;
 
+    // readonly Func<query, response> _providerQuery;
+
     // Explicit conversion dictionary to avoid messy, unsafe enum casts or Enum.Parse usages
     static readonly Dictionary<PunishmentType, ReactionType> PunishmentToReaction = new Dictionary<PunishmentType, ReactionType>()
     {
@@ -26,10 +30,17 @@ internal class FilterService
         { PunishmentType.Ban, ReactionType.Ban },
     };
 
-    private FilterService(FilterSettings settings, Dictionary<string, FilterRule> filterPhrases, PermissionsService permissionsService)
+    private FilterService(
+        FilterConfig config,
+        PermissionsService permissionsService)
     {
-        this.settings = settings;
-        this.phraseDictionary = filterPhrases;
+        // Create an easily-matchable dictionary out of the filter rules
+        Dictionary<string, FilterRule> filteredPhrases = new Dictionary<string, FilterRule>();
+
+        foreach (FilterRule rule in config.filterRules) filteredPhrases.Add(rule.filterPhrase, rule);
+
+        this.settings = config.filterSettings;
+        this.phraseDictionary = filteredPhrases;
         this.permissionsService = permissionsService;
     }
 
@@ -40,13 +51,8 @@ internal class FilterService
         config = await ConfigService.RetrieveFilterConfig();
         if (config == null) config = await GenerateDefaultConfig();
         
-        // Create an easily-matchable dictionary out of the filter rules
-        Dictionary<string, FilterRule> filteredPhrases = new Dictionary<string, FilterRule>();
-
-        foreach (FilterRule rule in config.filterRules) filteredPhrases.Add(rule.filterPhrase, rule);
-
         // Pass the new phrase dictionary to the constructor.
-        return new FilterService(config.filterSettings, filteredPhrases, permissionsService);
+        return new FilterService(config, permissionsService);
     }
 
     public void Evaluate(MessageContext messageData)
@@ -69,8 +75,12 @@ internal class FilterService
                 if (strongestPunishment == null || rule.punishType > strongestPunishment)
                 {
                     strongestPunishment = rule.punishType;
-                    messageData.reactionType = PunishmentToReaction[rule.punishType];
-                    messageData.reactionString = $"{messageData.reactionType.ToString().ToUpper()} {messageData.username} REASON: Matched '{rule.filterPhrase}' filter.";
+
+                    if (messageData.modAction == null) messageData.modAction = new ModerationAction();
+
+                    messageData.modAction.targetUser = messageData.username;
+                    messageData.modAction.punishment = rule.punishType;
+                    messageData.modAction.reason = $"Matched '{rule.filterPhrase}' filter.";
                 }
 
                 // An expansion of the Punishment functionality would want to be called directly here.
@@ -82,27 +92,26 @@ internal class FilterService
     public async Task ToggleFilter(bool newState)
     {
         settings.filterEnabled = newState;    // Default state of the filter
-        Console.WriteLine($"Filter {(newState ? "" : "de")}activated.");
     }
 
     // Rule management functions. Add and Update could be safely combined, but keeping them distinct will help users keep the impact of accidental commands minimal.
-    public void AddFilterRule(string filteredPhrase, PunishmentType reaction)
+    public void AddFilterRule(MessageContext messageData, string filteredPhrase, PunishmentType reaction)
     {
         // The command string's tokens will be parsed by FilterCommand, so there is no need to parse them here.
 
         // Add the new FilterRule to the phrase dictionary
         if (phraseDictionary.TryGetValue(filteredPhrase, out FilterRule filterRule))
         {
-            Console.WriteLine($"{filteredPhrase} is already marked for {filterRule.punishType.ToString().ToUpper()}.");
+            messageData.reactionString = $"{filteredPhrase} is already marked for {filterRule.punishType.ToString().ToUpper()}.";
         }
         else
         {
             phraseDictionary.Add(filteredPhrase, new FilterRule(filteredPhrase, reaction));
-            Console.WriteLine($"Filter added for {filteredPhrase} with punishment of {phraseDictionary[filteredPhrase].punishType.ToString().ToUpper()}.");
+            messageData.reactionString = $"Filter added for {filteredPhrase} with punishment of {phraseDictionary[filteredPhrase].punishType.ToString().ToUpper()}.";
         }
     }
 
-    public void RemoveFilterRule(string filteredPhrase)
+    public void RemoveFilterRule(MessageContext messageData, string filteredPhrase)
     {
         // The command string's tokens will be parsed by FilterCommand, so there is no need to parse them here.
 
@@ -110,15 +119,15 @@ internal class FilterService
         if (phraseDictionary.ContainsKey(filteredPhrase))
         {
             phraseDictionary.Remove(filteredPhrase);
-            Console.WriteLine($"{filteredPhrase} filter removed.");
+            messageData.reactionString = $"{filteredPhrase} filter removed.";
         }
         else
         {
-            Console.WriteLine($"No filter for {filteredPhrase} found.");
+            messageData.reactionString = $"No filter for {filteredPhrase} found.";
         }
     }
 
-    public void UpdateFilterRule(string filteredPhrase, PunishmentType updatedReaction)
+    public void UpdateFilterRule(MessageContext messageData, string filteredPhrase, PunishmentType updatedReaction)
     {
         // The command string's tokens will be parsed and verified by FilterCommand, so there is no need to parse them here.
 
@@ -127,15 +136,15 @@ internal class FilterService
         {
             if (filterRule.punishType == updatedReaction)
             {
-                Console.WriteLine($"{filteredPhrase} is already marked for {filterRule.punishType.ToString().ToUpper()}!");
+                messageData.reactionString = $"{filteredPhrase} is already marked for {filterRule.punishType.ToString().ToUpper()}!";
             }
             else
             {
                 filterRule.punishType = updatedReaction;
-                Console.WriteLine($"{filteredPhrase} filter updated to apply {filterRule.punishType.ToString().ToUpper()}.");
+                messageData.reactionString = $"{filteredPhrase} filter updated to apply {filterRule.punishType.ToString().ToUpper()}.";
             }
         }
-        else Console.WriteLine($"{filteredPhrase} filter not found.");
+        else messageData.reactionString = $"{filteredPhrase} filter not found.";
     }
 
     // Handle converting the phrase dictionary to a List of FilterRules and sending it off for storage.
