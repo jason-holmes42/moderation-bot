@@ -63,8 +63,7 @@ internal class PermissionsAdminCommand : ICoreCommand
 
             default:
                 // Should never get here because TryParseCommandArgs should fail and return if there's any issue.
-                Console.WriteLine("Error: Permissions command parsing unsuccessful.");
-                break;
+                return "Error: Permissions command parsing unsuccessful.";
         }
 
         return null;

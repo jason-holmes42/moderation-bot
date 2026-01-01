@@ -71,7 +71,7 @@ internal class CommandsAdminCommand : ICoreCommand
 
             default:
                 // Should never get here because TryParseCommandArgs should fail and return if there's any issue.
-                Console.WriteLine("Error: Custom command parsing unsuccessful.");
+                return "Error: Custom command parsing unsuccessful.";
                 break;
         }
 

@@ -81,7 +81,7 @@ internal class FilterAdminCommand : ICoreCommand
 
             default:
                 // Should never get here because TryParseFilterArgs should fail and return if there's any issue.
-                Console.WriteLine("Error: Filter command parsing unsuccessful.");
+                return "Error: Filter command parsing unsuccessful.";
                 break;
         }
 

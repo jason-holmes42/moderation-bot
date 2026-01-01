@@ -30,7 +30,6 @@ public class ChatReplayProvider : IChatProvider
     {
         TwitchJSONData jsonData = await ParseData(filepath);
         string broadcaster = jsonData.streamer.name;
-        // Console.WriteLine($"{jsonData.streamer.Keys.ToString()}");
 
         return new ChatReplayProvider(broadcaster, jsonData);
     }
