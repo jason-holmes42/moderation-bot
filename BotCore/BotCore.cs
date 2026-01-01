@@ -34,6 +34,7 @@ public class BotCore
         _permissionsService = permissionsService;
         _filterService = filterService;
         _commandService = commandService;
+        _commandService.InitializeCommands(ProviderQuery);
 
         _chatProviders = new Dictionary<ChatEndpoint, IChatProvider>();
     }
@@ -49,9 +50,6 @@ public class BotCore
 
         return new BotCore(timeProvider, cooldownTracker, permissionsService, filterService, commandService);
     }
-
-    // public event Func<string>? OnQuery;
-    // Action<string>? onQueryHandler;
 
     public async Task ProcessMessage(MessageContext message)
     {        
@@ -72,6 +70,19 @@ public class BotCore
         }
 
         // Send MessageContext to UI for display
+    }
+
+    // Delegate query function fed to services to allow them to safely make information requests of the provider without giving them direct access.
+    async Task<QueryResult> ProviderQuery(QueryRequest request)
+    {
+        // Switch on the request's QueryType enum, which can only contain implemented query types.
+        switch (request.QueryType)
+        {
+            case QueryType.Uptime:
+                return await _chatProviders[request.Endpoint].QueryUptimeAsync();
+            default:
+                return QueryResult.Failure("Invalid query type.");
+        }
     }
 
     // Simple chat provider registry functions; to be enhanced with collision checks.
