@@ -12,20 +12,20 @@ namespace BotCore.Commands;
 // Custom commands are user-defined commands that can be accessed by chat members from within the chat to produce a static response from the moderation bot.
 internal class CustomCommandDefinition : ICommand
 {
-    public string commandString { get; init; }
-    public string[]? commandAliases { get; set; }
-    [JsonIgnore]public bool isMutable { get; init; } = true;
+    public string CommandString { get; init; }
+    public string[]? CommandAliases { get; set; }
+    [JsonIgnore]public bool IsMutable { get; init; } = true;
 
-    [JsonIgnore]public CooldownType cooldownType { get; init; } = CooldownType.CustomCommand;
-    [JsonIgnore]public TimeSpan? cooldownOverride { get; } = null;
+    [JsonIgnore]public CooldownType CooldownType { get; init; } = CooldownType.CustomCommand;
+    [JsonIgnore]public TimeSpan? CooldownOverride { get; } = null;
 
-    public PermissionsLevel requiredPermissions { get; set; } = PermissionsLevel.None;
+    public PermissionsLevel RequiredPermissions { get; set; } = PermissionsLevel.None;
 
-    public string commandResponse { get; set; }
+    public string CommandResponse { get; set; }
 
     public CustomCommandDefinition(string commandString, string commandResponse)
     {
-        this.commandString = commandString;
-        this.commandResponse = commandResponse;
+        CommandString = commandString;
+        CommandResponse = commandResponse;
     }
 }

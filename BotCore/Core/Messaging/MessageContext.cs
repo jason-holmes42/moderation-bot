@@ -11,25 +11,25 @@ namespace BotCore.Core.Messaging;
 // Defines a data container including the original ChatMessage that was received as well as other information useful for bot functions.
 public class MessageContext
 {
-    public ChatMessage Message { get; init; }
+    public ChatMessage ChatMessage { get; init; }
     public IChatProvider Provider { get; init; }
     public ChatEndpoint Endpoint { get; init; }
 
     // Permissions level
-    public ModerationAction? modAction { get; set; }
-    public ReactionType reactionType { get; set; }
-    public string? reactionString { get; set; }
+    public ModerationAction? ModAction { get; set; }
+    public ReactionType ReactionType { get; set; }
+    public string? ReactionString { get; set; }
 
     // Passthrough properties to make referencing ChatMessage data less of a pain
-    public string message => Message.message;
-    public string username => Message.username;
-    public string timestamp => Message.timestamp;
+    public string Message => ChatMessage.Message;
+    public string Username => ChatMessage.Username;
+    public string Timestamp => ChatMessage.Timestamp;
 
     public MessageContext(ChatMessage messageData, IChatProvider chatProvider, ChatEndpoint endpoint)
     {
-        Message = messageData;
+        ChatMessage = messageData;
         Provider = chatProvider;
-        reactionType = ReactionType.None;
+        ReactionType = ReactionType.None;
         Endpoint = endpoint;
     }
 }

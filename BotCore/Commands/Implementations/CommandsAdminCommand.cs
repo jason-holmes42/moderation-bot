@@ -13,14 +13,14 @@ using static System.Collections.Specialized.BitVector32;
 namespace BotCore.Commands.Implementations;
 internal class CommandsAdminCommand : ICoreCommand
 {
-    public string commandString { get; init; } = "command";
-    public string[]? commandAliases { get; set; } = [];
-    public bool isMutable { get; init; } = false;
+    public string CommandString { get; init; } = "command";
+    public string[]? CommandAliases { get; set; } = [];
+    public bool IsMutable { get; init; } = false;
 
-    public CooldownType cooldownType { get; init; } = CooldownType.None;
-    public TimeSpan? cooldownOverride { get; } = null;
+    public CooldownType CooldownType { get; init; } = CooldownType.None;
+    public TimeSpan? CooldownOverride { get; } = null;
 
-    public PermissionsLevel requiredPermissions { get; set; } = PermissionsLevel.Moderator;
+    public PermissionsLevel RequiredPermissions { get; set; } = PermissionsLevel.Moderator;
 
     enum CommandsAdminAction
     {
@@ -36,17 +36,17 @@ internal class CommandsAdminCommand : ICoreCommand
         public string commandResponse { get; init; }
     }
 
-    CommandService commandService;
+    CommandService _commandService;
 
     public CommandsAdminCommand(CommandService commandService)
     {
-        this.commandService = commandService;
+        _commandService = commandService;
     }
 
     public async Task<string> ExecuteAsync(MessageContext messageData, string[] tokens)
     {
         // Parse the tokens into usable details
-        if (!TryParseCommandArgs(messageData.message, out CommandsAdminArgs args, out string error))
+        if (!TryParseCommandArgs(messageData.Message, out CommandsAdminArgs args, out string error))
         {
             return $"Error: {error}";
         }
@@ -55,18 +55,18 @@ internal class CommandsAdminCommand : ICoreCommand
         switch (args.commandAction)
         {
             case CommandsAdminAction.Add:
-                commandService.RegisterCommand(messageData, new CustomCommandDefinition(args.commandPhrase, args.commandResponse));
-                await commandService.StoreCommandConfig();
+                _commandService.RegisterCommand(messageData, new CustomCommandDefinition(args.commandPhrase, args.commandResponse));
+                await _commandService.StoreCommandConfig();
                 break;
 
             case CommandsAdminAction.Remove:
-                commandService.UnregisterCommand(messageData, args.commandPhrase);
-                await commandService.StoreCommandConfig();
+                _commandService.UnregisterCommand(messageData, args.commandPhrase);
+                await _commandService.StoreCommandConfig();
                 break;
 
             case CommandsAdminAction.Update:
-                commandService.UpdateCommand(messageData, new CustomCommandDefinition(args.commandPhrase, args.commandResponse));
-                await commandService.StoreCommandConfig();
+                _commandService.UpdateCommand(messageData, new CustomCommandDefinition(args.commandPhrase, args.commandResponse));
+                await _commandService.StoreCommandConfig();
                 break;
 
             default:

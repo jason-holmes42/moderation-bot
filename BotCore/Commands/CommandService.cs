@@ -31,8 +31,8 @@ internal class CommandService
         CooldownTracker cooldownTracker)
     {
         // Cache settings and service providers
-        _settings = config.commandSettings;
-        _customCommands = config.customCommands;
+        _settings = config.CommandSettings;
+        _customCommands = config.CustomCommands;
 
         _filterService = filterService;
         _permissionsService = permissionsService;
@@ -69,32 +69,32 @@ internal class CommandService
     public async Task Evaluate(MessageContext messageData)
     {
         // Trim any whitespace characters for simple tokenization.
-        string input = messageData.message.Trim();
+        string input = messageData.Message.Trim();
 
         // If the first character of the trimmed string is not the command character, no need to parse. 
-        if (input[0] != _settings.commandChar)
+        if (input[0] != _settings.CommandChar)
         {
             return;
         }
 
         // Elsewise, tokenize by space character ' ' and parse as a command.
         string[] tokens = TokenizeCommand(' ', input);
-        messageData.reactionType = ReactionType.Command;
+        messageData.ReactionType = ReactionType.Command;
         
         // Check registered commands for a match and, upon success, execute the command.
         if (_commandRegistry.TryGetValue(tokens[0], out ICommand command))
         {
             // Check if the command is on cooldown and, if it is, skip processing. However, if the user has cooldown-exemption permissions, carry on as normal.
-            if (!_cooldownTracker.IsOffCooldown(command) && !_permissionsService.HasPermission(messageData.username, _settings.cooldownExemptionLevel))
+            if (!_cooldownTracker.IsOffCooldown(command) && !_permissionsService.HasPermission(messageData.Username, _settings.CooldownExemptionLevel))
             {
-                Console.WriteLine($"DEBUG: {_settings.commandChar}{command.commandString} identified but skipped due to cooldown.");        // Debug-only message
+                Console.WriteLine($"DEBUG: {_settings.CommandChar}{command.CommandString} identified but skipped due to cooldown.");        // Debug-only message
                 return;
             }
 
             // Check if user has permission to use the command. If not, skip processing.
-            if (!_permissionsService.HasPermission(messageData.username, command.requiredPermissions))
+            if (!_permissionsService.HasPermission(messageData.Username, command.RequiredPermissions))
             {
-                Console.WriteLine($"DEBUG: {messageData.username} lacks permission for {_settings.commandChar}{command.commandString}: {_permissionsService.GetPermissionsLevel(messageData.username)} vs {command.requiredPermissions}."); // Debug-only message
+                Console.WriteLine($"DEBUG: {messageData.Username} lacks permission for {_settings.CommandChar}{command.CommandString}: {_permissionsService.GetPermissionsLevel(messageData.Username)} vs {command.RequiredPermissions}."); // Debug-only message
                 return;
             }
 
@@ -102,17 +102,17 @@ internal class CommandService
             if (command is ICoreCommand executable)
             {
                 string response = await executable.ExecuteAsync(messageData, tokens);
-                if (response != null) messageData.reactionString = response;
-                _cooldownTracker.StartCooldown(command.commandString);
+                if (response != null) messageData.ReactionString = response;
+                _cooldownTracker.StartCooldown(command.CommandString);
             }
             // Otherwise if it's a custom command and user has permission, issue its response and trigger the cooldown.
             else if (command is CustomCommandDefinition custom)
             {
-                messageData.reactionString = custom.commandResponse;
-                _cooldownTracker.StartCooldown(command.commandString);
+                messageData.ReactionString = custom.CommandResponse;
+                _cooldownTracker.StartCooldown(command.CommandString);
             }
             // This should never execute because all commands fit into one of the above categories.
-            else messageData.reactionString = $"Unable to identify `{_settings.commandChar}{command.commandString}` command type.";
+            else messageData.ReactionString = $"Unable to identify `{_settings.CommandChar}{command.CommandString}` command type.";
         }
         // If a message starts with a command character but is not a valid command, there is no need to respond.
     }
@@ -122,9 +122,9 @@ internal class CommandService
     {
         if (RegisterCommandInternal(command))
         {
-            messageData.reactionString = $"Command added for `{_settings.commandChar}{command.commandString}`.";
+            messageData.ReactionString = $"Command added for `{_settings.CommandChar}{command.CommandString}`.";
         }
-        else messageData.reactionString = $"Command `{_settings.commandChar}{command.commandString}` already exists.";
+        else messageData.ReactionString = $"Command `{_settings.CommandChar}{command.CommandString}` already exists.";
     }
 
     // RegisterCommandInternal acts as the single authoritative path for command registration, verifying and registering incoming commands, with success or failure being reported to the caller. Validation is performed by the CommandAdminCommand prior to reaching this point.
@@ -133,9 +133,9 @@ internal class CommandService
         // Identify whether a command exists or not. Since core commands are registered during setup, this prevents users from adding custom commands using the same strings.
 
         // If it doesn't exist already, add it.
-        if (!_commandRegistry.ContainsKey(command.commandString))
+        if (!_commandRegistry.ContainsKey(command.CommandString))
         {
-            _commandRegistry.Add(command.commandString, command);
+            _commandRegistry.Add(command.CommandString, command);
             return true;
         }
         else return false;
@@ -148,38 +148,38 @@ internal class CommandService
         if (_commandRegistry.TryGetValue(commandString, out ICommand registeredCommand))
         {
             // If the command is present, identify whether it is mutable. If it is not mutable, the user may not remove it.
-            if (!registeredCommand.isMutable)
+            if (!registeredCommand.IsMutable)
             {
-                messageData.reactionString = $"Command `{_settings.commandChar}{registeredCommand.commandString}` may not be removed.";
+                messageData.ReactionString = $"Command `{_settings.CommandChar}{registeredCommand.CommandString}` may not be removed.";
                 return;
             }
 
             // Otherwise, remove the registered command.
             _commandRegistry.Remove(commandString);
-            messageData.reactionString = $"Command `{_settings.commandChar}{commandString}` removed.";
+            messageData.ReactionString = $"Command `{_settings.CommandChar}{commandString}` removed.";
         }
-        else messageData.reactionString = $"No command for `{_settings.commandChar}{commandString}` found.";
+        else messageData.ReactionString = $"No command for `{_settings.CommandChar}{commandString}` found.";
     }
 
     // UpdateCommand updates eligible commands while protecting immutable commands (which typically represent core functionality). The passed command argument should be the new version of the command.
     public void UpdateCommand(MessageContext messageData, ICommand command)
     {
         // Locate the command in the command registry.
-        if (_commandRegistry.TryGetValue(command.commandString, out ICommand registeredCommand))
+        if (_commandRegistry.TryGetValue(command.CommandString, out ICommand registeredCommand))
         {
             // If the command is present, identify whether it is mutable. If it is not mutable, the user may not change it.
             // By checking the currently registered command for mutability instead of the incoming command, it prevents updates from trying to trick the registry into allowing it to change a mutable command.
-            if (!registeredCommand.isMutable)
+            if (!registeredCommand.IsMutable)
             {
-                messageData.reactionString = $"Command `{_settings.commandChar}{registeredCommand.commandString}` may not be changed.";
+                messageData.ReactionString = $"Command `{_settings.CommandChar}{registeredCommand.CommandString}` may not be changed.";
                 return;
             }
 
             // Otherwise, update the registered command.
-            _commandRegistry[command.commandString] = command;
-            messageData.reactionString = $"Command `{_settings.commandChar}{command.commandString}` updated.";
+            _commandRegistry[command.CommandString] = command;
+            messageData.ReactionString = $"Command `{_settings.CommandChar}{command.CommandString}` updated.";
         }
-        else messageData.reactionString = $"No command for `{_settings.commandChar}{command.commandString}` found.";
+        else messageData.ReactionString = $"No command for `{_settings.CommandChar}{command.CommandString}` found.";
     }
 
     // Convert incoming string (previously identified as a command) into a collection of actionable tokens delimited by the splitChar character.
@@ -211,7 +211,7 @@ internal class CommandService
         // Construct the default config
         CommandSettings commandSettings = new CommandSettings()
         {
-            commandChar = '!'
+            CommandChar = '!'
         };
 
         List<CustomCommandDefinition> customCommands = new List<CustomCommandDefinition>();

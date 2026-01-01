@@ -10,19 +10,19 @@ using System.Threading.Tasks;
 namespace BotCore.Permissions;
 internal class PermissionsService
 {
-    PermissionsSettings permissionsSettings;
-    Dictionary<string, PermissionsLevel> permissionsList;
+    PermissionsSettings _permissionsSettings;
+    Dictionary<string, PermissionsLevel> _permissionsList;
 
     PermissionsService(PermissionsConfig permissionsConfig, string broadcaster)
     {
-        this.permissionsSettings = permissionsConfig.permissionsSettings;
-        this.permissionsList = new Dictionary<string, PermissionsLevel>(permissionsConfig.permissionsList, StringComparer.OrdinalIgnoreCase);   // Necessary for case-insensitive username lookups
+        _permissionsSettings = permissionsConfig.PermissionsSettings;
+        _permissionsList = new Dictionary<string, PermissionsLevel>(permissionsConfig.PermissionsList, StringComparer.OrdinalIgnoreCase);   // Necessary for case-insensitive username lookups
 
         // The broadcaster should always have Broadcaster-level permissions, so confirm their presence in the permissions list.
-        if (!permissionsList.TryGetValue(broadcaster, out PermissionsLevel broadcasterPerms) || broadcasterPerms < PermissionsLevel.Broadcaster)
+        if (!_permissionsList.TryGetValue(broadcaster, out PermissionsLevel broadcasterPerms) || broadcasterPerms < PermissionsLevel.Broadcaster)
         {
             // If they are not present or their permissions are not Broadcaster, correct them.
-            permissionsList[broadcaster] = PermissionsLevel.Broadcaster;
+            _permissionsList[broadcaster] = PermissionsLevel.Broadcaster;
         }
     }
 
@@ -40,7 +40,7 @@ internal class PermissionsService
     public PermissionsLevel GetPermissionsLevel(string user)
     {
         // If the user has a registered permissions level, return it. Otherwise, indicate none. A ternary conditional could be used here, but this is more legible.
-        if (permissionsList.TryGetValue(user, out PermissionsLevel registeredLevel))
+        if (_permissionsList.TryGetValue(user, out PermissionsLevel registeredLevel))
         {
             return registeredLevel;
         }
@@ -60,7 +60,7 @@ internal class PermissionsService
         // e.g., Broadcasters can edit all permissions (except their own) and cannot elevate anyone to broadcaster, admins can edit moderator and regular permissions and cannot elevate anyone to admin, and so on.
         // Broadcasters are automatically given a permissions level higher than admins. This allows them to manage their registered administrators without special case logic, being able to demote themselves, add other broadcasters, etc.
 
-        PermissionsLevel userPermissions = GetPermissionsLevel(messageData.username);
+        PermissionsLevel userPermissions = GetPermissionsLevel(messageData.Username);
         PermissionsLevel targetPermissions = GetPermissionsLevel(targetUser);
 
         if (userPermissions > targetPermissions && userPermissions > targetLevel)
@@ -72,13 +72,13 @@ internal class PermissionsService
                 return;
             }
 
-            permissionsList[targetUser] = targetLevel;    // This will safely add new entries or update existing entries.
-            messageData.reactionString = $"{targetUser}'s permissions set to {targetLevel.ToString().ToUpper()}.";
+            _permissionsList[targetUser] = targetLevel;    // This will safely add new entries or update existing entries.
+            messageData.ReactionString = $"{targetUser}'s permissions set to {targetLevel.ToString().ToUpper()}.";
             return;
         }
         else
         {
-            messageData.reactionString = $"{messageData.username}'s permissions level is not high enough to set {targetUser}'s permissions to {targetLevel.ToString().ToUpper()}.";
+            messageData.ReactionString = $"{messageData.Username}'s permissions level is not high enough to set {targetUser}'s permissions to {targetLevel.ToString().ToUpper()}.";
             return;
         }
     }
@@ -89,23 +89,23 @@ internal class PermissionsService
         // Confirm whether the targetUser has permissions registered.
         PermissionsLevel targetPermissions;
 
-        if (!permissionsList.TryGetValue(targetUser, out targetPermissions))
+        if (!_permissionsList.TryGetValue(targetUser, out targetPermissions))
         {
-            messageData.reactionString = $"{targetUser} does not have any registered permissions.";
+            messageData.ReactionString = $"{targetUser} does not have any registered permissions.";
             return;
         }
 
         // The initiating user must have higher permissions than the target user to remove their permissions.
-        PermissionsLevel userPermissions = GetPermissionsLevel(messageData.username);
+        PermissionsLevel userPermissions = GetPermissionsLevel(messageData.Username);
         if (userPermissions > targetPermissions)
         {
-            permissionsList.Remove(targetUser);
-            messageData.reactionString = $"{targetUser}'s permissions removed.";
+            _permissionsList.Remove(targetUser);
+            messageData.ReactionString = $"{targetUser}'s permissions removed.";
             return;
         }
         else
         {
-            messageData.reactionString = $"{messageData.username}'s permissions level not high enough to remove {targetUser}'s permissions.";
+            messageData.ReactionString = $"{messageData.Username}'s permissions level not high enough to remove {targetUser}'s permissions.";
             return;
         }
 
@@ -114,7 +114,7 @@ internal class PermissionsService
     // Handle converting current settings and permissions state into PermissionsConfig and sending off for storage.
     public async Task StorePermissionsConfig()
     {
-        await ConfigService.StorePermissionsConfig(new PermissionsConfig(permissionsSettings, permissionsList));
+        await ConfigService.StorePermissionsConfig(new PermissionsConfig(_permissionsSettings, _permissionsList));
     }
 
     // Generate a default config file if one does not exist.

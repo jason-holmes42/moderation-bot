@@ -13,14 +13,14 @@ using static System.Collections.Specialized.BitVector32;
 namespace BotCore.Commands;
 internal class FilterAdminCommand : ICoreCommand
 {
-    public string commandString { get; init; } = "filter";
-    public string[]? commandAliases { get; set; } = [];
-    public bool isMutable { get; init; } = false;
+    public string CommandString { get; init; } = "filter";
+    public string[]? CommandAliases { get; set; } = [];
+    public bool IsMutable { get; init; } = false;
 
-    public CooldownType cooldownType { get; init; } = CooldownType.None;
-    public TimeSpan? cooldownOverride { get; } = null;
+    public CooldownType CooldownType { get; init; } = CooldownType.None;
+    public TimeSpan? CooldownOverride { get; } = null;
 
-    public PermissionsLevel requiredPermissions { get; set; } = PermissionsLevel.Moderator;
+    public PermissionsLevel RequiredPermissions { get; set; } = PermissionsLevel.Moderator;
 
     enum FilterCommandAction
     {
@@ -38,11 +38,11 @@ internal class FilterAdminCommand : ICoreCommand
         public PunishmentType filterPunishment { get; init; }
     }
 
-    FilterService filterService;
+    FilterService _filterService;
 
     public FilterAdminCommand(FilterService filterService)
     {
-        this.filterService = filterService;
+        _filterService = filterService;
     }
 
     public async Task<string> ExecuteAsync(MessageContext messageData, string[] tokens)
@@ -57,26 +57,26 @@ internal class FilterAdminCommand : ICoreCommand
         switch (args.filterAction)
         {
             case FilterCommandAction.On:
-                filterService.ToggleFilter(true);
+                _filterService.ToggleFilter(true);
                 return $"Filter activated.";
 
             case FilterCommandAction.Off:
-                filterService.ToggleFilter(false);
+                _filterService.ToggleFilter(false);
                 return $"Filter deactivated.";
 
             case FilterCommandAction.Add:
-                filterService.AddFilterRule(messageData, args.filterPhrase, args.filterPunishment);
-                await filterService.StoreFilterConfig();
+                _filterService.AddFilterRule(messageData, args.filterPhrase, args.filterPunishment);
+                await _filterService.StoreFilterConfig();
                 break;
 
             case FilterCommandAction.Remove:
-                filterService.RemoveFilterRule(messageData, args.filterPhrase);
-                await filterService.StoreFilterConfig();
+                _filterService.RemoveFilterRule(messageData, args.filterPhrase);
+                await _filterService.StoreFilterConfig();
                 break;
 
             case FilterCommandAction.Update:
-                filterService.UpdateFilterRule(messageData, args.filterPhrase, args.filterPunishment);
-                await filterService.StoreFilterConfig(); 
+                _filterService.UpdateFilterRule(messageData, args.filterPhrase, args.filterPunishment);
+                await _filterService.StoreFilterConfig(); 
                 break;
 
             default:

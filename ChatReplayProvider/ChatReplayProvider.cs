@@ -9,20 +9,20 @@ namespace ChatReplayProvider;
 // A Chat Provider for treating saved chat log files as if live chat streams. Only designed to support Twitch VOD chat replays which contain all of the necessary content and timing data.
 public class ChatReplayProvider : IChatProvider
 {
-    ProviderID platform = ProviderID.ChatReplay;
-    public ChatEndpoint channelIdentity { get; init; }      // Used to identify this specific provider for message routing from BotCore
+    ProviderID _platform = ProviderID.ChatReplay;
+    public ChatEndpoint ChannelIdentity { get; init; }      // Used to identify this specific provider for message routing from BotCore
 
-    int timeElapsed;            // Used to keep track of the seconds elapsed as provided by replay log's offset seconds
-    DateTime replayStart;       // Used to track time since replay began for dynamic timestamp creation for PostMessage
+    int _timeElapsed;            // Used to keep track of the seconds elapsed as provided by replay log's offset seconds
+    DateTime _replayStart;       // Used to track time since replay began for dynamic timestamp creation for PostMessage
 
-    List<ChatMessage> commentData;
+    List<ChatMessage> _commentData;
 
     public event Action<MessageContext>? OnMessageReceived;
 
     public ChatReplayProvider(string broadcaster, TwitchJSONData jsonData)
     {
-        channelIdentity = new ChatEndpoint(platform, broadcaster);
-        commentData = ParseComments(jsonData);
+        ChannelIdentity = new ChatEndpoint(_platform, broadcaster);
+        _commentData = ParseComments(jsonData);
     }
 
     // Load data from file. Async due to the size of files potentially taking some time / allowing for loading from alternate sources.
@@ -38,7 +38,7 @@ public class ChatReplayProvider : IChatProvider
     public async Task StartAsync()
     {
         Console.WriteLine("Begin Playback");
-        await PlaybackData(commentData);
+        await PlaybackData(_commentData);
     }
 
     // Parse the selected chat replay log file into Twitch JSON data transfer objects (DTOs).
@@ -95,22 +95,22 @@ public class ChatReplayProvider : IChatProvider
     // Handle the timing of each message by iterating through the list of messages received from ParseData
     async Task PlaybackData(List<ChatMessage> replayData)
     {
-        timeElapsed = 0;    // For tracking against log-provided offsetSeconds
-        replayStart = DateTime.Now; // For tracking against real time for use with PostMessage function
+        _timeElapsed = 0;    // For tracking against log-provided offsetSeconds
+        _replayStart = DateTime.Now; // For tracking against real time for use with PostMessage function
 
         // Initial delay to match up with the first message's delay.
-        await Task.Delay(replayData[0].offsetSeconds * 1000);
+        await Task.Delay(replayData[0].OffsetSeconds * 1000);
 
         for (int i = 0; i < replayData.Count; i++)
         {
-            timeElapsed += replayData[i].offsetSeconds - timeElapsed;
+            _timeElapsed += replayData[i].OffsetSeconds - _timeElapsed;
 
             MessageReceived(replayData[i]);
 
             if (i + 1 < replayData.Count)
             {
                 // Handle the wait until the next message using the next message's offset time.
-                await Task.Delay((replayData[i + 1].offsetSeconds - timeElapsed) * 1000);
+                await Task.Delay((replayData[i + 1].OffsetSeconds - _timeElapsed) * 1000);
 
             } else
             {
@@ -134,14 +134,14 @@ public class ChatReplayProvider : IChatProvider
     // Invoke the OnMessageReceived event
     void MessageReceived(ChatMessage message)
     {
-        MessageContext messageData = new MessageContext(message, this, channelIdentity);
+        MessageContext messageData = new MessageContext(message, this, ChannelIdentity);
         OnMessageReceived?.Invoke(messageData);
     }
 
     // Send a message from the bot to the platform in question. For ChatReplay, it processes the outgoing message as if it were an actual message within the log, allowing the bot to react accordingly.
     public void PostMessage(string outMessage)
     {
-        int secondsSinceStart = (int)(DateTime.Now - replayStart).TotalSeconds;
+        int secondsSinceStart = (int)(DateTime.Now - _replayStart).TotalSeconds;
         ChatMessage chatMessage = new ChatMessage("ModerationBot", outMessage, secondsSinceStart, ConvertTimestamp(secondsSinceStart));
         MessageReceived(chatMessage);
     }
@@ -151,7 +151,7 @@ public class ChatReplayProvider : IChatProvider
     {
         // Issue punishment
         // Log reason
-        Console.WriteLine($"Punishing {modAction.targetUser} with {modAction.punishment.ToString().ToUpper()}. REASON: {modAction.reason}");
+        Console.WriteLine($"Punishing {modAction.TargetUser} with {modAction.Punishment.ToString().ToUpper()}. REASON: {modAction.Reason}");
     }
 
     // ======= API FUNCTIONS =======
@@ -160,6 +160,6 @@ public class ChatReplayProvider : IChatProvider
     public async Task<QueryResult> QueryUptimeAsync()
     {
         // Since ChatReplay is not live, we will use the timeElapsed parameter from the Playback function to mimic the typical result.
-        return QueryResult.Success(TimeSpan.FromSeconds(timeElapsed));
+        return QueryResult.Success(TimeSpan.FromSeconds(_timeElapsed));
     }
 }

@@ -44,7 +44,7 @@ public class BotCore
         BotTimeProvider timeProvider = new BotTimeProvider();
         CooldownTracker cooldownTracker = new CooldownTracker(timeProvider);
 
-        PermissionsService permissionsService = await PermissionsService.CreateAsync(channelIdentity.channelID);
+        PermissionsService permissionsService = await PermissionsService.CreateAsync(channelIdentity.ChannelID);
         FilterService filterService = await FilterService.CreateAsync(permissionsService);
         CommandService commandService = await CommandService.CreateAsync(filterService, permissionsService, cooldownTracker);
 
@@ -57,16 +57,16 @@ public class BotCore
         _filterService.Evaluate(message);
         
         // If the filter identified a needed moderation action, send it to the provider for processing.
-        if (message.modAction != null)
+        if (message.ModAction != null)
         {
-            _chatProviders[message.Endpoint].IssuePunishment(message.modAction);
+            _chatProviders[message.Endpoint].IssuePunishment(message.ModAction);
         }
 
         // Assess message for commands, process any identified commands
         await _commandService.Evaluate(message);
-        if (message.reactionString != null)
+        if (message.ReactionString != null)
         {
-            _chatProviders[message.Endpoint].PostMessage(message.reactionString);
+            _chatProviders[message.Endpoint].PostMessage(message.ReactionString);
         }
 
         // Send MessageContext to UI for display
@@ -88,11 +88,11 @@ public class BotCore
     // Simple chat provider registry functions; to be enhanced with collision checks.
     public void RegisterProvider(IChatProvider provider)
     {
-        _chatProviders[provider.channelIdentity] = provider;
+        _chatProviders[provider.ChannelIdentity] = provider;
     }
 
     public void UnregisterProvider(IChatProvider provider)
     {
-        _chatProviders.Remove(provider.channelIdentity);
+        _chatProviders.Remove(provider.ChannelIdentity);
     }
 }

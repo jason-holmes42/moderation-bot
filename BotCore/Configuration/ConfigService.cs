@@ -15,11 +15,11 @@ namespace BotCore.Configuration;
 // Responsible for loading bot-specific information from storage and saving to storage. Currently designed for simple JSON storage, but can be converted for database storage without affecting other modules.
 internal class ConfigService
 {
-    static readonly string filterConfigFilename = "filterConfig.json";
-    static readonly string commandConfigFilename = "commandConfig.json";
-    static readonly string permissionsConfigFilename = "permissionsConfig.json";
-    static readonly string configDirectoryName = "config";
-    static readonly string backupDirectoryName = "backup";
+    static readonly string _filterConfigFilename = "filterConfig.json";
+    static readonly string _commandConfigFilename = "commandConfig.json";
+    static readonly string _permissionsConfigFilename = "permissionsConfig.json";
+    static readonly string _configDirectoryName = "config";
+    static readonly string _backupDirectoryName = "backup";
 
     // Create and cache the Json Serializer Options object used for all serialization/deserialization needs.
     private static readonly JsonSerializerOptions jsonOptions =
@@ -32,32 +32,32 @@ internal class ConfigService
     // Service-specific retrieval and storage functions. They are split to allow for each service to make requests to ConfigService without needing to know the implementation or storage details.
     public static Task<FilterConfig> RetrieveFilterConfig()
     {
-        return RetrieveConfigAsync<FilterConfig>(filterConfigFilename);
+        return RetrieveConfigAsync<FilterConfig>(_filterConfigFilename);
     }
 
     public static Task<CommandConfig> RetrieveCommandConfig()
     {
-        return RetrieveConfigAsync<CommandConfig>(commandConfigFilename);
+        return RetrieveConfigAsync<CommandConfig>(_commandConfigFilename);
     }
 
     public static Task<PermissionsConfig> RetrievePermissionsConfig()
     {
-        return RetrieveConfigAsync<PermissionsConfig>(permissionsConfigFilename);
+        return RetrieveConfigAsync<PermissionsConfig>(_permissionsConfigFilename);
     }
 
     public static Task StoreFilterConfig(FilterConfig filterConfig)
     {
-        return StoreConfigAsync<FilterConfig>(filterConfig, filterConfigFilename);
+        return StoreConfigAsync<FilterConfig>(filterConfig, _filterConfigFilename);
     }
 
     public static Task StoreCommandConfig(CommandConfig commandConfig)
     {
-        return StoreConfigAsync<CommandConfig>(commandConfig, commandConfigFilename);
+        return StoreConfigAsync<CommandConfig>(commandConfig, _commandConfigFilename);
     }
 
     public static Task StorePermissionsConfig(PermissionsConfig permissionConfig)
     {
-        return StoreConfigAsync<PermissionsConfig>(permissionConfig, permissionsConfigFilename);
+        return StoreConfigAsync<PermissionsConfig>(permissionConfig, _permissionsConfigFilename);
     }
 
     // Generalized retrieval/storage functions to centralize error-handling, mitigate serialization/deserialization reuse, and make future replacement straightforward.
@@ -134,7 +134,7 @@ internal class ConfigService
     // Smooth out the process of relative filepaths and avoid having to Path.Combine everywhere
     private static string GetFilePath(string filename)
     {
-        string configDir = Path.Combine(AppContext.BaseDirectory, configDirectoryName);
+        string configDir = Path.Combine(AppContext.BaseDirectory, _configDirectoryName);
         Directory.CreateDirectory(configDir);       // Safely create the directory referenced above if it does not exist.
 
         return Path.Combine(configDir, filename);
@@ -144,7 +144,7 @@ internal class ConfigService
     private static string BackupFile(string filepath)
     {
         // The backup directory should be a subdirectory of the config directory, so make it if it doesn't exist.
-        string backupDir = Path.Combine(AppContext.BaseDirectory, configDirectoryName, backupDirectoryName);
+        string backupDir = Path.Combine(AppContext.BaseDirectory, _configDirectoryName, _backupDirectoryName);
         Directory.CreateDirectory(backupDir);
 
         // Append the current datetime to the filename, add .bak, mark it for the backup directory

@@ -11,16 +11,16 @@ using System.Threading.Tasks;
 namespace BotCore.Commands.Implementations;
 internal class PermissionsAdminCommand : ICoreCommand
 {
-    public string commandString { get; init; } = "permissions";
-    public string[]? commandAliases { get; set; } = [];
-    public bool isMutable { get; init; } = false;
+    public string CommandString { get; init; } = "permissions";
+    public string[]? CommandAliases { get; set; } = [];
+    public bool IsMutable { get; init; } = false;
 
-    public CooldownType cooldownType { get; init; } = CooldownType.None;
-    public TimeSpan? cooldownOverride { get; } = null;
+    public CooldownType CooldownType { get; init; } = CooldownType.None;
+    public TimeSpan? CooldownOverride { get; } = null;
 
-    public PermissionsLevel requiredPermissions { get; set; } = PermissionsLevel.Moderator;
+    public PermissionsLevel RequiredPermissions { get; set; } = PermissionsLevel.Moderator;
 
-    PermissionsService permissionsService;
+    PermissionsService _permissionsService;
 
     enum PermissionsCommandAction
     {
@@ -37,7 +37,7 @@ internal class PermissionsAdminCommand : ICoreCommand
 
     public PermissionsAdminCommand(PermissionsService permissionsService)
     {
-        this.permissionsService = permissionsService;
+        _permissionsService = permissionsService;
     }
 
     public async Task<string> ExecuteAsync(MessageContext messageData, string[] tokens)
@@ -52,13 +52,13 @@ internal class PermissionsAdminCommand : ICoreCommand
         switch (args.permissionsAction)
         {
             case PermissionsCommandAction.Set:
-                permissionsService.SetPermissions(messageData, args.targetUser, args.targetLevel);
-                await permissionsService.StorePermissionsConfig();
+                _permissionsService.SetPermissions(messageData, args.targetUser, args.targetLevel);
+                await _permissionsService.StorePermissionsConfig();
                 break;
 
             case PermissionsCommandAction.Remove:
-                permissionsService.RemovePermissions(messageData, args.targetUser);
-                await permissionsService.StorePermissionsConfig();
+                _permissionsService.RemovePermissions(messageData, args.targetUser);
+                await _permissionsService.StorePermissionsConfig();
                 break;
 
             default:

@@ -12,14 +12,14 @@ using BotCore.Permissions;
 namespace BotCore.Commands.Implementations;
 internal class UptimeCommand : ICoreCommand
 {
-    public string commandString { get; init; } = "uptime";
-    public string[]? commandAliases { get; set; } = [];
-    public bool isMutable { get; init; } = false;
+    public string CommandString { get; init; } = "uptime";
+    public string[]? CommandAliases { get; set; } = [];
+    public bool IsMutable { get; init; } = false;
 
-    public CooldownType cooldownType { get; init; } = CooldownType.CoreCommand;
-    public TimeSpan? cooldownOverride { get; } = null;
+    public CooldownType CooldownType { get; init; } = CooldownType.CoreCommand;
+    public TimeSpan? CooldownOverride { get; } = null;
 
-    public PermissionsLevel requiredPermissions { get; set; } = PermissionsLevel.None;
+    public PermissionsLevel RequiredPermissions { get; set; } = PermissionsLevel.None;
 
     Func<QueryRequest, Task<QueryResult>> _providerQuery;
 
@@ -34,13 +34,13 @@ internal class UptimeCommand : ICoreCommand
         QueryResult result = await _providerQuery(new QueryRequest(messageData.Endpoint, QueryType.Uptime));
         
         // Confirm the API request was successful and the result is populated.
-        if (!result.isSuccessful)
+        if (!result.IsSuccessful)
         {
-            return $"Unable to acquire current uptime: {result.error}";
+            return $"Unable to acquire current uptime: {result.Error}";
         }
 
         // Convert the result to the format we want.
-        TimeSpan uptime = (TimeSpan)result.value!;
+        TimeSpan uptime = (TimeSpan)result.Value!;
 
         // Add hour display only if elapsedTime is over an hour (3600 seconds) to keep the first hour of timestamps a little cleaner.
         string uptimeString = uptime.TotalSeconds >= 3600 ? uptime.ToString(@"hh\:mm\:ss") : uptime.ToString(@"mm\:ss");

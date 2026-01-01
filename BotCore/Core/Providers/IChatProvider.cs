@@ -12,7 +12,7 @@ namespace BotCore.Core.Providers;
 // Additionally, they convert any outgoing communications to platform-specific commands.
 public interface IChatProvider
 {
-    ChatEndpoint channelIdentity { get; init; }         // Routing endpoint containing the platformID and channelID
+    ChatEndpoint ChannelIdentity { get; init; }         // Routing endpoint containing the platformID and channelID
 
     Task StartAsync();                                  // The asynchronous processing of incoming messages.
 

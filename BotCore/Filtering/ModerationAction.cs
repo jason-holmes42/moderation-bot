@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 namespace BotCore.Filtering;
 public class ModerationAction
 {
-    public string targetUser { get; set; }
-    public PunishmentType punishment {  get; set; }
-    public TimeSpan? duration { get; set; }            // For custom-length timeouts
-    public string reason { get; set; }
+    public string TargetUser { get; set; }
+    public PunishmentType Punishment {  get; set; }
+    public TimeSpan? Duration { get; set; }            // For custom-length timeouts
+    public string Reason { get; set; }
 }

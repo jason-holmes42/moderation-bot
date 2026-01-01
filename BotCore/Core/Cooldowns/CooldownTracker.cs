@@ -9,8 +9,8 @@ using BotCore.Core.Time;
 namespace BotCore.Core.Cooldowns;
 internal class CooldownTracker
 {
-    Dictionary<string, DateTime> cooldownRegistry = new Dictionary<string, DateTime>();
-    ITimeProvider timeProvider;
+    Dictionary<string, DateTime> _cooldownRegistry = new Dictionary<string, DateTime>();
+    ITimeProvider _timeProvider;
 
     // This dictionary dictates the cooldown of each command by the cooldown type defined in the command itself.
     static readonly Dictionary<CooldownType, TimeSpan> typeCooldowns = new Dictionary<CooldownType, TimeSpan>()
@@ -23,7 +23,7 @@ internal class CooldownTracker
 
     public CooldownTracker(ITimeProvider timeProvider)
     {
-        this.timeProvider = timeProvider;
+        _timeProvider = timeProvider;
     }
 
     // Function that only answers the question "Is this item on cooldown?"
@@ -33,17 +33,17 @@ internal class CooldownTracker
         DateTime lastUsedTimestamp;
 
         // If the entry is registered, check when it was last used.
-        if (cooldownRegistry.TryGetValue(command.commandString, out lastUsedTimestamp))
+        if (_cooldownRegistry.TryGetValue(command.CommandString, out lastUsedTimestamp))
         {
-            DateTime currentTime = timeProvider.Now;
+            DateTime currentTime = _timeProvider.Now;
 
             // If the command has defined a custom cooldown override, use that as the cooldown. Otherwise, base the cooldown on the registered cooldown type.
-            TimeSpan cooldown = command.cooldownOverride ?? typeCooldowns[command.cooldownType];
+            TimeSpan cooldown = command.CooldownOverride ?? typeCooldowns[command.CooldownType];
 
             // If it has been beyond the cooldown time, it's ready for use and should be removed from the registry.   
             if (currentTime - lastUsedTimestamp >= cooldown)
             {
-                cooldownRegistry.Remove(command.commandString);
+                _cooldownRegistry.Remove(command.CommandString);
                 return true;
             }
             // Otherwise it isn't off cooldown yet.
@@ -58,6 +58,6 @@ internal class CooldownTracker
     {
         // Certain users may be immune to cooldown restrictions but their command uses should still trigger that cooldown for others, so it is possible that an entry may already exist.
         // By assigning the entry's timestamp in this manner, it will automatically add a new entry or update an existing entry without issue.
-        cooldownRegistry[entry] = timeProvider.Now;
+        _cooldownRegistry[entry] = _timeProvider.Now;
     }
 }

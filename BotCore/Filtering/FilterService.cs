@@ -15,20 +15,12 @@ namespace BotCore.Filtering;
 
 internal class FilterService
 {
-    PermissionsService permissionsService;
+    PermissionsService _permissionsService;
 
-    Dictionary<string, FilterRule> phraseDictionary;
-    FilterSettings settings;
+    Dictionary<string, FilterRule> _phraseDictionary;
+    FilterSettings _settings;
 
     // readonly Func<query, response> _providerQuery;
-
-    // Explicit conversion dictionary to avoid messy, unsafe enum casts or Enum.Parse usages
-    static readonly Dictionary<PunishmentType, ReactionType> PunishmentToReaction = new Dictionary<PunishmentType, ReactionType>()
-    {
-        { PunishmentType.Warning, ReactionType.Warning },
-        { PunishmentType.Timeout, ReactionType.Timeout },
-        { PunishmentType.Ban, ReactionType.Ban },
-    };
 
     private FilterService(
         FilterConfig config,
@@ -37,11 +29,11 @@ internal class FilterService
         // Create an easily-matchable dictionary out of the filter rules
         Dictionary<string, FilterRule> filteredPhrases = new Dictionary<string, FilterRule>();
 
-        foreach (FilterRule rule in config.filterRules) filteredPhrases.Add(rule.filterPhrase, rule);
+        foreach (FilterRule rule in config.FilterRules) filteredPhrases.Add(rule.FilterPhrase, rule);
 
-        this.settings = config.filterSettings;
-        this.phraseDictionary = filteredPhrases;
-        this.permissionsService = permissionsService;
+        _settings = config.FilterSettings;
+        _phraseDictionary = filteredPhrases;
+        _permissionsService = permissionsService;
     }
 
     public static async Task<FilterService> CreateAsync(PermissionsService permissionsService)
@@ -58,29 +50,29 @@ internal class FilterService
     public void Evaluate(MessageContext messageData)
     {
         // If the filter has been disabled, do not evaluate a message.
-        if (!settings.filterEnabled) return;
+        if (!_settings.FilterEnabled) return;
 
         // In the case of multiple matches in a single message, the strongest punishment should be prioritized.
         PunishmentType? strongestPunishment = null;
 
         // Assess message body for filtered phrases
-        foreach (var rule in phraseDictionary.Values)
+        foreach (var rule in _phraseDictionary.Values)
         {
-            if (rule.regexPattern.IsMatch(messageData.message))
+            if (rule.RegexPattern.IsMatch(messageData.Message))
             {
                 // If message contains a filtered phrase, first check to see whether the user's permissions exempt them from the filter.
-                if (permissionsService.HasPermission(messageData.username, settings.filterExemptionLevel)) return;
+                if (_permissionsService.HasPermission(messageData.Username, _settings.FilterExemptionLevel)) return;
 
                 // If not exempt, mark the message's reaction type and reaction string. Based on this, the punishment will be triggered elsewhere.
-                if (strongestPunishment == null || rule.punishType > strongestPunishment)
+                if (strongestPunishment == null || rule.PunishType > strongestPunishment)
                 {
-                    strongestPunishment = rule.punishType;
+                    strongestPunishment = rule.PunishType;
 
-                    if (messageData.modAction == null) messageData.modAction = new ModerationAction();
+                    if (messageData.ModAction == null) messageData.ModAction = new ModerationAction();
 
-                    messageData.modAction.targetUser = messageData.username;
-                    messageData.modAction.punishment = rule.punishType;
-                    messageData.modAction.reason = $"Matched '{rule.filterPhrase}' filter.";
+                    messageData.ModAction.TargetUser = messageData.Username;
+                    messageData.ModAction.Punishment = rule.PunishType;
+                    messageData.ModAction.Reason = $"Matched '{rule.FilterPhrase}' filter.";
                 }
 
                 // An expansion of the Punishment functionality would want to be called directly here.
@@ -91,7 +83,7 @@ internal class FilterService
     // Switch the filter from on to off or vice versa.
     public void ToggleFilter(bool newState)
     {
-        settings.filterEnabled = newState;    // Default state of the filter
+        _settings.FilterEnabled = newState;    // Default state of the filter
     }
 
     // Rule management functions. Add and Update could be safely combined, but keeping them distinct will help users keep the impact of accidental commands minimal.
@@ -100,14 +92,14 @@ internal class FilterService
         // The command string's tokens will be parsed by FilterCommand, so there is no need to parse them here.
 
         // Add the new FilterRule to the phrase dictionary
-        if (phraseDictionary.TryGetValue(filteredPhrase, out FilterRule filterRule))
+        if (_phraseDictionary.TryGetValue(filteredPhrase, out FilterRule filterRule))
         {
-            messageData.reactionString = $"{filteredPhrase} is already marked for {filterRule.punishType.ToString().ToUpper()}.";
+            messageData.ReactionString = $"{filteredPhrase} is already marked for {filterRule.PunishType.ToString().ToUpper()}.";
         }
         else
         {
-            phraseDictionary.Add(filteredPhrase, new FilterRule(filteredPhrase, reaction));
-            messageData.reactionString = $"Filter added for {filteredPhrase} with punishment of {phraseDictionary[filteredPhrase].punishType.ToString().ToUpper()}.";
+            _phraseDictionary.Add(filteredPhrase, new FilterRule(filteredPhrase, reaction));
+            messageData.ReactionString = $"Filter added for {filteredPhrase} with punishment of {_phraseDictionary[filteredPhrase].PunishType.ToString().ToUpper()}.";
         }
     }
 
@@ -116,14 +108,14 @@ internal class FilterService
         // The command string's tokens will be parsed by FilterCommand, so there is no need to parse them here.
 
         // Locate the filteredPhrase from the phrase dictionary and remove it.
-        if (phraseDictionary.ContainsKey(filteredPhrase))
+        if (_phraseDictionary.ContainsKey(filteredPhrase))
         {
-            phraseDictionary.Remove(filteredPhrase);
-            messageData.reactionString = $"{filteredPhrase} filter removed.";
+            _phraseDictionary.Remove(filteredPhrase);
+            messageData.ReactionString = $"{filteredPhrase} filter removed.";
         }
         else
         {
-            messageData.reactionString = $"No filter for {filteredPhrase} found.";
+            messageData.ReactionString = $"No filter for {filteredPhrase} found.";
         }
     }
 
@@ -132,25 +124,25 @@ internal class FilterService
         // The command string's tokens will be parsed and verified by FilterCommand, so there is no need to parse them here.
 
         // Locate the filteredPhrase from the phrase dictionary and, if it exists, update it.
-        if (phraseDictionary.TryGetValue(filteredPhrase, out FilterRule filterRule))
+        if (_phraseDictionary.TryGetValue(filteredPhrase, out FilterRule filterRule))
         {
-            if (filterRule.punishType == updatedReaction)
+            if (filterRule.PunishType == updatedReaction)
             {
-                messageData.reactionString = $"{filteredPhrase} is already marked for {filterRule.punishType.ToString().ToUpper()}!";
+                messageData.ReactionString = $"{filteredPhrase} is already marked for {filterRule.PunishType.ToString().ToUpper()}!";
             }
             else
             {
-                filterRule.punishType = updatedReaction;
-                messageData.reactionString = $"{filteredPhrase} filter updated to apply {filterRule.punishType.ToString().ToUpper()}.";
+                filterRule.PunishType = updatedReaction;
+                messageData.ReactionString = $"{filteredPhrase} filter updated to apply {filterRule.PunishType.ToString().ToUpper()}.";
             }
         }
-        else messageData.reactionString = $"{filteredPhrase} filter not found.";
+        else messageData.ReactionString = $"{filteredPhrase} filter not found.";
     }
 
     // Handle converting the phrase dictionary to a List of FilterRules and sending it off for storage.
     public async Task StoreFilterConfig()
     {
-        await ConfigService.StoreFilterConfig(new FilterConfig(settings, phraseDictionary.Values.ToList()));
+        await ConfigService.StoreFilterConfig(new FilterConfig(_settings, _phraseDictionary.Values.ToList()));
     }
 
     static async Task<FilterConfig> GenerateDefaultConfig()
@@ -158,7 +150,7 @@ internal class FilterService
         // Construct the default config
         FilterSettings filterSettings = new FilterSettings()
         {
-            filterEnabled = true
+            FilterEnabled = true
         };
 
         List<FilterRule> filterRules = new List<FilterRule>();

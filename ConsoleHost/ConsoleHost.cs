@@ -8,10 +8,10 @@ using System.Linq.Expressions;
 // The console host and driver for the bot. Used to display incoming data once it has been converted. Primarily for early testing and designed to be supplanted by a more feature-rich WPF console display.
 internal class ConsoleHost
 {
-    IChatProvider chatProvider;
-    BotCore botCore;
+    IChatProvider _chatProvider;
+    BotCore _botCore;
 
-    string fullLogFilepath = "replayLogs/Full Log.json";
+    string _fullLogFilepath = "replayLogs/Full Log.json";
 
     static async Task Main(string[] args)
     {
@@ -23,12 +23,12 @@ internal class ConsoleHost
     async Task Run()
     {
         // Initialize chat provider. This is where you'd insert both Chat Provider and Broadcaster selection logic, but for now we're only using ChatReplayProvider.
-        ChatReplayProvider chatReplay = await ChatReplayProvider.CreateAsync(fullLogFilepath);
-        chatProvider = chatReplay;
+        ChatReplayProvider chatReplay = await ChatReplayProvider.CreateAsync(_fullLogFilepath);
+        _chatProvider = chatReplay;
 
         // Initialize bot. Each user gets an individual bot instance that centralizes and handles their processing across whatever platforms they're using.
-        botCore = await BotCore.CreateAsync(chatProvider.channelIdentity);
-        botCore.RegisterProvider(chatProvider);
+        _botCore = await BotCore.CreateAsync(_chatProvider.ChannelIdentity);
+        _botCore.RegisterProvider(_chatProvider);
 
         // Register cross-communication events
         chatReplay.OnMessageReceived += OnMessageReceived;
@@ -46,7 +46,7 @@ internal class ConsoleHost
         // send to bot for processing (filtering, command reactions, etc.). Error handling since async void can be a little risky.
         try
         {
-            await botCore.ProcessMessage(data);
+            await _botCore.ProcessMessage(data);
         }
         catch (Exception ex)
         {
@@ -58,6 +58,6 @@ internal class ConsoleHost
     // Take a ChatMessage and display it in the console.
     void ShowMessage(MessageContext data)
     {
-        Console.WriteLine($"[{data.timestamp}] {data.username}: {data.message}");
+        Console.WriteLine($"[{data.Timestamp}] {data.Username}: {data.Message}");
     }
 }

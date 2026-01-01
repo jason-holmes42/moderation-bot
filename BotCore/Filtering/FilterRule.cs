@@ -9,16 +9,16 @@ using System.Threading.Tasks;
 namespace BotCore.Filtering;
 public class FilterRule
 {
-    public string filterPhrase { get; init; }
-    public PunishmentType punishType { get; set; }
+    public string FilterPhrase { get; init; }
+    public PunishmentType PunishType { get; set; }
 
     [JsonIgnore]
-    public Regex regexPattern { get; init; }
+    public Regex RegexPattern { get; init; }
 
     public FilterRule(string filterPhrase, PunishmentType punishType)
     {
-        this.filterPhrase = filterPhrase;
-        this.punishType = punishType;
-        this.regexPattern = new Regex(filterPhrase, RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        FilterPhrase = filterPhrase;
+        PunishType = punishType;
+        RegexPattern = new Regex(filterPhrase, RegexOptions.IgnoreCase | RegexOptions.Compiled);
     }
 }
