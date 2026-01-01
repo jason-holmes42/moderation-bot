@@ -32,7 +32,6 @@ internal class ConsoleHost
 
         // Register cross-communication events
         chatReplay.OnMessageReceived += OnMessageReceived;
-        botCore.OnMessageSent += chatReplay.PostMessage;
 
         // Enter processing loop
         await chatReplay.StartAsync();

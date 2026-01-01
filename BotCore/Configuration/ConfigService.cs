@@ -15,8 +15,6 @@ namespace BotCore.Configuration;
 // Responsible for loading bot-specific information from storage and saving to storage. Currently designed for simple JSON storage, but can be converted for database storage without affecting other modules.
 internal class ConfigService
 {
-    Dictionary<string, int> defaultSettings;
-
     static readonly string filterConfigFilename = "filterConfig.json";
     static readonly string commandConfigFilename = "commandConfig.json";
     static readonly string permissionsConfigFilename = "permissionsConfig.json";

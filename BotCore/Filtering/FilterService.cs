@@ -89,7 +89,7 @@ internal class FilterService
     }
 
     // Switch the filter from on to off or vice versa.
-    public async Task ToggleFilter(bool newState)
+    public void ToggleFilter(bool newState)
     {
         settings.filterEnabled = newState;    // Default state of the filter
     }

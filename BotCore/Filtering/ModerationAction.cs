@@ -9,6 +9,6 @@ public class ModerationAction
 {
     public string targetUser { get; set; }
     public PunishmentType punishment {  get; set; }
-    public TimeSpan? duration { get; set; }            // For timeouts
+    public TimeSpan? duration { get; set; }            // For custom-length timeouts
     public string reason { get; set; }
 }

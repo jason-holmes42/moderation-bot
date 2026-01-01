@@ -57,11 +57,11 @@ internal class FilterAdminCommand : ICoreCommand
         switch (args.filterAction)
         {
             case FilterCommandAction.On:
-                await filterService.ToggleFilter(true);
+                filterService.ToggleFilter(true);
                 return $"Filter activated.";
 
             case FilterCommandAction.Off:
-                await filterService.ToggleFilter(false);
+                filterService.ToggleFilter(false);
                 return $"Filter deactivated.";
 
             case FilterCommandAction.Add:
@@ -82,7 +82,6 @@ internal class FilterAdminCommand : ICoreCommand
             default:
                 // Should never get here because TryParseFilterArgs should fail and return if there's any issue.
                 return "Error: Filter command parsing unsuccessful.";
-                break;
         }
 
         return null;

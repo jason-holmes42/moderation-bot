@@ -50,9 +50,6 @@ public class BotCore
         return new BotCore(timeProvider, cooldownTracker, permissionsService, filterService, commandService);
     }
 
-    public event Action<string>? OnMessageSent;
-    Action<string>? onMessageSentHandler;
-
     // public event Func<string>? OnQuery;
     // Action<string>? onQueryHandler;
 
@@ -77,7 +74,7 @@ public class BotCore
         // Send MessageContext to UI for display
     }
 
-    // Simple registry functions; to be enhanced with collision checks.
+    // Simple chat provider registry functions; to be enhanced with collision checks.
     public void RegisterProvider(IChatProvider provider)
     {
         _chatProviders[provider.channelIdentity] = provider;
@@ -86,12 +83,5 @@ public class BotCore
     public void UnregisterProvider(IChatProvider provider)
     {
         _chatProviders.Remove(provider.channelIdentity);
-    }
-
-    // When a message needs to be issued to a chat provider--like a ban message or a command reaction message--this is what to send. For now, it will just send a string to be displayed, but later it will send commands.
-    public void SendMessage(string message)
-    {
-        Console.WriteLine($"SENDING: {message}");
-        //OnMessageSent?.Invoke(message);
     }
 }
