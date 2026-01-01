@@ -149,6 +149,8 @@ public class ChatReplayProvider : IChatProvider
     // Issue a punishment according to provided ModerationAction information using provider-specific functions.
     public void IssuePunishment(ModerationAction modAction)
     {
+        // Issue punishment
+        // Log reason
         Console.WriteLine($"Punishing {modAction.targetUser} with {modAction.punishment.ToString().ToUpper()}. REASON: {modAction.reason}");
     }
 
