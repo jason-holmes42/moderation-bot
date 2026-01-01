@@ -40,13 +40,12 @@ internal class PermissionsAdminCommand : ICoreCommand
         this.permissionsService = permissionsService;
     }
 
-    public async Task ExecuteAsync(MessageContext messageData, string[] tokens)
+    public async Task<string> ExecuteAsync(MessageContext messageData, string[] tokens)
     {
         // Parse the tokens into usable details
         if (!TryParseCommandArgs(tokens, out PermissionsCommandArgs args, out string error))
         {
-            Console.WriteLine($"Error: {error}");
-            return;
+            return $"Error: {error}";
         }
 
         // Switch on the action enum to issue requests to the PermissionsService.
@@ -67,6 +66,8 @@ internal class PermissionsAdminCommand : ICoreCommand
                 Console.WriteLine("Error: Permissions command parsing unsuccessful.");
                 break;
         }
+
+        return null;
     }
 
     static bool TryParseCommandArgs(string[] tokens, out PermissionsCommandArgs args, out string error)

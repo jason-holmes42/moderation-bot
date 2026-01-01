@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using BotCore.Core.Cooldowns;
@@ -44,13 +45,12 @@ internal class FilterAdminCommand : ICoreCommand
         this.filterService = filterService;
     }
 
-    public async Task ExecuteAsync(MessageContext messageData, string[] tokens)
+    public async Task<string> ExecuteAsync(MessageContext messageData, string[] tokens)
     {
         // Parse the tokens into usable details
         if (!TryParseFilterArgs(tokens, out FilterCommandArgs args, out string error))
         {
-            Console.WriteLine($"Error: {error}");
-            return;
+            return $"Error: {error}";
         }
 
         // Switch on the action enum to issue requests to the FilterService.
@@ -58,25 +58,25 @@ internal class FilterAdminCommand : ICoreCommand
         {
             case FilterCommandAction.On:
                 await filterService.ToggleFilter(true);
-                break;
+                return $"Filter activated.";
 
             case FilterCommandAction.Off:
                 await filterService.ToggleFilter(false);
-                break;
+                return $"Filter deactivated.";
 
             case FilterCommandAction.Add:
-                filterService.AddFilterRule(args.filterPhrase, args.filterPunishment);
+                filterService.AddFilterRule(messageData, args.filterPhrase, args.filterPunishment);
                 await filterService.StoreFilterConfig();
                 break;
 
             case FilterCommandAction.Remove:
-                filterService.RemoveFilterRule(args.filterPhrase);
+                filterService.RemoveFilterRule(messageData, args.filterPhrase);
                 await filterService.StoreFilterConfig();
                 break;
 
             case FilterCommandAction.Update:
-                filterService.UpdateFilterRule(args.filterPhrase, args.filterPunishment);
-                await filterService.StoreFilterConfig();
+                filterService.UpdateFilterRule(messageData, args.filterPhrase, args.filterPunishment);
+                await filterService.StoreFilterConfig(); 
                 break;
 
             default:
@@ -84,6 +84,8 @@ internal class FilterAdminCommand : ICoreCommand
                 Console.WriteLine("Error: Filter command parsing unsuccessful.");
                 break;
         }
+
+        return null;
     }
 
     // TryParse functions to keep core processing clean.

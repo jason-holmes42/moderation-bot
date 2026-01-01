@@ -20,15 +20,13 @@ internal class UptimeCommand : ICoreCommand
 
     public PermissionsLevel requiredPermissions { get; set; } = PermissionsLevel.None;
 
-    public async Task ExecuteAsync(MessageContext messageData, string[] tokens)
+    public async Task<string> ExecuteAsync(MessageContext messageData, string[] tokens)
     {
         TimeSpan uptime = await messageData.Provider.QueryUptimeAsync();
-
-        messageData.reactionType = ReactionType.Command;
 
         // Add hour display only if elapsedTime is over an hour (3600 seconds) to keep the first hour of timestamps a little cleaner.
         string uptimeString = uptime.TotalSeconds >= 3600 ? uptime.ToString(@"hh\:mm\:ss") : uptime.ToString(@"mm\:ss");
 
-        messageData.reactionString = $"Replay has been live for {uptimeString}.";
+        return $"Replay has been live for {uptimeString}.";
     }
 }

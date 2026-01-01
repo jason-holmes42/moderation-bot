@@ -1,5 +1,6 @@
 ﻿using BotCore.Core.Cooldowns;
 using BotCore.Core.Messaging;
+using BotCore.Core.Providers;
 using BotCore.Filtering;
 using BotCore.Permissions;
 using System;
@@ -42,30 +43,29 @@ internal class CommandsAdminCommand : ICoreCommand
         this.commandService = commandService;
     }
 
-    public async Task ExecuteAsync(MessageContext messageData, string[] tokens)
+    public async Task<string> ExecuteAsync(MessageContext messageData, string[] tokens)
     {
         // Parse the tokens into usable details
         if (!TryParseCommandArgs(messageData.message, out CommandsAdminArgs args, out string error))
         {
-            Console.WriteLine($"Error: {error}");
-            return;
+            return $"Error: {error}";
         }
 
         // Switch on the action enum to issue requests to the commandService.
         switch (args.commandAction)
         {
             case CommandsAdminAction.Add:
-                commandService.RegisterCommand(new CustomCommandDefinition(args.commandPhrase, args.commandResponse));
+                commandService.RegisterCommand(messageData, new CustomCommandDefinition(args.commandPhrase, args.commandResponse));
                 await commandService.StoreCommandConfig();
                 break;
 
             case CommandsAdminAction.Remove:
-                commandService.UnregisterCommand(args.commandPhrase);
+                commandService.UnregisterCommand(messageData, args.commandPhrase);
                 await commandService.StoreCommandConfig();
                 break;
 
             case CommandsAdminAction.Update:
-                commandService.UpdateCommand(new CustomCommandDefinition(args.commandPhrase, args.commandResponse));
+                commandService.UpdateCommand(messageData, new CustomCommandDefinition(args.commandPhrase, args.commandResponse));
                 await commandService.StoreCommandConfig();
                 break;
 
@@ -74,6 +74,8 @@ internal class CommandsAdminCommand : ICoreCommand
                 Console.WriteLine("Error: Custom command parsing unsuccessful.");
                 break;
         }
+
+        return null;
     }
 
     // TryParse functions to keep core processing clean.
