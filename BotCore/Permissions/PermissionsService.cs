@@ -1,6 +1,7 @@
 ﻿using BotCore.Configuration;
 using BotCore.Core;
 using BotCore.Core.Messaging;
+using BotCore.Core.Providers;
 using BotCore.Filtering;
 using System;
 using System.Collections.Generic;
@@ -14,23 +15,18 @@ internal class PermissionsService
     UserContext _userContext;
 
     PermissionsSettings _permissionsSettings;
-    Dictionary<string, PermissionsLevel> _permissionsList;
+    Dictionary<ProviderID, Dictionary<string, PermissionsLevel>> _permissionsList;
 
     PermissionsService(UserContext userContext, PermissionsConfig permissionsConfig)
     {
         _userContext = userContext;
 
         _permissionsSettings = permissionsConfig.PermissionsSettings;
-        _permissionsList = new Dictionary<string, PermissionsLevel>(permissionsConfig.PermissionsList, StringComparer.OrdinalIgnoreCase);   // Necessary for case-insensitive username lookups
-
-        string broadcaster = userContext.GetIdentity(Core.Providers.ProviderID.ChatReplay)!;
-
-        // The broadcaster should always have Broadcaster-level permissions, so confirm their presence in the permissions list.
-        if (!_permissionsList.TryGetValue(broadcaster, out PermissionsLevel broadcasterPerms) || broadcasterPerms < PermissionsLevel.Broadcaster)
-        {
-            // If they are not present or their permissions are not Broadcaster, correct them.
-            _permissionsList[broadcaster] = PermissionsLevel.Broadcaster;
-        }
+        _permissionsList = permissionsConfig.PermissionsList
+            .ToDictionary(
+                KeyValuePair => KeyValuePair.Key,
+                KeyValuePair => new Dictionary<string, PermissionsLevel>(KeyValuePair.Value, StringComparer.OrdinalIgnoreCase)  // Necessary for case-insensitive username lookups
+            );
     }
 
     public static async Task<PermissionsService> CreateAsync(UserContext userContext)
@@ -44,10 +40,13 @@ internal class PermissionsService
     }
 
     // Answer what a given user's registered permissions level is.
-    public PermissionsLevel GetPermissionsLevel(string user)
+    public PermissionsLevel GetPermissionsLevel(ProviderID platform, string user)
     {
+        // To ensure the broadcaster has Broadcaster level permissions across all platforms, compare the user against the broadcaster's registered platform identity.
+        if (IsBroadcaster(platform, user)) return PermissionsLevel.Broadcaster;
+
         // If the user has a registered permissions level, return it. Otherwise, indicate none. A ternary conditional could be used here, but this is more legible.
-        if (_permissionsList.TryGetValue(user, out PermissionsLevel registeredLevel))
+        if (_permissionsList[platform].TryGetValue(user, out PermissionsLevel registeredLevel))
         {
             return registeredLevel;
         }
@@ -55,9 +54,9 @@ internal class PermissionsService
     }
 
     // Answer whether a given user has registered permissions at or above the required level.
-    public bool HasPermission(string user, PermissionsLevel requiredLevel)
+    public bool HasPermission(ProviderID platform, string user, PermissionsLevel requiredLevel)
     {
-        return GetPermissionsLevel(user) >= requiredLevel;
+        return GetPermissionsLevel(platform, user) >= requiredLevel;
     }
 
     // Permissions management functions. Add/Update distinctions, while useful for commands and filters, are not relevant here.
@@ -67,8 +66,8 @@ internal class PermissionsService
         // e.g., Broadcasters can edit all permissions (except their own) and cannot elevate anyone to broadcaster, admins can edit moderator and regular permissions and cannot elevate anyone to admin, and so on.
         // Broadcasters are automatically given a permissions level higher than admins. This allows them to manage their registered administrators without special case logic, being able to demote themselves, add other broadcasters, etc.
 
-        PermissionsLevel userPermissions = GetPermissionsLevel(messageData.Username);
-        PermissionsLevel targetPermissions = GetPermissionsLevel(targetUser);
+        PermissionsLevel userPermissions = GetPermissionsLevel(messageData.Endpoint.Platform, messageData.Username);
+        PermissionsLevel targetPermissions = GetPermissionsLevel(messageData.Endpoint.Platform, targetUser);
 
         if (userPermissions > targetPermissions && userPermissions > targetLevel)
         {
@@ -79,7 +78,7 @@ internal class PermissionsService
                 return;
             }
 
-            _permissionsList[targetUser] = targetLevel;    // This will safely add new entries or update existing entries.
+            _permissionsList[messageData.Endpoint.Platform][targetUser] = targetLevel;    // This will safely add new entries or update existing entries.
             messageData.ReactionString = $"{targetUser}'s permissions set to {targetLevel.ToString().ToUpper()}.";
             return;
         }
@@ -96,17 +95,17 @@ internal class PermissionsService
         // Confirm whether the targetUser has permissions registered.
         PermissionsLevel targetPermissions;
 
-        if (!_permissionsList.TryGetValue(targetUser, out targetPermissions))
+        if (!_permissionsList[messageData.Endpoint.Platform].TryGetValue(targetUser, out targetPermissions))
         {
             messageData.ReactionString = $"{targetUser} does not have any registered permissions.";
             return;
         }
 
         // The initiating user must have higher permissions than the target user to remove their permissions.
-        PermissionsLevel userPermissions = GetPermissionsLevel(messageData.Username);
+        PermissionsLevel userPermissions = GetPermissionsLevel(messageData.Endpoint.Platform, messageData.Username);
         if (userPermissions > targetPermissions)
         {
-            _permissionsList.Remove(targetUser);
+            _permissionsList[messageData.Endpoint.Platform].Remove(targetUser);
             messageData.ReactionString = $"{targetUser}'s permissions removed.";
             return;
         }
@@ -115,7 +114,17 @@ internal class PermissionsService
             messageData.ReactionString = $"{messageData.Username}'s permissions level not high enough to remove {targetUser}'s permissions.";
             return;
         }
+    }
 
+    // Compares the provided username against the bot's registered identity for the provided platform to determine whether the person in question is the broadcaster or not.
+    bool IsBroadcaster(ProviderID platform, string username)
+    {
+        // Retrieve the broadcaster's identity for the platform in question
+        string userPlatformIdentity = _userContext.GetIdentity(platform)!;
+        if (string.IsNullOrEmpty(userPlatformIdentity)) return false;   // If the platform somehow does not have a user identity registered, assume the answer is no.
+
+        // Compare the username in question against the derived broadcaster identity and return the result.
+        return userPlatformIdentity.Equals(username, StringComparison.OrdinalIgnoreCase);
     }
 
     // Handle converting current settings and permissions state into PermissionsConfig and sending off for storage.
@@ -129,7 +138,7 @@ internal class PermissionsService
     {
         // Construct the default config
         PermissionsSettings permissionsSettings = new PermissionsSettings();
-        Dictionary<string, PermissionsLevel> permissionsList = new Dictionary<string, PermissionsLevel>(StringComparer.OrdinalIgnoreCase); // Necessary for case-insensitive username lookups
+        Dictionary<ProviderID, Dictionary<string, PermissionsLevel>> permissionsList = new();
 
         PermissionsConfig permissionsConfig = new PermissionsConfig(permissionsSettings, permissionsList);
 

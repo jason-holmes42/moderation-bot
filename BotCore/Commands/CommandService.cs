@@ -90,16 +90,16 @@ internal class CommandService
         if (_commandRegistry.TryGetValue(tokens[0], out ICommand command))
         {
             // Check if the command is on cooldown and, if it is, skip processing. However, if the user has cooldown-exemption permissions, carry on as normal.
-            if (!_cooldownTracker.IsOffCooldown(command) && !_permissionsService.HasPermission(messageData.Username, _settings.CooldownExemptionLevel))
+            if (!_cooldownTracker.IsOffCooldown(command) && !_permissionsService.HasPermission(messageData.Endpoint.Platform, messageData.Username, _settings.CooldownExemptionLevel))
             {
                 Console.WriteLine($"DEBUG: {_settings.CommandChar}{command.CommandString} identified but skipped due to cooldown.");        // Debug-only message
                 return;
             }
 
             // Check if user has permission to use the command. If not, skip processing.
-            if (!_permissionsService.HasPermission(messageData.Username, command.RequiredPermissions))
+            if (!_permissionsService.HasPermission(messageData.Endpoint.Platform, messageData.Username, command.RequiredPermissions))
             {
-                Console.WriteLine($"DEBUG: {messageData.Username} lacks permission for {_settings.CommandChar}{command.CommandString}: {_permissionsService.GetPermissionsLevel(messageData.Username)} vs {command.RequiredPermissions}."); // Debug-only message
+                Console.WriteLine($"DEBUG: {messageData.Username} lacks permission for {_settings.CommandChar}{command.CommandString}: {_permissionsService.GetPermissionsLevel(messageData.Endpoint.Platform, messageData.Username)} vs {command.RequiredPermissions}."); // Debug-only message
                 return;
             }
 

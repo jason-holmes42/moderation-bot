@@ -66,7 +66,7 @@ internal class FilterService
             if (rule.RegexPattern.IsMatch(messageData.Message))
             {
                 // If message contains a filtered phrase, first check to see whether the user's permissions exempt them from the filter.
-                if (_permissionsService.HasPermission(messageData.Username, _settings.FilterExemptionLevel)) return;
+                if (_permissionsService.HasPermission(messageData.Endpoint.Platform, messageData.Username, _settings.FilterExemptionLevel)) return;
 
                 // If not exempt, mark the message's reaction type and reaction string. Based on this, the punishment will be triggered elsewhere.
                 if (strongestPunishment == null || rule.PunishType > strongestPunishment)
