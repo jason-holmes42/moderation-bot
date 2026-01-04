@@ -44,13 +44,15 @@ public class BotCore
         // Establish the UserContext to identify this bot's user.
         UserContext userContext = new UserContext(internalUser);
 
+        userContext.SetIdentity(new ChatEndpoint(ProviderID.ChatReplay, "PJDiCesare"));
+
         // Instantiate services.
         BotTimeProvider timeProvider = new BotTimeProvider();
         CooldownTracker cooldownTracker = new CooldownTracker(timeProvider);
 
-        PermissionsService permissionsService = await PermissionsService.CreateAsync(userContext.InternalUser);
-        FilterService filterService = await FilterService.CreateAsync(permissionsService);
-        CommandService commandService = await CommandService.CreateAsync(filterService, permissionsService, cooldownTracker);
+        PermissionsService permissionsService = await PermissionsService.CreateAsync(userContext);
+        FilterService filterService = await FilterService.CreateAsync(userContext, permissionsService);
+        CommandService commandService = await CommandService.CreateAsync(userContext, filterService, permissionsService, cooldownTracker);
 
         return new BotCore(userContext, timeProvider, cooldownTracker, permissionsService, filterService, commandService);
     }

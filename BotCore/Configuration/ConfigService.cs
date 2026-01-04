@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using BotCore.Core;
 using BotCore.Filtering;
 using BotCore.Commands;
 using BotCore.Permissions;
@@ -15,61 +16,27 @@ namespace BotCore.Configuration;
 // Responsible for loading bot-specific information from storage and saving to storage. Currently designed for simple JSON storage, but can be converted for database storage without affecting other modules.
 internal class ConfigService
 {
-    static readonly string _filterConfigFilename = "filterConfig.json";
-    static readonly string _commandConfigFilename = "commandConfig.json";
-    static readonly string _permissionsConfigFilename = "permissionsConfig.json";
     static readonly string _configDirectoryName = "config";
     static readonly string _backupDirectoryName = "backup";
 
     // Create and cache the Json Serializer Options object used for all serialization/deserialization needs.
-    private static readonly JsonSerializerOptions jsonOptions =
+    public static readonly JsonSerializerOptions jsonOptions =
         new JsonSerializerOptions
         {
             WriteIndented = true,
             Converters = { new JsonStringEnumConverter() }      // Converts enums from integers to strings and vice-versa.
         };
 
-    // Service-specific retrieval and storage functions. They are split to allow for each service to make requests to ConfigService without needing to know the implementation or storage details.
-    public static Task<FilterConfig> RetrieveFilterConfig()
-    {
-        return RetrieveConfigAsync<FilterConfig>(_filterConfigFilename);
-    }
-
-    public static Task<CommandConfig> RetrieveCommandConfig()
-    {
-        return RetrieveConfigAsync<CommandConfig>(_commandConfigFilename);
-    }
-
-    public static Task<PermissionsConfig> RetrievePermissionsConfig()
-    {
-        return RetrieveConfigAsync<PermissionsConfig>(_permissionsConfigFilename);
-    }
-
-    public static Task StoreFilterConfig(FilterConfig filterConfig)
-    {
-        return StoreConfigAsync<FilterConfig>(filterConfig, _filterConfigFilename);
-    }
-
-    public static Task StoreCommandConfig(CommandConfig commandConfig)
-    {
-        return StoreConfigAsync<CommandConfig>(commandConfig, _commandConfigFilename);
-    }
-
-    public static Task StorePermissionsConfig(PermissionsConfig permissionConfig)
-    {
-        return StoreConfigAsync<PermissionsConfig>(permissionConfig, _permissionsConfigFilename);
-    }
-
     // Generalized retrieval/storage functions to centralize error-handling, mitigate serialization/deserialization reuse, and make future replacement straightforward.
-    private static async Task<T> RetrieveConfigAsync<T>(string filename)
+    public static async Task<T> RetrieveConfigAsync<T>(UserContext internalUser) where T : ISettingsConfig
     {
-        string filepath = GetFilePath(filename);
+        string filepath = GetFilePath(internalUser, T.Filename);
 
         // Since the config files will not be especially large, we can skip StreamReader for this
         // Check if a config file exists. If not, return a value to the caller to indicate the service needs to generate one.
         if (!File.Exists(filepath))
         {
-            Console.WriteLine($"File at {filepath} does not exist. Generating default config for {filename}.");
+            Console.WriteLine($"File at {filepath} does not exist. Generating default config for {T.Filename}.");
             return default;
         }
 
@@ -80,7 +47,7 @@ internal class ConfigService
 
             if (string.IsNullOrWhiteSpace(jsonData))
             {
-                Console.WriteLine($"Error: JSON loading failed. Generating default config for {filename}.");
+                Console.WriteLine($"Error: JSON loading failed. Generating default config for {T.Filename}.");
                 return default;
             }
 
@@ -88,53 +55,53 @@ internal class ConfigService
         }
         catch (JsonException ex)
         {
-            Console.WriteLine($"Config file {filename} contains invalid JSON: {ex.Message}");
+            Console.WriteLine($"Config file {T.Filename} contains invalid JSON: {ex.Message}");
             string backupLoc = BackupFile(filepath);
-            Console.WriteLine($"Storing invalid file to {backupLoc}. Generating default config for {filename}.");
+            Console.WriteLine($"Storing invalid file to {backupLoc}. Generating default config for {T.Filename}.");
             return default;
         }
         catch (IOException ex)
         {
-            Console.WriteLine($"Could not read config file {filename}: {ex.Message}");
+            Console.WriteLine($"Could not read config file {T.Filename}: {ex.Message}");
             string backupLoc = BackupFile(filepath);
-            Console.WriteLine($"Storing invalid file to {backupLoc}. Generating default config for {filename}.");
+            Console.WriteLine($"Storing invalid file to {backupLoc}. Generating default config for {T.Filename}.");
             return default;
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Unexpected error loading {filename} config: {ex.Message}");
+            Console.WriteLine($"Unexpected error loading {T.Filename} config: {ex.Message}");
             string backupLoc = BackupFile(filepath);
-            Console.WriteLine($"Storing invalid file to {backupLoc}. Generating default config for {filename}.");
+            Console.WriteLine($"Storing invalid file to {backupLoc}. Generating default config for {T.Filename}.");
             return default;
         }
     }
 
-    private static async Task StoreConfigAsync<T>(T config, string filename)
+    public static async Task StoreConfigAsync<T>(UserContext internalUser, T config) where T : ISettingsConfig
     {
         try
         {
             // Serialize the config object to JSON. The options ensure that enums convert to legible strings and that the file includes indentation so it isn't just one long nightmare JSON string.
             string json = JsonSerializer.Serialize(config, jsonOptions);
-            await File.WriteAllTextAsync(GetFilePath(filename), json);
+            await File.WriteAllTextAsync(GetFilePath(internalUser, T.Filename), json);
         }
         catch (JsonException ex)
         {
-            Console.WriteLine($"Error while serializing {filename} to JSON: {ex.Message}");
+            Console.WriteLine($"Error while serializing {T.Filename} to JSON: {ex.Message}");
         }
         catch (IOException ex)
         {
-            Console.WriteLine($"Error while writing {filename} to file: {ex.Message}");
+            Console.WriteLine($"Error while writing {T.Filename} to file: {ex.Message}");
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Unexpected error encountered while storing {filename}: {ex.Message}");
+            Console.WriteLine($"Unexpected error encountered while storing {T.Filename}: {ex.Message}");
         }
     }
 
     // Smooth out the process of relative filepaths and avoid having to Path.Combine everywhere
-    private static string GetFilePath(string filename)
+    private static string GetFilePath(UserContext internalUser, string filename)
     {
-        string configDir = Path.Combine(AppContext.BaseDirectory, _configDirectoryName);
+        string configDir = Path.Combine(AppContext.BaseDirectory, _configDirectoryName, internalUser.InternalUser);
         Directory.CreateDirectory(configDir);       // Safely create the directory referenced above if it does not exist.
 
         return Path.Combine(configDir, filename);

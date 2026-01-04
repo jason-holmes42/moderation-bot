@@ -15,6 +15,8 @@ namespace BotCore.Filtering;
 
 internal class FilterService
 {
+    UserContext _userContext;
+
     PermissionsService _permissionsService;
 
     Dictionary<string, FilterRule> _phraseDictionary;
@@ -23,9 +25,12 @@ internal class FilterService
     // readonly Func<query, response> _providerQuery;
 
     private FilterService(
+        UserContext userContext,
         FilterConfig config,
         PermissionsService permissionsService)
     {
+        _userContext = userContext;
+
         // Create an easily-matchable dictionary out of the filter rules
         Dictionary<string, FilterRule> filteredPhrases = new Dictionary<string, FilterRule>();
 
@@ -36,15 +41,15 @@ internal class FilterService
         _permissionsService = permissionsService;
     }
 
-    public static async Task<FilterService> CreateAsync(PermissionsService permissionsService)
+    public static async Task<FilterService> CreateAsync(UserContext userContext, PermissionsService permissionsService)
     {
         // Retrieve filter config from storage. Failing that, generate a new one and save it to storage.
         FilterConfig config;
-        config = await ConfigService.RetrieveFilterConfig();
+        config = await ConfigService.RetrieveConfigAsync<FilterConfig>(userContext);
         if (config == null) config = await GenerateDefaultConfig();
         
         // Pass the new phrase dictionary to the constructor.
-        return new FilterService(config, permissionsService);
+        return new FilterService(userContext, config, permissionsService);
     }
 
     public void Evaluate(MessageContext messageData)
@@ -142,7 +147,7 @@ internal class FilterService
     // Handle converting the phrase dictionary to a List of FilterRules and sending it off for storage.
     public async Task StoreFilterConfig()
     {
-        await ConfigService.StoreFilterConfig(new FilterConfig(_settings, _phraseDictionary.Values.ToList()));
+        await ConfigService.StoreConfigAsync(_userContext, new FilterConfig(_settings, _phraseDictionary.Values.ToList()));
     }
 
     static async Task<FilterConfig> GenerateDefaultConfig()
@@ -155,9 +160,6 @@ internal class FilterService
 
         List<FilterRule> filterRules = new List<FilterRule>();
         FilterConfig config = new FilterConfig(filterSettings, filterRules);
-
-        // Store it for future retrieval
-        await ConfigService.StoreFilterConfig(config);
 
         // Send it back for use
         return config;

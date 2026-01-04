@@ -1,4 +1,5 @@
 ﻿using BotCore.Configuration;
+using BotCore.Core;
 using BotCore.Core.Messaging;
 using BotCore.Filtering;
 using System;
@@ -10,13 +11,19 @@ using System.Threading.Tasks;
 namespace BotCore.Permissions;
 internal class PermissionsService
 {
+    UserContext _userContext;
+
     PermissionsSettings _permissionsSettings;
     Dictionary<string, PermissionsLevel> _permissionsList;
 
-    PermissionsService(PermissionsConfig permissionsConfig, string broadcaster)
+    PermissionsService(UserContext userContext, PermissionsConfig permissionsConfig)
     {
+        _userContext = userContext;
+
         _permissionsSettings = permissionsConfig.PermissionsSettings;
         _permissionsList = new Dictionary<string, PermissionsLevel>(permissionsConfig.PermissionsList, StringComparer.OrdinalIgnoreCase);   // Necessary for case-insensitive username lookups
+
+        string broadcaster = userContext.GetIdentity(Core.Providers.ProviderID.ChatReplay)!;
 
         // The broadcaster should always have Broadcaster-level permissions, so confirm their presence in the permissions list.
         if (!_permissionsList.TryGetValue(broadcaster, out PermissionsLevel broadcasterPerms) || broadcasterPerms < PermissionsLevel.Broadcaster)
@@ -26,14 +33,14 @@ internal class PermissionsService
         }
     }
 
-    public static async Task<PermissionsService> CreateAsync(string broadcaster)
+    public static async Task<PermissionsService> CreateAsync(UserContext userContext)
     {
         // Retrieve config from storage and, failing that, generate a new one.
         PermissionsConfig permissionsConfig;
-        permissionsConfig = await ConfigService.RetrievePermissionsConfig();
+        permissionsConfig = await ConfigService.RetrieveConfigAsync<PermissionsConfig>(userContext);
         if (permissionsConfig == null) permissionsConfig = await GenerateDefaultConfig();
 
-        return new PermissionsService(permissionsConfig, broadcaster);
+        return new PermissionsService(userContext, permissionsConfig);
     }
 
     // Answer what a given user's registered permissions level is.
@@ -114,7 +121,7 @@ internal class PermissionsService
     // Handle converting current settings and permissions state into PermissionsConfig and sending off for storage.
     public async Task StorePermissionsConfig()
     {
-        await ConfigService.StorePermissionsConfig(new PermissionsConfig(_permissionsSettings, _permissionsList));
+        await ConfigService.StoreConfigAsync(_userContext, new PermissionsConfig(_permissionsSettings, _permissionsList));
     }
 
     // Generate a default config file if one does not exist.
@@ -125,9 +132,6 @@ internal class PermissionsService
         Dictionary<string, PermissionsLevel> permissionsList = new Dictionary<string, PermissionsLevel>(StringComparer.OrdinalIgnoreCase); // Necessary for case-insensitive username lookups
 
         PermissionsConfig permissionsConfig = new PermissionsConfig(permissionsSettings, permissionsList);
-
-        // Store it for future retrieval
-        await ConfigService.StorePermissionsConfig(permissionsConfig);
 
         // Send it back for use
         return permissionsConfig;

@@ -15,8 +15,10 @@ using BotCore.Core.Providers;
 namespace BotCore.Commands;
 internal class CommandService
 {
+    UserContext _userContext;
     CommandSettings _settings;
     List<CustomCommandDefinition> _customCommands;
+
     Dictionary<string, ICommand> _commandRegistry = new Dictionary<string, ICommand>(StringComparer.OrdinalIgnoreCase); // Necessary for case-insensitive command lookups
 
     FilterService _filterService;
@@ -25,12 +27,14 @@ internal class CommandService
 
 
     private CommandService(
+        UserContext userContext,
         CommandConfig config, 
         FilterService filterService, 
         PermissionsService permissionsService, 
         CooldownTracker cooldownTracker)
     {
         // Cache settings and service providers
+        _userContext = userContext;
         _settings = config.CommandSettings;
         _customCommands = config.CustomCommands;
 
@@ -40,17 +44,18 @@ internal class CommandService
     }
 
     public static async Task<CommandService> CreateAsync(
+        UserContext userContext,
         FilterService filterService, 
         PermissionsService permissionsService, 
         CooldownTracker cooldownTracker)
     {
         // Retrieve command config from storage. Failing that, generate a new one and save it to storage.
         CommandConfig config;
-        config = await ConfigService.RetrieveCommandConfig();
+        config = await ConfigService.RetrieveConfigAsync<CommandConfig>(userContext);
         if (config == null) config = await GenerateDefaultConfig();
 
         // Pass the config (which contains settings and custom commands) and filter service to the constructor
-        return new CommandService(config, filterService, permissionsService, cooldownTracker);
+        return new CommandService(userContext, config, filterService, permissionsService, cooldownTracker);
     }
 
     // InitializeCommands allows BotCore to pass stateful delegates directly to the commands by initializing the commands for the service after the service's configuration has been retrieved.
@@ -203,7 +208,7 @@ internal class CommandService
 
         // Future extensions of mutable command types will need to extract their commands separately, or adjust the above LINQ statement to handle it accordingly.
 
-        await ConfigService.StoreCommandConfig(new CommandConfig(_settings, customCommands));
+        await ConfigService.StoreConfigAsync(_userContext, new CommandConfig(_settings, customCommands));
     }
 
     static async Task<CommandConfig> GenerateDefaultConfig()
@@ -217,9 +222,6 @@ internal class CommandService
         List<CustomCommandDefinition> customCommands = new List<CustomCommandDefinition>();
 
         CommandConfig config = new CommandConfig(commandSettings, customCommands);
-
-        // Store it for future retrieval
-        await ConfigService.StoreCommandConfig(config);
 
         // Send it back for use
         return config;
