@@ -56,21 +56,21 @@ internal class ConfigService
         catch (JsonException ex)
         {
             Console.WriteLine($"Config file {T.Filename} contains invalid JSON: {ex.Message}");
-            string backupLoc = BackupFile(filepath);
+            string backupLoc = BackupFile(internalUser, filepath);
             Console.WriteLine($"Storing invalid file to {backupLoc}. Generating default config for {T.Filename}.");
             return default;
         }
         catch (IOException ex)
         {
             Console.WriteLine($"Could not read config file {T.Filename}: {ex.Message}");
-            string backupLoc = BackupFile(filepath);
+            string backupLoc = BackupFile(internalUser, filepath);
             Console.WriteLine($"Storing invalid file to {backupLoc}. Generating default config for {T.Filename}.");
             return default;
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Unexpected error loading {T.Filename} config: {ex.Message}");
-            string backupLoc = BackupFile(filepath);
+            string backupLoc = BackupFile(internalUser, filepath);
             Console.WriteLine($"Storing invalid file to {backupLoc}. Generating default config for {T.Filename}.");
             return default;
         }
@@ -108,10 +108,10 @@ internal class ConfigService
     }
 
     // Store invalid configuration files in a backup location for reference.
-    private static string BackupFile(string filepath)
+    private static string BackupFile(UserContext internalUser, string filepath)
     {
         // The backup directory should be a subdirectory of the config directory, so make it if it doesn't exist.
-        string backupDir = Path.Combine(AppContext.BaseDirectory, _configDirectoryName, _backupDirectoryName);
+        string backupDir = Path.Combine(AppContext.BaseDirectory, _configDirectoryName, internalUser.InternalUser, _backupDirectoryName);
         Directory.CreateDirectory(backupDir);
 
         // Append the current datetime to the filename, add .bak, mark it for the backup directory
