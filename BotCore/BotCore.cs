@@ -12,6 +12,8 @@ namespace BotCore;
 // Core functionality for the moderation bot.
 public class BotCore
 {
+    UserContext _userContext;
+
     BotTimeProvider _timeProvider;
     CooldownTracker _cooldownTracker;
 
@@ -19,15 +21,15 @@ public class BotCore
     FilterService _filterService;
     CommandService _commandService;
 
-    Dictionary<ChatEndpoint, IChatProvider> _chatProviders;
+    Dictionary<ChatEndpoint, IChatProvider> _chatProviders = new();
 
     BotCore(
-        BotTimeProvider timeProvider,
-        CooldownTracker cooldownTracker,
-        PermissionsService permissionsService,
-        FilterService filterService,
-        CommandService commandService)
+        UserContext userContext,
+        BotTimeProvider timeProvider, CooldownTracker cooldownTracker,
+        PermissionsService permissionsService, FilterService filterService, CommandService commandService)
     {
+        _userContext = userContext;
+
         _timeProvider = timeProvider;
         _cooldownTracker = cooldownTracker;
 
@@ -35,20 +37,22 @@ public class BotCore
         _filterService = filterService;
         _commandService = commandService;
         _commandService.InitializeCommands(ProviderQuery);
-
-        _chatProviders = new Dictionary<ChatEndpoint, IChatProvider>();
     }
 
-    public static async Task<BotCore> CreateAsync(ChatEndpoint channelIdentity)
+    public static async Task<BotCore> CreateAsync(string internalUser)
     {
+        // Establish the UserContext to identify this bot's user.
+        UserContext userContext = new UserContext(internalUser);
+
+        // Instantiate services.
         BotTimeProvider timeProvider = new BotTimeProvider();
         CooldownTracker cooldownTracker = new CooldownTracker(timeProvider);
 
-        PermissionsService permissionsService = await PermissionsService.CreateAsync(channelIdentity.ChannelID);
+        PermissionsService permissionsService = await PermissionsService.CreateAsync(userContext.InternalUser);
         FilterService filterService = await FilterService.CreateAsync(permissionsService);
         CommandService commandService = await CommandService.CreateAsync(filterService, permissionsService, cooldownTracker);
 
-        return new BotCore(timeProvider, cooldownTracker, permissionsService, filterService, commandService);
+        return new BotCore(userContext, timeProvider, cooldownTracker, permissionsService, filterService, commandService);
     }
 
     public async Task ProcessMessage(MessageContext message)
@@ -88,11 +92,13 @@ public class BotCore
     // Simple chat provider registry functions; to be enhanced with collision checks.
     public void RegisterProvider(IChatProvider provider)
     {
+        _userContext.SetIdentity(provider.ChannelIdentity);
         _chatProviders[provider.ChannelIdentity] = provider;
     }
 
     public void UnregisterProvider(IChatProvider provider)
     {
+        _userContext.RemoveIdentity(provider.ChannelIdentity);
         _chatProviders.Remove(provider.ChannelIdentity);
     }
 }

@@ -11,7 +11,9 @@ internal class ConsoleHost
     IChatProvider _chatProvider;
     BotCore _botCore;
 
+    // These are temporary variables to stand-in for selection systems to be implemented later.
     string _fullLogFilepath = "replayLogs/Full Log.json";
+    string _userIdentity = "testuser";
 
     static async Task Main(string[] args)
     {
@@ -27,7 +29,7 @@ internal class ConsoleHost
         _chatProvider = chatReplay;
 
         // Initialize bot. Each user gets an individual bot instance that centralizes and handles their processing across whatever platforms they're using.
-        _botCore = await BotCore.CreateAsync(_chatProvider.ChannelIdentity);
+        _botCore = await BotCore.CreateAsync(_userIdentity);
         _botCore.RegisterProvider(_chatProvider);
 
         // Register cross-communication events
