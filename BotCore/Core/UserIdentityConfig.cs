@@ -10,5 +10,10 @@ namespace BotCore.Core;
 internal class UserIdentityConfig : ISettingsConfig
 {
     public static string Filename { get; } = "user_identity.json";
-    public Dictionary<ProviderID, string> PlatformIdentity {  get; init; }
+    public Dictionary<ProviderID, string> PlatformIdentities {  get; init; }
+
+    public UserIdentityConfig(Dictionary<ProviderID, string> platformIdentities)
+    {
+        PlatformIdentities = platformIdentities;
+    }
 }

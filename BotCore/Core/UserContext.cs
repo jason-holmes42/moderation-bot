@@ -25,11 +25,27 @@ internal class UserContext
 
     public void SetIdentity(ChatEndpoint platformIdentity)
     {
-        _platformIdentities[platformIdentity.Platform] = platformIdentity.ChannelID;
+        SetIdentity(platformIdentity.Platform, platformIdentity.ChannelID);
+    }
+
+    public void SetIdentity(ProviderID platform, string identity)
+    {
+        _platformIdentities[platform] = identity;
     }
 
     public void RemoveIdentity(ChatEndpoint platformIdentity)
     {
         _platformIdentities.Remove(platformIdentity.Platform);
+    }
+
+    public void LoadIdentities(Dictionary<ProviderID, string> platformIdentities)
+    {
+        foreach (var entry in platformIdentities) SetIdentity(entry.Key, entry.Value);
+    }
+
+    public Dictionary<ProviderID, string> GetAllIdentities()
+    {
+        // Return a new copy of the internal dictionary to prevent external modification.
+        return new Dictionary<ProviderID, string>(_platformIdentities);
     }
 }

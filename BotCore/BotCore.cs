@@ -6,6 +6,7 @@ using BotCore.Core.Messaging;
 using BotCore.Core.Providers;
 using BotCore.Core.Cooldowns;
 using BotCore.Core.Time;
+using BotCore.Configuration;
 
 namespace BotCore;
 
@@ -43,6 +44,10 @@ public class BotCore
     {
         // Establish the UserContext to identify this bot's user.
         UserContext userContext = new UserContext(internalUser);
+
+        // Retrieve any previously-stored identities for the user from storage
+        UserIdentityConfig userIdentity = await ConfigService.RetrieveConfigAsync<UserIdentityConfig>(userContext);
+        if (userIdentity != null) userContext.LoadIdentities(userIdentity.PlatformIdentities);
 
         userContext.SetIdentity(new ChatEndpoint(ProviderID.ChatReplay, "PJDiCesare"));
 
@@ -92,15 +97,26 @@ public class BotCore
     }
 
     // Simple chat provider registry functions; to be enhanced with collision checks.
-    public void RegisterProvider(IChatProvider provider)
+    public async Task RegisterProvider(IChatProvider provider)
     {
+        // Registering a provider requires specifying an identity on that platform and, if you desire bot functionality, the appropriate authentication.
+        // This renders provider registration and platform identity registration distinct but inseparable.
+
+        // Register both the user's identity on the platform and the provider for that identity as an active provider
         _userContext.SetIdentity(provider.ChannelIdentity);
         _chatProviders[provider.ChannelIdentity] = provider;
+
+        // Save updates to the user's identity registry.
+        await ConfigService.StoreConfigAsync(_userContext, new UserIdentityConfig(_userContext.GetAllIdentities()));
     }
 
-    public void UnregisterProvider(IChatProvider provider)
+    public async Task UnregisterProvider(IChatProvider provider)
     {
+        // Unregister both the user's identity on the platform and the provider for that identity as an active provider
         _userContext.RemoveIdentity(provider.ChannelIdentity);
         _chatProviders.Remove(provider.ChannelIdentity);
+
+        // Save updates to the user's identity registry.
+        await ConfigService.StoreConfigAsync(_userContext, new UserIdentityConfig(_userContext.GetAllIdentities()));
     }
 }
