@@ -51,6 +51,19 @@ internal class FilterService
         // Pass the new phrase dictionary to the constructor.
         return new FilterService(userContext, config, permissionsService);
     }
+    
+    // Internal, test-only constructor. Accepts whatever the test provides it and generates defaults for everything else, then chains into the normal constructor to centralize initialization.
+    internal FilterService(
+        bool testOnly,
+        UserContext? userContext = null,
+        FilterConfig? filterConfig = null,
+        PermissionsService? permissionsService = null)
+        : this(
+            userContext ?? new UserContext("__TESTUSER__"),
+            filterConfig ?? GenerateDefaultConfig().GetAwaiter().GetResult(),
+            permissionsService ?? new PermissionsService(testOnly: true)
+        )
+    { }
 
     public void Evaluate(MessageContext messageData)
     {

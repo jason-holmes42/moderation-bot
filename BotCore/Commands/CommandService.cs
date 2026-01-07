@@ -11,6 +11,7 @@ using BotCore.Permissions;
 using BotCore.Core.Messaging;
 using BotCore.Core.Cooldowns;
 using BotCore.Core.Providers;
+using BotCore.Core.Time;
 
 namespace BotCore.Commands;
 internal class CommandService
@@ -57,6 +58,23 @@ internal class CommandService
         // Pass the config (which contains settings and custom commands) and filter service to the constructor
         return new CommandService(userContext, config, filterService, permissionsService, cooldownTracker);
     }
+
+    // Internal, test-only constructor. Accepts whatever the test provides it and generates defaults for everything else.
+    internal CommandService(
+        bool testOnly,
+        UserContext? userContext = null,
+        CommandConfig? config = null,
+        FilterService? filterService = null,
+        PermissionsService? permissionsService = null,
+        CooldownTracker? cooldownTracker = null)
+        : this(
+            userContext ?? new UserContext("__TESTUSER__"),
+            config ?? GenerateDefaultConfig().GetAwaiter().GetResult(),
+            filterService ?? new FilterService(testOnly: true),
+            permissionsService ?? new PermissionsService(testOnly: true),
+            cooldownTracker ?? new CooldownTracker(new BotTimeProvider())
+        )
+    { }
 
     // InitializeCommands allows BotCore to pass stateful delegates directly to the commands by initializing the commands for the service after the service's configuration has been retrieved.
     public void InitializeCommands(Func<QueryRequest, Task<QueryResult>> providerQuery)

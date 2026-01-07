@@ -39,6 +39,14 @@ internal class PermissionsService
         return new PermissionsService(userContext, permissionsConfig);
     }
 
+    // Internal, test-only constructor. Accepts whatever the test provides it and generates defaults for everything else, then chains into the normal constructor to centralize initialization.
+    internal PermissionsService(bool testOnly, UserContext? userContext = null, PermissionsConfig? permissionsConfig = null)
+        : this(
+            userContext ?? new UserContext("__TESTUSER__"),
+            permissionsConfig ?? GenerateDefaultConfig().GetAwaiter().GetResult()
+        )
+    { }
+
     // Answer what a given user's registered permissions level is.
     public PermissionsLevel GetPermissionsLevel(ProviderID platform, string user)
     {
@@ -54,7 +62,7 @@ internal class PermissionsService
     }
 
     // Answer whether a given user has registered permissions at or above the required level.
-    public bool HasPermission(ProviderID platform, string user, PermissionsLevel requiredLevel)
+    public virtual bool HasPermission(ProviderID platform, string user, PermissionsLevel requiredLevel)
     {
         return GetPermissionsLevel(platform, user) >= requiredLevel;
     }

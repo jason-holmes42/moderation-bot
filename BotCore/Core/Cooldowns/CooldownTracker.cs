@@ -27,7 +27,7 @@ internal class CooldownTracker
     }
 
     // Function that only answers the question "Is this item on cooldown?"
-    public bool IsOffCooldown(ICommand command)
+    public virtual bool IsOffCooldown(ICommand command)
     {
         // CooldownTracker uses lazy query tracking, meaning it only updates when asked.
         DateTime lastUsedTimestamp;
