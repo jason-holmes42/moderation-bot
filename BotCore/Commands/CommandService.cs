@@ -118,7 +118,7 @@ internal class CommandService
             // Check if user has permission to use the command. If not, skip processing.
             if (!_permissionsService.HasPermission(messageData.Endpoint.Platform, messageData.Username, command.RequiredPermissions))
             {
-                Console.WriteLine($"DEBUG: {messageData.Username} lacks permission for {_settings.CommandChar}{command.CommandString}: {_permissionsService.GetPermissionsLevel(messageData.Endpoint.Platform, messageData.Username)} vs {command.RequiredPermissions}."); // Debug-only message
+                Console.WriteLine($"DEBUG: {messageData.Username} lacks permission for {_settings.CommandChar}{command.CommandString}: User needs at least {command.RequiredPermissions} permissions."); // Debug-only message
                 return;
             }
 
@@ -152,7 +152,7 @@ internal class CommandService
     }
 
     // RegisterCommandInternal acts as the single authoritative path for command registration, verifying and registering incoming commands, with success or failure being reported to the caller. Validation is performed by the CommandAdminCommand prior to reaching this point.
-    bool RegisterCommandInternal(ICommand command)
+    internal bool RegisterCommandInternal(ICommand command)
     {
         // Identify whether a command exists or not. Since core commands are registered during setup, this prevents users from adding custom commands using the same strings.
 
