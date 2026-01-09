@@ -45,7 +45,7 @@ internal class FilterAdminCommand : ICoreCommand
         _filterService = filterService;
     }
 
-    public async Task<string> ExecuteAsync(MessageContext messageData, string[] tokens)
+    public async virtual Task<string> ExecuteAsync(MessageContext messageData, string[] tokens)
     {
         // Parse the tokens into usable details
         if (!TryParseFilterArgs(tokens, out FilterCommandArgs args, out string error))

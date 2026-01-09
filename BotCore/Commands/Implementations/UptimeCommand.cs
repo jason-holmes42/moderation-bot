@@ -28,7 +28,7 @@ internal class UptimeCommand : ICoreCommand
         _providerQuery = providerQuery;
     }
 
-    public async Task<string> ExecuteAsync(MessageContext messageData, string[] tokens)
+    public async virtual Task<string> ExecuteAsync(MessageContext messageData, string[] tokens)
     {
         // Use the providerQuery delegate to request uptime information from the provider.
         QueryResult result = await _providerQuery(new QueryRequest(messageData.Endpoint, QueryType.Uptime));

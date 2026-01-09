@@ -43,7 +43,7 @@ internal class CommandsAdminCommand : ICoreCommand
         _commandService = commandService;
     }
 
-    public async Task<string> ExecuteAsync(MessageContext messageData, string[] tokens)
+    public async virtual Task<string> ExecuteAsync(MessageContext messageData, string[] tokens)
     {
         // Parse the tokens into usable details
         if (!TryParseCommandArgs(messageData.Message, out CommandsAdminArgs args, out string error))

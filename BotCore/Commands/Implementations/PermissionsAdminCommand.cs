@@ -40,7 +40,7 @@ internal class PermissionsAdminCommand : ICoreCommand
         _permissionsService = permissionsService;
     }
 
-    public async Task<string> ExecuteAsync(MessageContext messageData, string[] tokens)
+    public async virtual Task<string> ExecuteAsync(MessageContext messageData, string[] tokens)
     {
         // Parse the tokens into usable details
         if (!TryParseCommandArgs(tokens, out PermissionsCommandArgs args, out string error))
