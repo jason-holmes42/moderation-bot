@@ -25,10 +25,9 @@ public class MessageContext
     public string Username => ChatMessage.Username;
     public string Timestamp => ChatMessage.Timestamp;
 
-    public MessageContext(ChatMessage messageData, IChatProvider chatProvider, ChatEndpoint endpoint)
+    public MessageContext(ChatMessage messageData, ChatEndpoint endpoint)
     {
         ChatMessage = messageData;
-        Provider = chatProvider;
         ReactionType = ReactionType.None;
         Endpoint = endpoint;
     }

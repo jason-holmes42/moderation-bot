@@ -134,7 +134,7 @@ public class ChatReplayProvider : IChatProvider
     // Invoke the OnMessageReceived event
     void MessageReceived(ChatMessage message)
     {
-        MessageContext messageData = new MessageContext(message, this, ChannelIdentity);
+        MessageContext messageData = new MessageContext(message, ChannelIdentity);
         OnMessageReceived?.Invoke(messageData);
     }
 
