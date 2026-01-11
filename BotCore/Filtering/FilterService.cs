@@ -168,7 +168,8 @@ internal class FilterService
         // Construct the default config
         FilterSettings filterSettings = new FilterSettings()
         {
-            FilterEnabled = true
+            FilterEnabled = true,
+            FilterExemptionLevel = PermissionsLevel.Moderator
         };
 
         List<FilterRule> filterRules = new List<FilterRule>();
