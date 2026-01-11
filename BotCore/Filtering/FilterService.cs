@@ -112,12 +112,12 @@ internal class FilterService
         // Add the new FilterRule to the phrase dictionary
         if (_phraseDictionary.TryGetValue(filteredPhrase, out FilterRule filterRule))
         {
-            messageData.ReactionString = $"{filteredPhrase} is already marked for {filterRule.PunishType.ToString().ToUpper()}.";
+            messageData.ReactionString = $"That phrase is already marked for {filterRule.PunishType.ToString().ToUpper()}.";
         }
         else
         {
             _phraseDictionary.Add(filteredPhrase, new FilterRule(filteredPhrase, reaction));
-            messageData.ReactionString = $"Filter added for {filteredPhrase} with punishment of {_phraseDictionary[filteredPhrase].PunishType.ToString().ToUpper()}.";
+            messageData.ReactionString = $"Filter added with punishment of {_phraseDictionary[filteredPhrase].PunishType.ToString().ToUpper()}.";
         }
     }
 
@@ -146,12 +146,12 @@ internal class FilterService
         {
             if (filterRule.PunishType == updatedReaction)
             {
-                messageData.ReactionString = $"{filteredPhrase} is already marked for {filterRule.PunishType.ToString().ToUpper()}!";
+                messageData.ReactionString = $"That phrase is already marked for {filterRule.PunishType.ToString().ToUpper()}!";
             }
             else
             {
                 filterRule.PunishType = updatedReaction;
-                messageData.ReactionString = $"{filteredPhrase} filter updated to apply {filterRule.PunishType.ToString().ToUpper()}.";
+                messageData.ReactionString = $"Filter updated to apply {filterRule.PunishType.ToString().ToUpper()}.";
             }
         }
         else messageData.ReactionString = $"{filteredPhrase} filter not found.";
