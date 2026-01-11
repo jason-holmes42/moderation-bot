@@ -17,8 +17,8 @@ public class ChatMessage
 
     public ChatMessage(string user, string msg, int offset = 0, string time = "")
     {
-        Username = user;
-        Message = msg;
+        Username = user ?? throw new ArgumentNullException(nameof(user));
+        Message = msg ?? throw new ArgumentNullException(nameof(msg));
         OffsetSeconds = offset;
         Timestamp = time;
     }
