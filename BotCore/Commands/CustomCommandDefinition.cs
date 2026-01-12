@@ -23,9 +23,10 @@ internal class CustomCommandDefinition : ICommand
 
     public string CommandResponse { get; set; }
 
-    public CustomCommandDefinition(string commandString, string commandResponse)
+    public CustomCommandDefinition(string commandString, string commandResponse, TimeSpan? cooldownOverride = null)
     {
         CommandString = commandString;
         CommandResponse = commandResponse;
+        CooldownOverride = cooldownOverride;
     }
 }
