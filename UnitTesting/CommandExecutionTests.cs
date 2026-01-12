@@ -89,7 +89,7 @@ public class CommandExecutionTests
 
 
     // 1. Evaluate message to identify commands
-    // Identify a message contains a core command in the usage format
+
     [Fact]
     public async Task CommandService_IdentifiesCoreCommands()
     {
@@ -105,7 +105,6 @@ public class CommandExecutionTests
         Assert.True(messageContext.ReactionType == BotCore.Core.ReactionType.Command);
     }
 
-    // Identify a message contains a custom command in the usage format
     [Fact]
     public async Task CommandService_IdentifiesCustomCommands()
     {
@@ -121,7 +120,6 @@ public class CommandExecutionTests
         Assert.True(messageContext.ReactionString == "Honk!");
     }
 
-    // Do not evaluate a command that does not exist.
     [Fact]
     public async Task CommandService_IgnoresFakeCommands()
     {
@@ -136,7 +134,6 @@ public class CommandExecutionTests
         Assert.True(messageContext.ReactionType == BotCore.Core.ReactionType.None);
     }
 
-    // Do not evaluate a command outside usage format. The usage format requires the command phrase be the first token of the message, preceded by the command character. e.g., !uptime, !command add honk Honk!
     [Theory]
     [InlineData("!uptime", true)]
     [InlineData("!uptime is the correct format.", true)]
@@ -160,7 +157,6 @@ public class CommandExecutionTests
         Assert.Equal(expectedResult, messageContext.ReactionType == BotCore.Core.ReactionType.Command);
     }
 
-    // Evaluate commands using the specified command character, whatever it may be. This test ensures the feature remains supported.
     [Fact]
     public async Task CommandService_IdentifiesCommands_WithCustomCharacter()
     {
@@ -178,7 +174,6 @@ public class CommandExecutionTests
         Assert.Equal(BotCore.Core.ReactionType.Command, messageContext.ReactionType);
     }
 
-    // Command string evaluation is case-insensitive.
     [Theory]
     [InlineData("!uptime", true)]
     [InlineData("!UPTIME", true)]
@@ -199,7 +194,7 @@ public class CommandExecutionTests
     }
 
     // 2. Route identified commands to respective destinations
-    // Correctly call commands
+
     [Theory]
     [ClassData(typeof(CommandRoutingData))]
     internal async Task CommandService_CorrectlyRoutesCommands(string messageInput, string expectedResponse, ICommand commandBeingTested)
@@ -217,7 +212,7 @@ public class CommandExecutionTests
     }
 
     // 3. Custom commands admin functions. Only tests whether the functions work once called; parsing the commands correctly belongs to the admin command itself and will get separate tests.
-    // RegisterCommand works
+
     [Fact]
     public void CommandService_RegisterCommand_RegistersCommands()
     {
@@ -226,16 +221,15 @@ public class CommandExecutionTests
         MessageContext messageContext = GenerateMessage("!honk");
 
         // Act
-        commandService.RegisterCommand(messageContext, new CustomCommandDefinition("honk", "Honk!"));
+        bool wasSuccessful = commandService.RegisterCommand(messageContext, new CustomCommandDefinition("honk", "Honk!"));
 
         // Assert
-        Assert.Equal($"Command added for `!honk`.", messageContext.ReactionString);
+        Assert.True(wasSuccessful);
     }
 
-    // RegisterCommand rejects registration when a conflict arises.
     [Theory]
-    [InlineData("honk", "Existing command conflict!")]
-    [InlineData("uptime", "Core command conflict!")]
+    [InlineData("honk", "Existing command conflict!")]  // Existing command conflict
+    [InlineData("uptime", "Core command conflict!")]    // Core command conflict
     public void CommandService_RegisterCommand_RejectsConflicts(string commandString, string commandResponse)
     {
         // Arrange
@@ -245,13 +239,12 @@ public class CommandExecutionTests
         MessageContext messageContext = GenerateMessage($"!command add {commandString} {commandResponse}");
 
         // Act
-        commandService.RegisterCommand(messageContext, new CustomCommandDefinition(commandString, commandResponse));
+        bool wasSuccessful = commandService.RegisterCommand(messageContext, new CustomCommandDefinition(commandString, commandResponse));
 
         // Assert
-        Assert.Equal($"Command `!{commandString}` already exists.", messageContext.ReactionString);
+        Assert.False(wasSuccessful);
     }
 
-    // UnregisterCommand works
     [Fact]
     public void CommandService_UnregisterCommand_UnregistersCommands()
     {
@@ -261,13 +254,13 @@ public class CommandExecutionTests
         MessageContext messageContext = GenerateMessage("!honk");
 
         // Act
-        commandService.UnregisterCommand(messageContext, "honk");
+        bool wasSuccessful = commandService.UnregisterCommand(messageContext, "honk");
 
         // Assert
+        Assert.True(wasSuccessful);
         Assert.Equal(ReactionType.None, messageContext.ReactionType);
     }
 
-    // UnregisterCommand gracefully handles attempting to remove a command that does not exist.
     [Fact]
     public void CommandService_UnegisterCommand_HandlesMissingCommand()
     {
@@ -276,13 +269,12 @@ public class CommandExecutionTests
         MessageContext messageContext = GenerateMessage($"!command remove hronk");
 
         // Act
-        commandService.UnregisterCommand(messageContext, "hronk");
+        bool wasSuccessful = commandService.UnregisterCommand(messageContext, "hronk");
 
         // Assert
-        Assert.Equal($"No command for `!hronk` found.", messageContext.ReactionString);
+        Assert.False(wasSuccessful);
     }
 
-    // UpdateCommand works
     [Fact]
     public async Task CommandService_UpdateCommand_UpdatesCommands()
     {
@@ -294,35 +286,34 @@ public class CommandExecutionTests
 
         // Act
         customCommand.CommandResponse = "Honk honk!";
-        commandService.UpdateCommand(messageContext, customCommand);
+        bool wasSuccessful = commandService.UpdateCommand(messageContext, customCommand);
 
         // Assert
         await commandService.Evaluate(messageContext);
+        Assert.True(wasSuccessful);
         Assert.Equal("Honk honk!", messageContext.ReactionString);
     }
 
-    // UpdateCommand gracefully handles conflicts
     [Theory]
-    [InlineData("hronk", "No such command conflict!")]
-    [InlineData("uptime", "Core command conflict!")]
+    [InlineData("hronk", "No such command conflict!")]  // No such command conflict
+    [InlineData("uptime", "Core command conflict!")]    // Core command conflict
     public void CommandService_UpdateCommand_HandlesConflicts(string commandString, string newCommandResponse)
     {
         // Arrange
         CommandService commandService = new CommandService(testOnly: true, permissionsService: _grantPermissionMock.Object);
-        CustomCommandDefinition customCommand = new CustomCommandDefinition("honk", "Honk!");
-        commandService.RegisterCommandInternal(customCommand);
-        MessageContext messageContext = GenerateMessage("!honk");
+        CustomCommandDefinition unregisteredCustomCommand = new(commandString, newCommandResponse);
+        commandService.InitializeCommands(ProviderQuery);
+        MessageContext messageContext = GenerateMessage($"!{commandString}");
 
         // Act
-        customCommand.CommandResponse = newCommandResponse;
-        commandService.UpdateCommand(messageContext, customCommand);
+        bool wasSuccessful = commandService.UpdateCommand(messageContext, unregisteredCustomCommand);
 
         // Assert
-        Assert.NotEqual($"Command `!{commandString}` updated.", messageContext.ReactionString);
+        Assert.False(wasSuccessful);
     }
 
     // 4. Permissions
-    // Command runs if user has permission
+
     [Fact]
     public async Task CommandService_RunsCommand_IfUserHasPermission()
     {
@@ -342,7 +333,6 @@ public class CommandExecutionTests
         Assert.Equal("!command", messageContext.ReactionString);
     }
 
-    // Command does not run if user does not have permission
     [Fact]
     public async Task CommandService_DoesNotRunCommand_IfUserLacksPermission()
     {
@@ -364,7 +354,6 @@ public class CommandExecutionTests
 
     // 5. Cooldowns
 
-    // Command runs if it is not on cooldown
     [Fact]
     public async Task CommandService_RunsCommand_IfNotOnCooldown()
     {
@@ -392,7 +381,6 @@ public class CommandExecutionTests
         Assert.Equal("!uptime", messageContext.ReactionString);
     }
 
-    // Command does not run if it is on cooldown
     [Fact]
     public async Task CommandService_DoesNotRunCommand_IfOnCooldown()
     {
@@ -420,7 +408,6 @@ public class CommandExecutionTests
         Assert.True(string.IsNullOrEmpty(messageContext.ReactionString));
     }
 
-    // Command runs even if it is on cooldown if user has sufficient permissions
     [Fact]
     public async Task CommandService_RunsCommands_AnytimeWithExemptionPermission()
     {

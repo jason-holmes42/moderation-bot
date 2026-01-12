@@ -142,13 +142,18 @@ internal class CommandService
     }
 
     // RegisterCommand handles the user-facing aspects of registration, calling RegisterCommandInternal to handle the rest. These functions are distinct from UpdateCommand to minimize potential user issues.
-    public void RegisterCommand(MessageContext messageData, ICommand command)
+    public bool RegisterCommand(MessageContext messageData, ICommand command)
     {
         if (RegisterCommandInternal(command))
         {
             messageData.ReactionString = $"Command added for `{_settings.CommandChar}{command.CommandString}`.";
+            return true;
         }
-        else messageData.ReactionString = $"Command `{_settings.CommandChar}{command.CommandString}` already exists.";
+        else
+        {
+            messageData.ReactionString = $"Command `{_settings.CommandChar}{command.CommandString}` already exists.";
+            return false;
+        }
     }
 
     // RegisterCommandInternal acts as the single authoritative path for command registration, verifying and registering incoming commands, with success or failure being reported to the caller. Validation is performed by the CommandAdminCommand prior to reaching this point.
@@ -166,7 +171,7 @@ internal class CommandService
     }
 
     // RemoveCommand removes eligible commands while protecting immutable commands (which typically represent core functionality).
-    public void UnregisterCommand(MessageContext messageData, string commandString)
+    public bool UnregisterCommand(MessageContext messageData, string commandString)
     {
         // Locate the command in the command registry.
         if (_commandRegistry.TryGetValue(commandString, out ICommand registeredCommand))
@@ -175,18 +180,23 @@ internal class CommandService
             if (!registeredCommand.IsMutable)
             {
                 messageData.ReactionString = $"Command `{_settings.CommandChar}{registeredCommand.CommandString}` may not be removed.";
-                return;
+                return false;
             }
 
             // Otherwise, remove the registered command.
             _commandRegistry.Remove(commandString);
             messageData.ReactionString = $"Command `{_settings.CommandChar}{commandString}` removed.";
+            return true;
         }
-        else messageData.ReactionString = $"No command for `{_settings.CommandChar}{commandString}` found.";
+        else
+        {
+            messageData.ReactionString = $"No command for `{_settings.CommandChar}{commandString}` found.";
+            return false;
+        }
     }
 
     // UpdateCommand updates eligible commands while protecting immutable commands (which typically represent core functionality). The passed command argument should be the new version of the command.
-    public void UpdateCommand(MessageContext messageData, ICommand command)
+    public bool UpdateCommand(MessageContext messageData, ICommand command)
     {
         // Locate the command in the command registry.
         if (_commandRegistry.TryGetValue(command.CommandString, out ICommand registeredCommand))
@@ -196,14 +206,19 @@ internal class CommandService
             if (!registeredCommand.IsMutable)
             {
                 messageData.ReactionString = $"Command `{_settings.CommandChar}{registeredCommand.CommandString}` may not be changed.";
-                return;
+                return false;
             }
 
             // Otherwise, update the registered command.
             _commandRegistry[command.CommandString] = command;
             messageData.ReactionString = $"Command `{_settings.CommandChar}{command.CommandString}` updated.";
+            return true;
         }
-        else messageData.ReactionString = $"No command for `{_settings.CommandChar}{command.CommandString}` found.";
+        else
+        {
+            messageData.ReactionString = $"No command for `{_settings.CommandChar}{command.CommandString}` found.";
+            return false;
+        }
     }
 
     // Convert incoming string (previously identified as a command) into a collection of actionable tokens delimited by the splitChar character.

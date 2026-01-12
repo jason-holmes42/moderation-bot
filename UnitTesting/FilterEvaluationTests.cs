@@ -49,7 +49,6 @@ public class FilterEvaluationTests
     // ===== Test Cases =====
 
 
-    // 1. Identifies messages containing prohibited phrases and applies the correct punishment.
     [Fact]
     public void FilterService_IdentifiesProhibitedPhrases()
     {
@@ -66,7 +65,6 @@ public class FilterEvaluationTests
         Assert.Equal(PunishmentType.Warning, messageContext.ModAction.Punishment);  // The punishment is the one listed.
     }
 
-    // Innocent messages ignored
     [Fact]
     public void FilterService_IgnoresInnocentMessages()
     {
@@ -84,7 +82,6 @@ public class FilterEvaluationTests
         Assert.Null(messageContext.ModAction);       // A ModAction only exists if a filtered phrase is identified.
     }
 
-    // Empty/whitespace doesn't cause a problem
     [Theory]
     // [InlineData(null)]   -- A null message cannot exist due to invariant enforcement at the initial ChatMessage construction stage, so a null message is impossible.
     [InlineData("")]
@@ -103,7 +100,6 @@ public class FilterEvaluationTests
         Assert.Null(messageContext.ModAction);       // A ModAction only exists if a filtered phrase is identified. This confirms both that the message is evaluated and does not false-positive.
     }
 
-    // Phrases are case insensitive.
     [Fact]
     public void FilterService_MatchesPhrases_RegardlessOfCase()
     {
@@ -120,7 +116,6 @@ public class FilterEvaluationTests
         Assert.Equal(PunishmentType.Warning, messageContext.ModAction.Punishment);
     }
 
-    // 2. The "correct punishment" is the strongest punishment among the violations present in the message.
     [Theory]
     [InlineData("This test message contains multiple prohibited phrases. Honk!", PunishmentType.Timeout)]
     [InlineData("When this test message's quest is complete, it should result in a ban.", PunishmentType.Ban)]
@@ -141,7 +136,6 @@ public class FilterEvaluationTests
         Assert.Equal(expectedPunishment, messageContext.ModAction.Punishment);
     }
 
-    // 3. Correctly accepts and evaluates regex filters.
     [Fact]
     public void FilterService_IdentifiesRegexPhrases()
     {
@@ -161,7 +155,6 @@ public class FilterEvaluationTests
         Assert.Null(innocentMessage.ModAction);
     }
 
-    // 4. Correctly exempts users with adequate permissions.
     [Fact]
     public void FilterService_ExemptsUsers_WithAdequatePermissions()
     {
@@ -177,24 +170,24 @@ public class FilterEvaluationTests
         Assert.Null(messageContext.ModAction);
     }
 
-    // 5. Filter admin commands.
-    // AddFilter works
+    // Filter admin commands.
+
     [Fact]
     public void FilterService_AddFilterRule_AddsNewFilter()
     {
         // Arrange
         FilterService filterService = new(testOnly: true, permissionsService: _rejectPermissionMock.Object);
         MessageContext messageContext = GenerateMessage("A test message to trigger the filter and reveal the filter is active.");
-        filterService.AddFilterRule(messageContext, "test", PunishmentType.Warning);
 
         // Act
+        bool wasSuccessful = filterService.AddFilterRule(messageContext, "test", PunishmentType.Warning);
         filterService.Evaluate(messageContext);
 
         // Assert
+        Assert.True(wasSuccessful);
         Assert.NotNull(messageContext.ModAction);
     }
 
-    // AddFilter rejects conflicts
     [Fact]
     public void FilterService_AddFilterRule_RejectsConflicts()
     {
@@ -204,13 +197,12 @@ public class FilterEvaluationTests
         filterService.AddFilterRule(messageContext, "test", PunishmentType.Warning);
 
         // Act
-        filterService.AddFilterRule(messageContext, "test", PunishmentType.Ban);    // AddFilterRule updates the context's ReactionString directly.
+        bool wasSuccessful = filterService.AddFilterRule(messageContext, "test", PunishmentType.Ban);    // AddFilterRule updates the context's ReactionString directly.
 
         // Assert
-        Assert.Equal($"That phrase is already marked for {PunishmentType.Warning.ToString().ToUpper()}.", messageContext.ReactionString);
+        Assert.False(wasSuccessful);
     }
 
-    // RemoveFilter works
     [Fact]
     public void FilterService_RemoveFilterRule_RemovesExistingFilter()
     {
@@ -220,14 +212,14 @@ public class FilterEvaluationTests
         filterService.AddFilterRule(messageContext, "test", PunishmentType.Warning);
 
         // Act
-        filterService.RemoveFilterRule(messageContext, "test");
+        bool wasSuccessful = filterService.RemoveFilterRule(messageContext, "test");
         filterService.Evaluate(messageContext);
 
         // Assert
+        Assert.True(wasSuccessful);
         Assert.Null(messageContext.ModAction);
     }
 
-    // RemoveFilter handles no valid filter to remove
     [Fact]
     public void FilterService_RemoveFilterRule_HandlesNoMatchingFilter()
     {
@@ -237,13 +229,12 @@ public class FilterEvaluationTests
         filterService.AddFilterRule(messageContext, "test", PunishmentType.Warning);
 
         // Act
-        filterService.RemoveFilterRule(messageContext, "honk");
+        bool wasSuccessful = filterService.RemoveFilterRule(messageContext, "honk");
 
         // Assert
-        Assert.Equal($"No filter for honk found.", messageContext.ReactionString);
+        Assert.False(wasSuccessful);
     }
 
-    // UpdateFilter works
     [Fact]
     public void FilterService_UpdateFilterRule_UpdatesFilters()
     {
@@ -253,20 +244,20 @@ public class FilterEvaluationTests
         filterService.AddFilterRule(messageContext, "test", PunishmentType.Warning);
 
         // Act
-        filterService.UpdateFilterRule(messageContext, "test", PunishmentType.Ban);
+        bool wasSuccessful = filterService.UpdateFilterRule(messageContext, "test", PunishmentType.Ban);
         filterService.Evaluate(messageContext);
 
         // Assert
+        Assert.True(wasSuccessful);
         Assert.NotNull(messageContext.ModAction);
         Assert.Equal(PunishmentType.Ban, messageContext.ModAction.Punishment);
     }
 
-    // UpdateFilter rejects conflicts
     [Theory]
-    [InlineData("honk", "That phrase is already marked for WARNING!")]
-    [InlineData("test", "test filter not found.")]
+    [InlineData("honk")]    // Phrase already exists.
+    [InlineData("test")]    // Phrase not registered.
 
-    public void FilterService_UpdateFilterRule_RejectsConflicts(string filter, string expectedResult)
+    public void FilterService_UpdateFilterRule_RejectsConflicts(string filter)
     {
         // Arrange
         FilterService filterService = new(testOnly: true, permissionsService: _rejectPermissionMock.Object);
@@ -274,9 +265,9 @@ public class FilterEvaluationTests
         filterService.AddFilterRule(messageContext, "honk", PunishmentType.Warning);
 
         // Act
-        filterService.UpdateFilterRule(messageContext, filter, PunishmentType.Warning);
+        bool wasSuccessful = filterService.UpdateFilterRule(messageContext, filter, PunishmentType.Warning);
 
         // Assert
-        Assert.Equal(expectedResult, messageContext.ReactionString);
+        Assert.False(wasSuccessful);
     }
 }

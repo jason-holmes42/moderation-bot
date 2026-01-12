@@ -105,7 +105,7 @@ internal class FilterService
     }
 
     // Rule management functions. Add and Update could be safely combined, but keeping them distinct will help users keep the impact of accidental commands minimal.
-    public void AddFilterRule(MessageContext messageData, string filteredPhrase, PunishmentType reaction)
+    public bool AddFilterRule(MessageContext messageData, string filteredPhrase, PunishmentType reaction)
     {
         // The command string's tokens will be parsed by FilterCommand, so there is no need to parse them here.
 
@@ -113,15 +113,17 @@ internal class FilterService
         if (_phraseDictionary.TryGetValue(filteredPhrase, out FilterRule filterRule))
         {
             messageData.ReactionString = $"That phrase is already marked for {filterRule.PunishType.ToString().ToUpper()}.";
+            return false;
         }
         else
         {
             _phraseDictionary.Add(filteredPhrase, new FilterRule(filteredPhrase, reaction));
             messageData.ReactionString = $"Filter added with punishment of {_phraseDictionary[filteredPhrase].PunishType.ToString().ToUpper()}.";
+            return true;
         }
     }
 
-    public void RemoveFilterRule(MessageContext messageData, string filteredPhrase)
+    public bool RemoveFilterRule(MessageContext messageData, string filteredPhrase)
     {
         // The command string's tokens will be parsed by FilterCommand, so there is no need to parse them here.
 
@@ -130,14 +132,16 @@ internal class FilterService
         {
             _phraseDictionary.Remove(filteredPhrase);
             messageData.ReactionString = $"{filteredPhrase} filter removed.";
+            return true;
         }
         else
         {
             messageData.ReactionString = $"No filter for {filteredPhrase} found.";
+            return false;
         }
     }
 
-    public void UpdateFilterRule(MessageContext messageData, string filteredPhrase, PunishmentType updatedReaction)
+    public bool UpdateFilterRule(MessageContext messageData, string filteredPhrase, PunishmentType updatedReaction)
     {
         // The command string's tokens will be parsed and verified by FilterCommand, so there is no need to parse them here.
 
@@ -147,14 +151,17 @@ internal class FilterService
             if (filterRule.PunishType == updatedReaction)
             {
                 messageData.ReactionString = $"That phrase is already marked for {filterRule.PunishType.ToString().ToUpper()}!";
+                return false;
             }
             else
             {
                 filterRule.PunishType = updatedReaction;
                 messageData.ReactionString = $"Filter updated to apply {filterRule.PunishType.ToString().ToUpper()}.";
+                return true;
             }
         }
         else messageData.ReactionString = $"{filteredPhrase} filter not found.";
+        return false;
     }
 
     // Handle converting the phrase dictionary to a List of FilterRules and sending it off for storage.
