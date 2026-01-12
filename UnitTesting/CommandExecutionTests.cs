@@ -12,6 +12,7 @@ using BotCore.Core.Time;
 using BotCore.Commands.Implementations;
 using BotCore.Core;
 using System.Runtime;
+using static UnitTesting.MessageContextFactory; // GenerateMessage(string message) generates a default MessageContext containing `message` as the content of the message.
 
 namespace UnitTesting;
 
@@ -77,14 +78,6 @@ public class CommandExecutionTests
             .Returns(false);
 }
 
-    // Shorthand functions to make writing tests simpler.
-    MessageContext GenerateMessage(string messageContent)
-    {
-        return new MessageContext(
-            new ChatMessage(user: "--Incoming Test User--", msg: messageContent),
-            new ChatEndpoint(platform: ProviderID.ChatReplay, channelID: "--Unit Test Provider--")
-        );
-    }
     // Dummy ProviderQuery function for command testing.
     public static async Task<QueryResult> ProviderQuery(QueryRequest request)
     {
