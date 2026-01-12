@@ -68,7 +68,7 @@ internal class PermissionsService
     }
 
     // Permissions management functions. Add/Update distinctions, while useful for commands and filters, are not relevant here.
-    public void SetPermissions(MessageContext messageData, string targetUser, PermissionsLevel targetLevel)
+    public bool SetPermissions(MessageContext messageData, string targetUser, PermissionsLevel targetLevel)
     {
         // A user must have higher permissions than both the target user and the target permissions level.
         // e.g., Broadcasters can edit all permissions (except their own) and cannot elevate anyone to broadcaster, admins can edit moderator and regular permissions and cannot elevate anyone to admin, and so on.
@@ -82,23 +82,22 @@ internal class PermissionsService
             // PermissionsLevel.None is functionally equivalent to having no registered permissions at all, so if that's the target use the RemovePermissions function for consistency and config cleanliness.
             if (targetLevel == PermissionsLevel.None)
             {
-                RemovePermissions(messageData, targetUser);
-                return;
+                return RemovePermissions(messageData, targetUser);
             }
 
             _permissionsList[messageData.Endpoint.Platform][targetUser] = targetLevel;    // This will safely add new entries or update existing entries.
             messageData.ReactionString = $"{targetUser}'s permissions set to {targetLevel.ToString().ToUpper()}.";
-            return;
+            return true;
         }
         else
         {
             messageData.ReactionString = $"{messageData.Username}'s permissions level is not high enough to set {targetUser}'s permissions to {targetLevel.ToString().ToUpper()}.";
-            return;
+            return false;
         }
     }
 
     // Having a separate syntax explicitly for removal simplifies the user experience.
-    public void RemovePermissions(MessageContext messageData, string targetUser)
+    public bool RemovePermissions(MessageContext messageData, string targetUser)
     {
         // Confirm whether the targetUser has permissions registered.
         PermissionsLevel targetPermissions;
@@ -106,7 +105,7 @@ internal class PermissionsService
         if (!_permissionsList[messageData.Endpoint.Platform].TryGetValue(targetUser, out targetPermissions))
         {
             messageData.ReactionString = $"{targetUser} does not have any registered permissions.";
-            return;
+            return true;
         }
 
         // The initiating user must have higher permissions than the target user to remove their permissions.
@@ -115,12 +114,12 @@ internal class PermissionsService
         {
             _permissionsList[messageData.Endpoint.Platform].Remove(targetUser);
             messageData.ReactionString = $"{targetUser}'s permissions removed.";
-            return;
+            return true;
         }
         else
         {
             messageData.ReactionString = $"{messageData.Username}'s permissions level not high enough to remove {targetUser}'s permissions.";
-            return;
+            return false;
         }
     }
 
