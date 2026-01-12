@@ -11,10 +11,10 @@ namespace UnitTesting;
 // A library of shorthand functions used to make writing tests simpler
 public static class MessageContextFactory
 {
-    public static MessageContext GenerateMessage(string messageContent)
+    public static MessageContext GenerateMessage(string messageContent, string username = "--Incoming Test User--")
     {
         return new MessageContext(
-            new ChatMessage(user: "--Incoming Test User--", msg: messageContent),
+            new ChatMessage(user: username, msg: messageContent),
             new ChatEndpoint(platform: ProviderID.ChatReplay, channelID: "--Unit Test Provider--")
         );
     }
