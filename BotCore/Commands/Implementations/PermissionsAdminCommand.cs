@@ -22,13 +22,13 @@ internal class PermissionsAdminCommand : ICoreCommand
 
     PermissionsService _permissionsService;
 
-    enum PermissionsCommandAction
+    internal enum PermissionsCommandAction
     {
         Set,
         Remove
     }
 
-    class PermissionsCommandArgs()
+    internal class PermissionsCommandArgs()
     {
         public PermissionsCommandAction permissionsAction{ get; init; }
         public string targetUser { get; init; } = string.Empty;
@@ -69,7 +69,7 @@ internal class PermissionsAdminCommand : ICoreCommand
         return null;
     }
 
-    static bool TryParseCommandArgs(string[] tokens, out PermissionsCommandArgs args, out string error)
+    internal static bool TryParseCommandArgs(string[] tokens, out PermissionsCommandArgs args, out string error)
     {
         // !permissions <set/remove> <targetUser> [permissionsLevel]
         // tokens[0] = permissions
