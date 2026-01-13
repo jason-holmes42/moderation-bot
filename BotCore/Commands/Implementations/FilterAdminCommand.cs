@@ -10,7 +10,7 @@ using BotCore.Filtering;
 using BotCore.Permissions;
 using static System.Collections.Specialized.BitVector32;
 
-namespace BotCore.Commands;
+namespace BotCore.Commands.Implementations;
 internal class FilterAdminCommand : ICoreCommand
 {
     public string CommandString { get; init; } = "filter";

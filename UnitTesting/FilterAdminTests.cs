@@ -1,13 +1,12 @@
 ﻿using Xunit;
 using Moq;
 using BotCore.Filtering;
-using BotCore.Commands;
+using BotCore.Commands.Implementations;
 using BotCore.Core.Messaging;
 using BotCore.Core.Providers;
 using BotCore.Permissions;
-using BotCore.Core.Time;
-using static UnitTesting.TestFactories; // GenerateMessage(string message) generates a default MessageContext containing `message` as the content of the message.
-using FilterCommandAction = BotCore.Commands.FilterAdminCommand.FilterCommandAction;
+using static UnitTesting.TestFactories;
+using FilterCommandAction = BotCore.Commands.Implementations.FilterAdminCommand.FilterCommandAction;
 
 namespace UnitTesting;
 public class FilterAdminTests
