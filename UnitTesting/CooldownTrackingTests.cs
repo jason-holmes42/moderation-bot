@@ -72,12 +72,9 @@ public class CooldownTrackingTests
     }
     public static IEnumerable<object[]> CategoryTests()
     {
-        return new[]
-        {
-            new object[] { new PermissionsAdminCommand(new PermissionsService(testOnly: true)), 0 },
-            new object[] { new UptimeCommand(CommandExecutionTests.ProviderQuery), 5 },
-            new object[] { new CustomCommandDefinition("honk", "Honk!"), 15 }
-        };
+        yield return new object[] { new PermissionsAdminCommand(new PermissionsService(testOnly: true)), 0 };
+        yield return new object[] { new UptimeCommand(CommandExecutionTests.ProviderQuery), 5 };
+        yield return new object[] { new CustomCommandDefinition("honk", "Honk!"), 15 };
     }
 
     [Fact]
