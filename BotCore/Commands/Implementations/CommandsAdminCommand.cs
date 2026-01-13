@@ -22,14 +22,14 @@ internal class CommandsAdminCommand : ICoreCommand
 
     public PermissionsLevel RequiredPermissions { get; set; } = PermissionsLevel.Moderator;
 
-    enum CommandsAdminAction
+    internal enum CommandsAdminAction
     {
         Add,
         Remove,
         Update
     }
 
-    class CommandsAdminArgs()
+    internal class CommandsAdminArgs()
     {
         public CommandsAdminAction commandAction { get; init; }
         public string commandPhrase { get; init; }
@@ -78,7 +78,7 @@ internal class CommandsAdminCommand : ICoreCommand
     }
 
     // TryParse functions to keep core processing clean.
-    static bool TryParseCommandArgs(string message, out CommandsAdminArgs args, out string error)
+    internal static bool TryParseCommandArgs(string message, out CommandsAdminArgs args, out string error)
     {
         // !command <add/remove/update> <commandString> <reactionString>
         // This command wants a different arrangement of tokens than other commands, so it must do its own tokenizing.
