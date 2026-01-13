@@ -74,7 +74,7 @@ public class CommandAdminTests
         }
         else
         {
-            Assert.NotNull(args);
+            Assert.Equal(expectedResult, wasSuccessful);
             Assert.Equal(expectedPhrase, args.commandPhrase);
         }
     }
