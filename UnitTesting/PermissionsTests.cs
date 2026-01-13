@@ -6,6 +6,7 @@ using BotCore.Permissions;
 using BotCore.Commands.Implementations;
 using BotCore.Core;
 using BotCore.Core.Messaging;
+using static UnitTesting.TestFactories;
 
 namespace UnitTesting;
 public class PermissionsTests
@@ -156,7 +157,7 @@ public class PermissionsTests
         PermissionsConfig testConfig = GenerateTestConfig();
         testConfig.PermissionsList[ProviderID.ChatReplay].Add("TestAdmin", PermissionsLevel.Admin);
         PermissionsService permissionsService = new(testOnly: true, permissionsConfig: testConfig);
-        MessageContext messageContext = MessageContextFactory.GenerateMessage("test message containing the admin command call", username: "TestAdmin");
+        MessageContext messageContext = GenerateMessage("test message containing the admin command call", username: "TestAdmin");
 
         // Act
         bool wasSuccessful = permissionsService.SetPermissions(messageContext, "TestUser", PermissionsLevel.Moderator);
@@ -175,7 +176,7 @@ public class PermissionsTests
         testConfig.PermissionsList[ProviderID.ChatReplay].Add("TestAdmin", userLevel);
         testConfig.PermissionsList[ProviderID.ChatReplay].Add("TestUser", targetUserLevel);
         PermissionsService permissionsService = new(testOnly: true, permissionsConfig: testConfig);
-        MessageContext messageContext = MessageContextFactory.GenerateMessage("test message containing the admin command call", username: "TestAdmin");
+        MessageContext messageContext = GenerateMessage("test message containing the admin command call", username: "TestAdmin");
 
         // Act
         bool wasSuccessful = permissionsService.SetPermissions(messageContext, "TestUser", newTargetLevel);
@@ -216,7 +217,7 @@ public class PermissionsTests
         testConfig.PermissionsList[ProviderID.ChatReplay].Add("TestAdmin", PermissionsLevel.Admin);
         testConfig.PermissionsList[ProviderID.ChatReplay].Add("TestUser", PermissionsLevel.Moderator);
         PermissionsService permissionsService = new(testOnly: true, permissionsConfig: testConfig);
-        MessageContext messageContext = MessageContextFactory.GenerateMessage("test message containing the admin command call", username: "TestAdmin");
+        MessageContext messageContext = GenerateMessage("test message containing the admin command call", username: "TestAdmin");
 
         // Act
         bool wasSuccessful = permissionsService.SetPermissions(messageContext, "TestUser", PermissionsLevel.None);
@@ -233,7 +234,7 @@ public class PermissionsTests
         PermissionsConfig testConfig = GenerateTestConfig();
         testConfig.PermissionsList[ProviderID.ChatReplay].Add("TestAdmin", PermissionsLevel.Admin);
         PermissionsService permissionsService = new(testOnly: true, permissionsConfig: testConfig);
-        MessageContext messageContext = MessageContextFactory.GenerateMessage("test message containing the admin command call", username: "TestAdmin");
+        MessageContext messageContext = GenerateMessage("test message containing the admin command call", username: "TestAdmin");
 
         // Act
         bool wasSuccessful = permissionsService.RemovePermissions(messageContext, "TestUser");
@@ -252,7 +253,7 @@ public class PermissionsTests
         testConfig.PermissionsList[ProviderID.ChatReplay].Add("TestAdmin", userLevel);
         testConfig.PermissionsList[ProviderID.ChatReplay].Add("TestUser", targetUserLevel);
         PermissionsService permissionsService = new(testOnly: true, permissionsConfig: testConfig);
-        MessageContext messageContext = MessageContextFactory.GenerateMessage("test message containing the admin command call", username: "TestAdmin");
+        MessageContext messageContext = GenerateMessage("test message containing the admin command call", username: "TestAdmin");
 
         // Act
         bool wasSuccessful = permissionsService.RemovePermissions(messageContext, "TestUser");

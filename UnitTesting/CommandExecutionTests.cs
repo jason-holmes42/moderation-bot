@@ -12,7 +12,7 @@ using BotCore.Core.Time;
 using BotCore.Commands.Implementations;
 using BotCore.Core;
 using System.Runtime;
-using static UnitTesting.MessageContextFactory; // GenerateMessage(string message) generates a default MessageContext containing `message` as the content of the message.
+using static UnitTesting.TestFactories; // GenerateMessage(string message) generates a default MessageContext containing `message` as the content of the message.
 
 namespace UnitTesting;
 

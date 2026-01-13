@@ -10,8 +10,6 @@ public class CooldownTrackingTests
 {
     CustomCommandDefinition _customCommand;
     UptimeCommand _uptimeCommand;
-    PermissionsAdminCommand _permCommand;
-    CustomCommandDefinition _overrideCommand;
 
     public CooldownTrackingTests()
     {
