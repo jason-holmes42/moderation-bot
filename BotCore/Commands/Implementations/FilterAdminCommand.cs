@@ -22,7 +22,7 @@ internal class FilterAdminCommand : ICoreCommand
 
     public PermissionsLevel RequiredPermissions { get; set; } = PermissionsLevel.Moderator;
 
-    enum FilterCommandAction
+    internal enum FilterCommandAction
     {
         On,
         Off,
@@ -31,7 +31,7 @@ internal class FilterAdminCommand : ICoreCommand
         Update
     }
 
-    class FilterCommandArgs()
+    internal class FilterCommandArgs()
     {
         public FilterCommandAction filterAction { get; init; }
         public string filterPhrase { get; init; } = string.Empty;
@@ -88,7 +88,7 @@ internal class FilterAdminCommand : ICoreCommand
     }
 
     // TryParse functions to keep core processing clean.
-    static bool TryParseFilterArgs(string[] tokens, out FilterCommandArgs args, out string error)
+    internal static bool TryParseFilterArgs(string[] tokens, out FilterCommandArgs args, out string error)
     {
         // !filter <on/off/add/remove/update> <filteredString> <punishment>
         // token[0] = filter
