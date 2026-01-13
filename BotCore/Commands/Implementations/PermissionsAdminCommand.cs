@@ -102,6 +102,13 @@ internal class PermissionsAdminCommand : ICoreCommand
             return false;
         }
 
+        // If the action is set to remove, the target permissions level is irrelevant.
+        if (action == PermissionsCommandAction.Remove)
+        {
+            args = new PermissionsCommandArgs { permissionsAction = action, targetUser = tokens[2] };
+            return true;
+        }
+
         // Check to see if a target permissions level is present. If so, parse it.
         if (tokens.Length > 3)
         {
@@ -111,7 +118,11 @@ internal class PermissionsAdminCommand : ICoreCommand
                 return false;
             }
         }
-        // If the target level is not present, then !permissions remove <targetUser> is being used and the default level of None should stand.
+        else
+        {
+            error = $"No permissions level indicated.";
+            return false;
+        }
 
         // Construct the args and send them back for processing.
         args = new PermissionsCommandArgs
