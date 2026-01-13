@@ -114,6 +114,11 @@ internal class FilterAdminCommand : ICoreCommand
         {
             error = "Filter action not recognized.";
             return false;
+        } 
+        else if (action == FilterCommandAction.On || action == FilterCommandAction.Off)
+        {
+            args = new FilterCommandArgs { filterAction = action }; // If the action is a Toggle action, the other arguments are irrelevant.
+            return true;
         }
 
         if (tokens.Length < 3)
