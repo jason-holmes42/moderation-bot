@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BotCore.Core.Time;
+namespace ChatModerationBot.Core.Time;
 
 // This will allow for robust testing of time-based decision-making, such as with CooldownTracker.
 internal interface ITimeProvider

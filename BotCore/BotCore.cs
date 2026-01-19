@@ -1,14 +1,14 @@
-﻿using BotCore.Core;
-using BotCore.Filtering;
-using BotCore.Commands;
-using BotCore.Permissions;
-using BotCore.Core.Messaging;
-using BotCore.Core.Providers;
-using BotCore.Core.Cooldowns;
-using BotCore.Core.Time;
-using BotCore.Configuration;
+﻿using ChatModerationBot.Core;
+using ChatModerationBot.Filtering;
+using ChatModerationBot.Commands;
+using ChatModerationBot.Permissions;
+using ChatModerationBot.Core.Messaging;
+using ChatModerationBot.Core.Providers;
+using ChatModerationBot.Core.Cooldowns;
+using ChatModerationBot.Core.Time;
+using ChatModerationBot.Configuration;
 
-namespace BotCore;
+namespace ChatModerationBot;
 
 // Core functionality for the moderation bot.
 public class BotCore

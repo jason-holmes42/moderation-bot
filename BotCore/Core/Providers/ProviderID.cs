@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BotCore.Core.Providers;
+namespace ChatModerationBot.Core.Providers;
 
 // An ID enum for each supported platform (via provider type). These are just examples of what sorts of providers could be utilized; only ChatReplay is implemented.
 public enum ProviderID

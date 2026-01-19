@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using BotCore.Core;
-using BotCore.Core.Cooldowns;
-using BotCore.Core.Messaging;
-using BotCore.Core.Providers;
-using BotCore.Permissions;
+using ChatModerationBot.Core;
+using ChatModerationBot.Core.Cooldowns;
+using ChatModerationBot.Core.Messaging;
+using ChatModerationBot.Core.Providers;
+using ChatModerationBot.Permissions;
 
-namespace BotCore.Commands.Implementations;
+namespace ChatModerationBot.Commands.Implementations;
 internal class UptimeCommand : ICoreCommand
 {
     public string CommandString { get; init; } = "uptime";

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BotCore.Configuration;
+namespace ChatModerationBot.Configuration;
 internal interface ISettingsConfig
 {
     static abstract string Filename { get; }

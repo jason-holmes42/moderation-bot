@@ -1,11 +1,11 @@
-﻿using BotCore.Core.Providers;
+﻿using ChatModerationBot.Core.Providers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BotCore.Core;
+namespace ChatModerationBot.Core;
 
 // Each BotCore instance represents a single user of the bot. However, that user may have a variety of identities across platforms. UserContext exists to store and orchestrate these distinctions.
 internal class UserContext

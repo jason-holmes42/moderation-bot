@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BotCore.Permissions;
+namespace ChatModerationBot.Permissions;
 
 // PermissionsLevel indicates the user's registered permissions and the minimum level required to access a command / be exempt from the filter.
 internal enum PermissionsLevel

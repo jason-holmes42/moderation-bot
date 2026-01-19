@@ -1,8 +1,8 @@
-﻿using BotCore.Core.Cooldowns;
-using BotCore.Core.Messaging;
-using BotCore.Core.Providers;
-using BotCore.Filtering;
-using BotCore.Permissions;
+﻿using ChatModerationBot.Core.Cooldowns;
+using ChatModerationBot.Core.Messaging;
+using ChatModerationBot.Core.Providers;
+using ChatModerationBot.Filtering;
+using ChatModerationBot.Permissions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static System.Collections.Specialized.BitVector32;
 
-namespace BotCore.Commands.Implementations;
+namespace ChatModerationBot.Commands.Implementations;
 internal class CommandsAdminCommand : ICoreCommand
 {
     public string CommandString { get; init; } = "command";

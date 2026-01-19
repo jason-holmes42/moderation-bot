@@ -1,11 +1,11 @@
-﻿using BotCore.Permissions;
+﻿using ChatModerationBot.Permissions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BotCore.Commands;
+namespace ChatModerationBot.Commands;
 internal class CommandSettings
 {
     public char CommandChar { get; set; } = '!';        // Character required to precede all commands.

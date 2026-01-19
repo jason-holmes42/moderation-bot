@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BotCore.Core.Time;
+namespace ChatModerationBot.Core.Time;
 internal class BotTimeProvider : ITimeProvider
 {
     public DateTime Now

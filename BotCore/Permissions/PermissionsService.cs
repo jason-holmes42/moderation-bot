@@ -1,15 +1,15 @@
-﻿using BotCore.Configuration;
-using BotCore.Core;
-using BotCore.Core.Messaging;
-using BotCore.Core.Providers;
-using BotCore.Filtering;
+﻿using ChatModerationBot.Configuration;
+using ChatModerationBot.Core;
+using ChatModerationBot.Core.Messaging;
+using ChatModerationBot.Core.Providers;
+using ChatModerationBot.Filtering;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BotCore.Permissions;
+namespace ChatModerationBot.Permissions;
 internal class PermissionsService
 {
     UserContext _userContext;

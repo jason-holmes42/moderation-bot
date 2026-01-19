@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using BotCore.Commands;
-using BotCore.Core.Time;
+using ChatModerationBot.Commands;
+using ChatModerationBot.Core.Time;
 
-namespace BotCore.Core.Cooldowns;
+namespace ChatModerationBot.Core.Cooldowns;
 internal class CooldownTracker
 {
     Dictionary<string, DateTime> _cooldownRegistry = new Dictionary<string, DateTime>();

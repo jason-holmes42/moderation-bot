@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BotCore.Core.Providers;
+namespace ChatModerationBot.Core.Providers;
 
 // An endpoint identifier for specific channels on specific platforms. Used by BotCore to route outgoing requests to the correct providers.
 public class ChatEndpoint

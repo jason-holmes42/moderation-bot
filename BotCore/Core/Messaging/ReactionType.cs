@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BotCore.Core;
+namespace ChatModerationBot.Core;
 public enum ReactionType
 {
     None,

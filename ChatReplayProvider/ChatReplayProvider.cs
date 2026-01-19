@@ -1,6 +1,6 @@
-﻿using BotCore.Core.Messaging;
-using BotCore.Core.Providers;
-using BotCore.Filtering;
+﻿using ChatModerationBot.Core.Messaging;
+using ChatModerationBot.Core.Providers;
+using ChatModerationBot.Filtering;
 using System.Reflection.Metadata.Ecma335;
 using System.Text.Json;
 

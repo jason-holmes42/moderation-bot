@@ -1,11 +1,11 @@
 ﻿using Xunit;
 using Moq;
-using BotCore.Commands;
-using BotCore.Core.Providers;
-using BotCore.Permissions;
-using BotCore.Commands.Implementations;
-using BotCore.Core;
-using BotCore.Core.Messaging;
+using ChatModerationBot.Commands;
+using ChatModerationBot.Core.Providers;
+using ChatModerationBot.Permissions;
+using ChatModerationBot.Commands.Implementations;
+using ChatModerationBot.Core;
+using ChatModerationBot.Core.Messaging;
 using static UnitTesting.TestFactories;
 
 namespace UnitTesting;

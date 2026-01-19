@@ -1,13 +1,13 @@
 ﻿using Xunit;
 using Moq;
-using BotCore.Commands;
-using BotCore.Commands.Implementations;
-using BotCore.Core.Messaging;
-using BotCore.Core.Providers;
-using BotCore.Permissions;
+using ChatModerationBot.Commands;
+using ChatModerationBot.Commands.Implementations;
+using ChatModerationBot.Core.Messaging;
+using ChatModerationBot.Core.Providers;
+using ChatModerationBot.Permissions;
 using static UnitTesting.TestFactories;
-using CommandsAdminAction = BotCore.Commands.Implementations.CommandsAdminCommand.CommandsAdminAction;
-using BotCore.Core;
+using CommandsAdminAction = ChatModerationBot.Commands.Implementations.CommandsAdminCommand.CommandsAdminAction;
+using ChatModerationBot.Core;
 
 namespace UnitTesting;
 public class CommandAdminTests

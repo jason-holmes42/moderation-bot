@@ -1,16 +1,16 @@
 using Xunit;
 using Moq;
 using System.ComponentModel.Design;
-using BotCore;
-using BotCore.Commands;
-using BotCore.Filtering;
-using BotCore.Core.Messaging;
-using BotCore.Core.Providers;
-using BotCore.Core.Cooldowns;
-using BotCore.Permissions;
-using BotCore.Core.Time;
-using BotCore.Commands.Implementations;
-using BotCore.Core;
+using ChatModerationBot;
+using ChatModerationBot.Commands;
+using ChatModerationBot.Filtering;
+using ChatModerationBot.Core.Messaging;
+using ChatModerationBot.Core.Providers;
+using ChatModerationBot.Core.Cooldowns;
+using ChatModerationBot.Permissions;
+using ChatModerationBot.Core.Time;
+using ChatModerationBot.Commands.Implementations;
+using ChatModerationBot.Core;
 using System.Runtime;
 using static UnitTesting.TestFactories; // GenerateMessage(string message) generates a default MessageContext containing `message` as the content of the message.
 
@@ -102,7 +102,7 @@ public class CommandExecutionTests
         await commandService.Evaluate(messageContext);
 
         // Assert
-        Assert.True(messageContext.ReactionType == BotCore.Core.ReactionType.Command);
+        Assert.True(messageContext.ReactionType == ChatModerationBot.Core.ReactionType.Command);
     }
 
     [Fact]
@@ -131,7 +131,7 @@ public class CommandExecutionTests
         await commandService.Evaluate(messageContext);
 
         // Assert
-        Assert.True(messageContext.ReactionType == BotCore.Core.ReactionType.None);
+        Assert.True(messageContext.ReactionType == ChatModerationBot.Core.ReactionType.None);
     }
 
     [Theory]
@@ -154,7 +154,7 @@ public class CommandExecutionTests
         await commandService.Evaluate(messageContext);
 
         // Assert
-        Assert.Equal(expectedResult, messageContext.ReactionType == BotCore.Core.ReactionType.Command);
+        Assert.Equal(expectedResult, messageContext.ReactionType == ChatModerationBot.Core.ReactionType.Command);
     }
 
     [Fact]
@@ -171,7 +171,7 @@ public class CommandExecutionTests
         await commandService.Evaluate(messageContext);
 
         // Assert
-        Assert.Equal(BotCore.Core.ReactionType.Command, messageContext.ReactionType);
+        Assert.Equal(ChatModerationBot.Core.ReactionType.Command, messageContext.ReactionType);
     }
 
     [Theory]
@@ -190,7 +190,7 @@ public class CommandExecutionTests
         await commandService.Evaluate(messageContext);
 
         // Assert
-        Assert.Equal(messageContext.ReactionType == BotCore.Core.ReactionType.Command, expectedResult);
+        Assert.Equal(messageContext.ReactionType == ChatModerationBot.Core.ReactionType.Command, expectedResult);
     }
 
     // 2. Route identified commands to respective destinations

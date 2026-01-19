@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using BotCore.Core.Cooldowns;
-using BotCore.Permissions;
+using ChatModerationBot.Core.Cooldowns;
+using ChatModerationBot.Permissions;
 
-namespace BotCore.Commands;
+namespace ChatModerationBot.Commands;
 
 // The ICommand interface ensures that all commands have the necessary data for control functions; command strings and aliases, cooldown details, permissions levels, etc.
 internal interface ICommand

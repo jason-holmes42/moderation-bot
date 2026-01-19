@@ -1,5 +1,5 @@
-﻿using BotCore.Core.Messaging;
-using BotCore.Core.Providers;
+﻿using ChatModerationBot.Core.Messaging;
+using ChatModerationBot.Core.Providers;
 using System;
 using System.Collections.Generic;
 using System.Linq;

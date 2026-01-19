@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BotCore.Permissions;
+namespace ChatModerationBot.Permissions;
 internal class PermissionsSettings
 {
     // permissions enabled, etc.

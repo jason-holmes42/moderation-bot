@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BotCore.Core.Providers;
+namespace ChatModerationBot.Core.Providers;
 
 // QueryResult is a container object for results returning from a provider's API.
 public class QueryResult

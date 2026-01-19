@@ -1,12 +1,12 @@
 ﻿using Xunit;
 using Moq;
-using BotCore.Filtering;
-using BotCore.Commands.Implementations;
-using BotCore.Core.Messaging;
-using BotCore.Core.Providers;
-using BotCore.Permissions;
+using ChatModerationBot.Filtering;
+using ChatModerationBot.Commands.Implementations;
+using ChatModerationBot.Core.Messaging;
+using ChatModerationBot.Core.Providers;
+using ChatModerationBot.Permissions;
 using static UnitTesting.TestFactories;
-using FilterCommandAction = BotCore.Commands.Implementations.FilterAdminCommand.FilterCommandAction;
+using FilterCommandAction = ChatModerationBot.Commands.Implementations.FilterAdminCommand.FilterCommandAction;
 
 namespace UnitTesting;
 public class FilterAdminTests

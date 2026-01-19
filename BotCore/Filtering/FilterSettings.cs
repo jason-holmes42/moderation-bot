@@ -1,11 +1,11 @@
-﻿using BotCore.Permissions;
+﻿using ChatModerationBot.Permissions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BotCore.Filtering;
+namespace ChatModerationBot.Filtering;
 internal class FilterSettings
 {
     public bool FilterEnabled { get; set; } = true;      // Whether the filter is currently active or not.

@@ -1,12 +1,12 @@
-﻿using BotCore.Configuration;
-using BotCore.Core.Providers;
+﻿using ChatModerationBot.Configuration;
+using ChatModerationBot.Core.Providers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BotCore.Permissions;
+namespace ChatModerationBot.Permissions;
 internal class PermissionsConfig : ISettingsConfig
 {
     public static string Filename { get; } = "permissions.json";

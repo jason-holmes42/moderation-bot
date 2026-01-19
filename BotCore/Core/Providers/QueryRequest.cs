@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BotCore.Core.Providers;
+namespace ChatModerationBot.Core.Providers;
 
 // QueryRequest bundles channel identity information, query type, and any necessary parameters for that query to succeed into a single object for passing to providers.
 public class QueryRequest

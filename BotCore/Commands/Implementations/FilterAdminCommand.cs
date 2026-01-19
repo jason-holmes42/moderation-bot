@@ -4,13 +4,13 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using BotCore.Core.Cooldowns;
-using BotCore.Core.Messaging;
-using BotCore.Filtering;
-using BotCore.Permissions;
+using ChatModerationBot.Core.Cooldowns;
+using ChatModerationBot.Core.Messaging;
+using ChatModerationBot.Filtering;
+using ChatModerationBot.Permissions;
 using static System.Collections.Specialized.BitVector32;
 
-namespace BotCore.Commands.Implementations;
+namespace ChatModerationBot.Commands.Implementations;
 internal class FilterAdminCommand : ICoreCommand
 {
     public string CommandString { get; init; } = "filter";

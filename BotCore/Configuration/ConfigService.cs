@@ -5,13 +5,13 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using BotCore.Core;
-using BotCore.Filtering;
-using BotCore.Commands;
-using BotCore.Permissions;
+using ChatModerationBot.Core;
+using ChatModerationBot.Filtering;
+using ChatModerationBot.Commands;
+using ChatModerationBot.Permissions;
 using System.Reflection.Metadata;
 
-namespace BotCore.Configuration;
+namespace ChatModerationBot.Configuration;
 
 // Responsible for loading bot-specific information from storage and saving to storage. Currently designed for simple JSON storage, but can be converted for database storage without affecting other modules.
 internal class ConfigService

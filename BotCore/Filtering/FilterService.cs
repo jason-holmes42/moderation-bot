@@ -4,14 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using BotCore.Core;
-using BotCore.Configuration;
-using BotCore.Permissions;
-using BotCore.Core.Messaging;
-using BotCore.Core.Providers;
+using ChatModerationBot.Core;
+using ChatModerationBot.Configuration;
+using ChatModerationBot.Permissions;
+using ChatModerationBot.Core.Messaging;
+using ChatModerationBot.Core.Providers;
 using System.Net;
 
-namespace BotCore.Filtering;
+namespace ChatModerationBot.Filtering;
 
 internal class FilterService
 {

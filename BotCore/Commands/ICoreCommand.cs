@@ -1,11 +1,11 @@
-﻿using BotCore.Core.Messaging;
+﻿using ChatModerationBot.Core.Messaging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BotCore.Commands;
+namespace ChatModerationBot.Commands;
 
 // Core commands use logic and produces behaviors, requiring unique processing relative to custom commands.
 internal interface ICoreCommand : ICommand

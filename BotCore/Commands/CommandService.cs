@@ -3,17 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using BotCore.Core;
-using BotCore.Commands.Implementations;
-using BotCore.Filtering;
-using BotCore.Configuration;
-using BotCore.Permissions;
-using BotCore.Core.Messaging;
-using BotCore.Core.Cooldowns;
-using BotCore.Core.Providers;
-using BotCore.Core.Time;
+using ChatModerationBot.Core;
+using ChatModerationBot.Commands.Implementations;
+using ChatModerationBot.Filtering;
+using ChatModerationBot.Configuration;
+using ChatModerationBot.Permissions;
+using ChatModerationBot.Core.Messaging;
+using ChatModerationBot.Core.Cooldowns;
+using ChatModerationBot.Core.Providers;
+using ChatModerationBot.Core.Time;
 
-namespace BotCore.Commands;
+namespace ChatModerationBot.Commands;
 internal class CommandService
 {
     UserContext _userContext;

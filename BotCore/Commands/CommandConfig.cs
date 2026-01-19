@@ -1,11 +1,11 @@
-﻿using BotCore.Configuration;
+﻿using ChatModerationBot.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BotCore.Commands;
+namespace ChatModerationBot.Commands;
 internal class CommandConfig : ISettingsConfig
 {
     public static string Filename { get; } = "commands.json";

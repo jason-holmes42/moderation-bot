@@ -1,11 +1,11 @@
-﻿using BotCore.Configuration;
+﻿using ChatModerationBot.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BotCore.Filtering;
+namespace ChatModerationBot.Filtering;
 internal class FilterConfig : ISettingsConfig
 {
     public static string Filename { get; } = "filter.json";

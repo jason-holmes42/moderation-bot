@@ -1,9 +1,9 @@
 ﻿using Xunit;
 using Moq;
-using BotCore.Core.Cooldowns;
-using BotCore.Commands;
-using BotCore.Commands.Implementations;
-using BotCore.Permissions;
+using ChatModerationBot.Core.Cooldowns;
+using ChatModerationBot.Commands;
+using ChatModerationBot.Commands.Implementations;
+using ChatModerationBot.Permissions;
 
 namespace UnitTesting;
 public class CooldownTrackingTests

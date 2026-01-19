@@ -1,5 +1,5 @@
-﻿using BotCore.Core.Cooldowns;
-using BotCore.Permissions;
+﻿using ChatModerationBot.Core.Cooldowns;
+using ChatModerationBot.Permissions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +7,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace BotCore.Commands;
+namespace ChatModerationBot.Commands;
 
 // Custom commands are user-defined commands that can be accessed by chat members from within the chat to produce a static response from the moderation bot.
 internal class CustomCommandDefinition : ICommand

@@ -1,4 +1,4 @@
-﻿using BotCore.Core.Time;
+﻿using ChatModerationBot.Core.Time;
 using System;
 using System.Collections.Generic;
 using System.Linq;

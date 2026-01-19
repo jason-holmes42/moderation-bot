@@ -1,13 +1,13 @@
 ﻿using Xunit;
 using Moq;
-using BotCore.Commands;
-using BotCore.Commands.Implementations;
-using BotCore.Core.Messaging;
-using BotCore.Core.Providers;
-using BotCore.Permissions;
+using ChatModerationBot.Commands;
+using ChatModerationBot.Commands.Implementations;
+using ChatModerationBot.Core.Messaging;
+using ChatModerationBot.Core.Providers;
+using ChatModerationBot.Permissions;
 using static UnitTesting.TestFactories;
-using PermissionsCommandAction = BotCore.Commands.Implementations.PermissionsAdminCommand.PermissionsCommandAction;
-using BotCore.Core;
+using PermissionsCommandAction = ChatModerationBot.Commands.Implementations.PermissionsAdminCommand.PermissionsCommandAction;
+using ChatModerationBot.Core;
 using System.Reflection.Emit;
 
 namespace UnitTesting;

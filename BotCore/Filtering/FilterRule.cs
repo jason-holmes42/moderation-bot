@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace BotCore.Filtering;
+namespace ChatModerationBot.Filtering;
 public class FilterRule
 {
     public string FilterPhrase { get; init; }
