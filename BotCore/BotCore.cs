@@ -7,6 +7,7 @@ using ChatModerationBot.Core.Providers;
 using ChatModerationBot.Core.Cooldowns;
 using ChatModerationBot.Core.Time;
 using ChatModerationBot.Configuration;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ChatModerationBot;
 
@@ -62,22 +63,25 @@ public class BotCore
         return new BotCore(userContext, timeProvider, cooldownTracker, permissionsService, filterService, commandService);
     }
 
-    public async Task ProcessMessage(MessageContext message)
-    {        
+    public async Task ProcessMessage(MessageContext messageData)
+    {
+        // Temporarily display incoming message
+        Console.WriteLine($"[{messageData.Timestamp}] {messageData.Username}: {messageData.Message}");
+
         // Send message through filtering, apply any necessary reaction information
-        _filterService.Evaluate(message);
+        _filterService.Evaluate(messageData);
         
         // If the filter identified a needed moderation action, send it to the provider for processing.
-        if (message.ModAction != null)
+        if (messageData.ModAction != null)
         {
-            _chatProviders[message.Endpoint].IssuePunishment(message.ModAction);
+            _chatProviders[messageData.Endpoint].IssuePunishment(messageData.ModAction);
         }
 
         // Assess message for commands, process any identified commands
-        await _commandService.Evaluate(message);
-        if (message.ReactionString != null)
+        await _commandService.Evaluate(messageData);
+        if (messageData.ReactionString != null)
         {
-            _chatProviders[message.Endpoint].PostMessage(message.ReactionString);
+            _chatProviders[messageData.Endpoint].PostMessage(messageData.ReactionString);
         }
 
         // Send MessageContext to UI for display
@@ -105,6 +109,9 @@ public class BotCore
         // Register both the user's identity on the platform and the provider for that identity as an active provider
         _userContext.SetIdentity(provider.ChannelIdentity);
         _chatProviders[provider.ChannelIdentity] = provider;
+
+        // Subscribe to provider's OnMessageReceived.
+        provider.OnMessageReceived += async message => { await ProcessMessage(message); };
 
         // Save updates to the user's identity registry.
         await ConfigService.StoreConfigAsync(_userContext, new UserIdentityConfig(_userContext.GetAllIdentities()));
