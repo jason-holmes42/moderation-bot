@@ -9,7 +9,9 @@ namespace ChatReplayProvider;
 // A Chat Provider for treating saved chat log files as if live chat streams. Only designed to support Twitch VOD chat replays which contain all of the necessary content and timing data.
 public class ChatReplayProvider : IChatProvider
 {
-    ProviderID _platform = ProviderID.ChatReplay;
+    private static readonly ProviderID _platform = ProviderID.ChatReplay;
+    private static readonly string _filepath = "replayLogs/";
+
     public ChatEndpoint ChannelIdentity { get; init; }      // Used to identify this specific provider for message routing from BotCore
 
     int _timeElapsed;            // Used to keep track of the seconds elapsed as provided by replay log's offset seconds
@@ -26,12 +28,12 @@ public class ChatReplayProvider : IChatProvider
     }
 
     // Load data from file. Async due to the size of files potentially taking some time / allowing for loading from alternate sources.
-    public static async Task<ChatReplayProvider> CreateAsync(string filepath)
+    public static async Task<ChatReplayProvider> CreateAsync(string platformIdentity, string filename)
     {
+        string filepath = $"{_filepath}{filename}";
         TwitchJSONData jsonData = await ParseData(filepath);
-        string broadcaster = jsonData.streamer.name;
 
-        return new ChatReplayProvider(broadcaster, jsonData);
+        return new ChatReplayProvider(platformIdentity, jsonData);
     }
 
     // Temporary display test, to be replaced with actual functionality once complete.
