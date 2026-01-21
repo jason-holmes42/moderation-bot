@@ -34,7 +34,7 @@ internal class PermissionsService
         // Retrieve config from storage and, failing that, generate a new one.
         PermissionsConfig permissionsConfig;
         permissionsConfig = await ConfigService.RetrieveConfigAsync<PermissionsConfig>(userContext);
-        if (permissionsConfig == null) permissionsConfig = await GenerateDefaultConfig();
+        if (permissionsConfig == null) permissionsConfig = await GenerateDefaultConfig(userContext);
 
         return new PermissionsService(userContext, permissionsConfig);
     }
@@ -43,7 +43,7 @@ internal class PermissionsService
     internal PermissionsService(bool testOnly, UserContext? userContext = null, PermissionsConfig? permissionsConfig = null)
         : this(
             userContext ?? new UserContext("__TESTUSER__"),
-            permissionsConfig ?? GenerateDefaultConfig().GetAwaiter().GetResult()
+            permissionsConfig ?? GenerateDefaultConfig(userContext).GetAwaiter().GetResult()
         )
     { }
 
@@ -141,11 +141,16 @@ internal class PermissionsService
     }
 
     // Generate a default config file if one does not exist.
-    static async Task<PermissionsConfig> GenerateDefaultConfig()
+    static async Task<PermissionsConfig> GenerateDefaultConfig(UserContext userContext)
     {
         // Construct the default config
         PermissionsSettings permissionsSettings = new PermissionsSettings();
         Dictionary<ProviderID, Dictionary<string, PermissionsLevel>> permissionsList = new();
+
+        foreach(ProviderID platform in userContext.GetAllIdentities().Keys)
+        {
+            permissionsList.Add(platform, new Dictionary<string, PermissionsLevel>());
+        }
 
         PermissionsConfig permissionsConfig = new PermissionsConfig(permissionsSettings, permissionsList);
 
