@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WPFClient"
-        xmlns:providers="clr-namespace:ChatModerationBot.Core.Providers;assembly=BotCore"
+        xmlns:providers="clr-namespace:ChatModerationBot.Core.Providers;assembly=ChatModerationBot"
         mc:Ignorable="d"
         Title="Start Provider"
         SizeToContent="WidthAndHeight"
