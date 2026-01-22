@@ -3,10 +3,40 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows</TargetFramework>
-    <RootNamespace>WPF_App</RootNamespace>
+    <RootNamespace>WPFClient</RootNamespace>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Images\niconicoterebichan.png" />
+    <None Remove="Images\twitch_glitch.png" />
+    <None Remove="Images\twitch_glitch_VOD.png" />
+    <None Remove="Images\youtube_icon.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Images\twitch_glitch_VOD.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\youtube_icon.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\niconicoterebichan.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BotCore\BotCore.csproj" />
+    <ProjectReference Include="..\ChatReplayProvider\ChatReplayProvider.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Images\twitch_glitch.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 
 </Project>
