@@ -25,6 +25,8 @@ public class BotCore
 
     Dictionary<ChatEndpoint, IChatProvider> _chatProviders = new();
 
+    public event Action<MessageContext>? OnMessageProcessed;
+
     BotCore(
         UserContext userContext,
         BotTimeProvider timeProvider, CooldownTracker cooldownTracker,
@@ -65,9 +67,6 @@ public class BotCore
 
     public async Task ProcessMessage(MessageContext messageData)
     {
-        // Temporarily display incoming message
-        Console.WriteLine($"[{messageData.Timestamp}] {messageData.Username}: {messageData.Message}");
-
         // Send message through filtering, apply any necessary reaction information
         _filterService.Evaluate(messageData);
         
@@ -75,16 +74,20 @@ public class BotCore
         if (messageData.ModAction != null)
         {
             _chatProviders[messageData.Endpoint].IssuePunishment(messageData.ModAction);
+            return;     // Do not process any other requests.
         }
 
         // Assess message for commands, process any identified commands
         await _commandService.Evaluate(messageData);
+
+        // Message processing is now complete, so send the MessageContext to UI for display
+        OnMessageProcessed?.Invoke(messageData);
+
+        // If there are any commands to process, do so.
         if (messageData.ReactionString != null)
         {
             _chatProviders[messageData.Endpoint].PostMessage(messageData.ReactionString);
         }
-
-        // Send MessageContext to UI for display
     }
 
     // Delegate query function fed to services to allow them to safely make information requests of the provider without giving them direct access.
@@ -122,6 +125,9 @@ public class BotCore
         // Unregister both the user's identity on the platform and the provider for that identity as an active provider
         _userContext.RemoveIdentity(provider.ChannelIdentity);
         _chatProviders.Remove(provider.ChannelIdentity);
+
+        // Unsubscribe to provider's OnMessageReceived.
+        provider.OnMessageReceived -= async message => { await ProcessMessage(message); };
 
         // Save updates to the user's identity registry.
         await ConfigService.StoreConfigAsync(_userContext, new UserIdentityConfig(_userContext.GetAllIdentities()));
