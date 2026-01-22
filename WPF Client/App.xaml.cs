@@ -1,14 +1,30 @@
 ﻿using System.Configuration;
 using System.Data;
+using System.Runtime.InteropServices;
 using System.Windows;
+using ChatModerationBot;
 
-namespace WPF_App
+namespace WPFClient;
+
+/// <summary>
+/// Interaction logic for App.xaml
+/// </summary>
+public partial class App : Application
 {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
-    public partial class App : Application
-    {
-    }
+    [DllImport("kernel32.dll")]
+    static extern bool AllocConsole();
 
+    protected override void OnStartup(StartupEventArgs e)
+    {
+        AllocConsole();
+        base.OnStartup(e);
+
+        MainWindowViewModel mainVM = new();
+        MainWindow mainWindow = new(mainVM);
+
+        mainWindow.Show();
+
+        // Initializing the bot must be done async, but we don't really need the associated task.
+        _ = mainVM.InitializeAsync();
+    }
 }

@@ -9,16 +9,36 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace WPF_App
+namespace WPFClient;
+
+/// <summary>
+/// Interaction logic for MainWindow.xaml
+/// </summary>
+public partial class MainWindow : Window
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-    public partial class MainWindow : Window
+    public MainWindowViewModel ViewModel => (MainWindowViewModel)DataContext;
+    public MainWindow(MainWindowViewModel viewModel)
     {
-        public MainWindow()
+        InitializeComponent();
+        DataContext = viewModel;
+    }
+
+    private void ExitCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+    {
+        e.CanExecute = true;
+    }
+
+    private void ExitCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+    {
+        // ViewModel clean up
+        Application.Current.Shutdown();
+    }
+
+    private void OnNewProviderExecuted(object sender, ExecutedRoutedEventArgs e)
+    {
+        if(ViewModel.NewProviderCommand.CanExecute(null))
         {
-            InitializeComponent();
+            ViewModel.NewProviderCommand.Execute(null);
         }
     }
 }
