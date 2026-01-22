@@ -11,9 +11,17 @@
             <Setter Property="Width" Value="6"/>
             <Setter Property="Background" Value="#FF2D2D30"/>
         </Style>
+
+        <Style TargetType="Button">
+            <Style.Resources>
+                <Style TargetType="Border">
+                    <Setter Property="CornerRadius" Value="2"/>
+                </Style>
+            </Style.Resources>
+        </Style>
     </UserControl.Resources>
     
-    <Border BorderBrush="DarkViolet" BorderThickness="1">
+    <Border BorderBrush="DarkViolet" BorderThickness="1" Unloaded="ProviderView_Unloaded">
         <DockPanel>
             <!-- Title Bar -->
             <Grid DockPanel.Dock="Top"
@@ -34,11 +42,11 @@
                         </MultiBinding>
                     </TextBlock.Text>
                 </TextBlock>
-
+                <Button HorizontalAlignment="Right" Margin="2" Width="25" Height="25" Content="✕" Click="btnClose"/>
             </Grid>
 
             <!-- Main Content -->
-            <!-- DARK gray background, white text. Username colors? Wraps and dictates the size of the "line" for both sections. Each line has some padding above and below-->
+            <!-- DARK gray background, white text. Wraps and dictates the size of the "line" for both sections. Each line has some padding above and below-->
             <ScrollViewer VerticalScrollBarVisibility="Auto">
                 <Grid Background="#FF18181B">
                 <Grid.ColumnDefinitions>

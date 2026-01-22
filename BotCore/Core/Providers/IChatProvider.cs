@@ -14,7 +14,7 @@ public interface IChatProvider
 {
     ChatEndpoint ChannelIdentity { get; init; }         // Routing endpoint containing the platformID and channelID
 
-    Task StartAsync();                                  // The asynchronous processing of incoming messages.
+    Task StartAsync(CancellationToken cancelToken);                                  // The asynchronous processing of incoming messages.
 
     event Action<MessageContext> OnMessageReceived;     // Event for handling incoming data
 

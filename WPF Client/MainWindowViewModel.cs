@@ -74,6 +74,7 @@ public class MainWindowViewModel
                 Canvas.SetLeft(providerView, 100);
                 Canvas.SetTop(providerView, 100);
 
+                providerView.RequestClose += OnProviderCloseRequested;
                 ProviderViews.Add(providerView);
 
                 // Trigger the view model to begin processing
@@ -84,5 +85,10 @@ public class MainWindowViewModel
                 MessageBox.Show($"{selectedProvider.ToString()} provider not implemented. Please select a different provider.");
                 return;
         }
+    }
+
+    private void OnProviderCloseRequested(ProviderView providerView)
+    {
+        ProviderViews.Remove(providerView);
     }
 }

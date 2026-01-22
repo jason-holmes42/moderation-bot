@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,10 +19,24 @@ namespace WPFClient;
 /// </summary>
 public partial class ProviderView : UserControl
 {
+    public event Action<ProviderView>? RequestClose;
     public ProviderView(ProviderViewModel viewModel)
     {
         InitializeComponent();
         DataContext = viewModel;
+    }
+
+    private void btnClose(object sender,  RoutedEventArgs e)
+    {
+        RequestClose?.Invoke(this);
+    }
+
+    private void ProviderView_Unloaded(object sender, RoutedEventArgs e)
+    {
+        if (DataContext is ProviderViewModel viewModel)
+        {
+            viewModel.Cleanup();
+        }
     }
 
     // Enable click-to-drag movement on TitleBar element

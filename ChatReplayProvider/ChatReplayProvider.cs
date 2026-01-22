@@ -37,10 +37,11 @@ public class ChatReplayProvider : IChatProvider
     }
 
     // Temporary display test, to be replaced with actual functionality once complete.
-    public async Task StartAsync()
+    public async Task StartAsync(CancellationToken cancelToken)
     {
         Console.WriteLine("Begin Playback");
-        await PlaybackData(_commentData);
+        try { await PlaybackData(_commentData, cancelToken); }
+        catch (OperationCanceledException) { Console.WriteLine("Playback cancelled."); }
     }
 
     // Parse the selected chat replay log file into Twitch JSON data transfer objects (DTOs).
@@ -95,28 +96,31 @@ public class ChatReplayProvider : IChatProvider
     }
 
     // Handle the timing of each message by iterating through the list of messages received from ParseData
-    async Task PlaybackData(List<ChatMessage> replayData)
+    async Task PlaybackData(List<ChatMessage> replayData, CancellationToken cancelToken)
     {
         _timeElapsed = 0;    // For tracking against log-provided offsetSeconds
         _replayStart = DateTime.Now; // For tracking against real time for use with PostMessage function
 
         // Initial delay to match up with the first message's delay.
-        await Task.Delay(replayData[0].OffsetSeconds * 1000);
+        await Task.Delay(replayData[0].OffsetSeconds * 1000, cancelToken);
 
-        for (int i = 0; i < replayData.Count; i++)
+        while (!cancelToken.IsCancellationRequested)
         {
-            _timeElapsed += replayData[i].OffsetSeconds - _timeElapsed;
-
-            MessageReceived(replayData[i]);
-
-            if (i + 1 < replayData.Count)
+            for (int i = 0; i < replayData.Count; i++)
             {
-                // Handle the wait until the next message using the next message's offset time.
-                await Task.Delay((replayData[i + 1].OffsetSeconds - _timeElapsed) * 1000);
+                _timeElapsed += replayData[i].OffsetSeconds - _timeElapsed;
 
-            } else
-            {
-                Console.WriteLine("Playback finished.");
+                MessageReceived(replayData[i]);
+
+                if (i + 1 < replayData.Count)
+                {
+                    // Handle the wait until the next message using the next message's offset time.
+                    await Task.Delay((replayData[i + 1].OffsetSeconds - _timeElapsed) * 1000, cancelToken);
+                }
+                else
+                {
+                    Console.WriteLine("Playback finished.");
+                }
             }
         }
     }

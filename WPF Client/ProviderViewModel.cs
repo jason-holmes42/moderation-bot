@@ -17,6 +17,7 @@ public class ProviderViewModel
     public ObservableCollection<MessageItem> MessageItems { get; } = new();
 
     IChatProvider _chatProvider;
+    CancellationTokenSource _cancelTokenSource = new();
     BotCore _botCore;
 
     public ProviderViewModel(BotCore botCore, string userIdentity, ProviderID platform, IChatProvider chatProvider)
@@ -69,6 +70,12 @@ public class ProviderViewModel
         Console.WriteLine($"[{messageData.Timestamp}] {messageData.Username}: {messageData.Message}");
     }
 
+    public void Cleanup()
+    {
+        _cancelTokenSource.Cancel();    // Send a cancellation request event to the token, which the provider is monitoring to know when it should stop
+        UnregisterProvider();
+    }
+
     // Unregister provider and unsubscribe from processed messages
     async Task UnregisterProvider()
     {
@@ -83,6 +90,6 @@ public class ProviderViewModel
         _botCore.OnMessageProcessed += DisplayMessage;
 
         // Initiate playback
-        await _chatProvider.StartAsync();
+        await _chatProvider.StartAsync(_cancelTokenSource.Token);
     }
 }
