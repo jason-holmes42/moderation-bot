@@ -18,7 +18,7 @@ using System.Runtime.CompilerServices;
 namespace WPFClient;
 public class ProviderViewModel
 {
-    public string ProviderName { get; set; }
+    public ProviderID Provider { get; set; }
     public string UserIdentity { get; set; }
 
     public ObservableCollection<MessageItem> MessageItems { get; } = new();
@@ -31,7 +31,7 @@ public class ProviderViewModel
     public ProviderViewModel(BotCore botCore, string userIdentity, ProviderID platform, IChatProvider chatProvider)
     {
         UserIdentity = userIdentity;
-        ProviderName = platform.ToString();
+        Provider = platform;
 
         _botCore = botCore;
         _chatProvider = chatProvider;

@@ -18,6 +18,7 @@ public class MainWindowViewModel
     BotCore _botCore;
 
     public ObservableCollection<ProviderView> ProviderViews { get; } = new();
+    Dictionary<ProviderID, ProviderView> _currentViews = new();
 
     public RelayCommand NewProviderCommand => new(execute => StartProvider());
 
@@ -56,6 +57,13 @@ public class MainWindowViewModel
         }
         else return;
 
+        // Prevent duplicate provider views for a given platform
+        if (_currentViews.ContainsKey(selectedProvider))
+        {
+            MessageBox.Show($"A {selectedProvider} provider is already running.");
+            return;
+        }
+
         // Use NewProvider results to open a new ProviderView for the provider
         ProviderViewModel providerViewModel;
 
@@ -76,6 +84,7 @@ public class MainWindowViewModel
 
                 providerView.RequestClose += OnProviderCloseRequested;
                 ProviderViews.Add(providerView);
+                _currentViews[selectedProvider] = providerView;
 
                 // Trigger the view model to begin processing
                 await providerViewModel.StartAsync();
@@ -90,5 +99,9 @@ public class MainWindowViewModel
     private void OnProviderCloseRequested(ProviderView providerView)
     {
         ProviderViews.Remove(providerView);
+        if (providerView.DataContext is ProviderViewModel viewModel)
+        {
+            _currentViews.Remove(viewModel.Provider);
+        }
     }
 }
