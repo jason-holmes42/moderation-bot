@@ -75,9 +75,6 @@ public class ProviderViewModel
         }
 
         MessageItems.Add(entry);
-
-        // Temporarily display incoming message
-        Console.WriteLine($"[{messageData.Timestamp}] {messageData.Username}: {messageData.Message}");
     }
 
     // Chat input for presentation demonstration only.

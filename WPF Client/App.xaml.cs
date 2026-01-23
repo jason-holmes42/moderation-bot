@@ -11,12 +11,8 @@ namespace WPFClient;
 /// </summary>
 public partial class App : Application
 {
-    [DllImport("kernel32.dll")]
-    static extern bool AllocConsole();
-
     protected override void OnStartup(StartupEventArgs e)
     {
-        AllocConsole();
         base.OnStartup(e);
 
         MainWindowViewModel mainVM = new();
