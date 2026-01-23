@@ -74,6 +74,7 @@ public class BotCore
         if (messageData.ModAction != null)
         {
             _chatProviders[messageData.Endpoint].IssuePunishment(messageData.ModAction);
+            OnMessageProcessed?.Invoke(messageData);    // Send the message for display.
             return;     // Do not process any other requests.
         }
 
