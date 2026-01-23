@@ -19,6 +19,7 @@ namespace WPFClient;
 public class ProviderViewModel
 {
     public ProviderID Provider { get; set; }
+    public string ProviderName { get; set; }
     public string UserIdentity { get; set; }
 
     public ObservableCollection<MessageItem> MessageItems { get; } = new();
@@ -32,6 +33,7 @@ public class ProviderViewModel
     {
         UserIdentity = userIdentity;
         Provider = platform;
+        ProviderName = platform.ToString();
 
         _botCore = botCore;
         _chatProvider = chatProvider;
