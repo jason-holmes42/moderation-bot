@@ -102,7 +102,7 @@ public class CommandExecutionTests
         await commandService.Evaluate(messageContext);
 
         // Assert
-        Assert.True(messageContext.ReactionType == ChatModerationBot.Core.ReactionType.Command);
+        Assert.True(messageContext.ReactionType == ChatModerationBot.Core.ReactionType.ValidCommand);
     }
 
     [Fact]
@@ -154,7 +154,7 @@ public class CommandExecutionTests
         await commandService.Evaluate(messageContext);
 
         // Assert
-        Assert.Equal(expectedResult, messageContext.ReactionType == ChatModerationBot.Core.ReactionType.Command);
+        Assert.Equal(expectedResult, messageContext.ReactionType == ChatModerationBot.Core.ReactionType.ValidCommand);
     }
 
     [Fact]
@@ -171,7 +171,7 @@ public class CommandExecutionTests
         await commandService.Evaluate(messageContext);
 
         // Assert
-        Assert.Equal(ChatModerationBot.Core.ReactionType.Command, messageContext.ReactionType);
+        Assert.Equal(ChatModerationBot.Core.ReactionType.ValidCommand, messageContext.ReactionType);
     }
 
     [Theory]
@@ -190,7 +190,7 @@ public class CommandExecutionTests
         await commandService.Evaluate(messageContext);
 
         // Assert
-        Assert.Equal(messageContext.ReactionType == ChatModerationBot.Core.ReactionType.Command, expectedResult);
+        Assert.Equal(messageContext.ReactionType == ChatModerationBot.Core.ReactionType.ValidCommand, expectedResult);
     }
 
     // 2. Route identified commands to respective destinations

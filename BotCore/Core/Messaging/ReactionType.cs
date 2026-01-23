@@ -8,8 +8,8 @@ namespace ChatModerationBot.Core;
 public enum ReactionType
 {
     None,
-    Command,
-    Warning,
-    Timeout,
-    Ban
+    ValidCommand,
+    InvalidCommand,
+    PermissionDenied,
+    CooldownPending
 }

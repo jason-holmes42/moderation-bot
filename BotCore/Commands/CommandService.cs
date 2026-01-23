@@ -106,21 +106,23 @@ internal class CommandService
         // Check registered commands for a match and, upon success, execute the command.
         if (_commandRegistry.TryGetValue(tokens[0], out ICommand command))
         {
-            messageData.ReactionType = ReactionType.Command;
-
             // Check if the command is on cooldown and, if it is, skip processing. However, if the user has cooldown-exemption permissions, carry on as normal.
             if (!_cooldownTracker.IsOffCooldown(command) && !_permissionsService.HasPermission(messageData.Endpoint.Platform, messageData.Username, _settings.CooldownExemptionLevel))
             {
-                Console.WriteLine($"DEBUG: {_settings.CommandChar}{command.CommandString} identified but skipped due to cooldown.");        // Debug-only message
+                messageData.ReactionType = ReactionType.CooldownPending;
+                messageData.ReactionString = $"{_settings.CommandChar}{command.CommandString} identified but skipped due to cooldown.";
                 return;
             }
 
             // Check if user has permission to use the command. If not, skip processing.
             if (!_permissionsService.HasPermission(messageData.Endpoint.Platform, messageData.Username, command.RequiredPermissions))
             {
-                Console.WriteLine($"DEBUG: {messageData.Username} lacks permission for {_settings.CommandChar}{command.CommandString}: User needs at least {command.RequiredPermissions} permissions."); // Debug-only message
+                messageData.ReactionType = ReactionType.PermissionDenied;
+                messageData.ReactionString = $"{messageData.Username} lacks permission for {_settings.CommandChar}{command.CommandString}: User needs at least {command.RequiredPermissions} permissions.";
                 return;
             }
+
+            messageData.ReactionType = ReactionType.ValidCommand;
 
             // If it's a core command and user has permission, execute its functionality and trigger the cooldown.
             if (command is ICoreCommand executable)

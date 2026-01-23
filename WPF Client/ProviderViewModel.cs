@@ -66,10 +66,10 @@ public class ProviderViewModel
         if (messageData.ModAction != null)
         {
             entry.BotReaction = $"{messageData.ModAction.Punishment} on {messageData.ModAction.TargetUser}. Reason: {messageData.ModAction.Reason}";
-        } 
+        }
         else if (messageData.ReactionType != ChatModerationBot.Core.ReactionType.None)
         {
-            entry.BotReaction = $"Valid command identified. Response: {messageData.ReactionString}";
+            entry.BotReaction = $"Command identified: {messageData.ReactionString}";
         }
 
         MessageItems.Add(entry);

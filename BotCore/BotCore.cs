@@ -85,7 +85,7 @@ public class BotCore
         OnMessageProcessed?.Invoke(messageData);
 
         // If there are any commands to process, do so.
-        if (messageData.ReactionString != null)
+        if (messageData.ReactionType == ReactionType.ValidCommand)
         {
             _chatProviders[messageData.Endpoint].PostMessage(messageData.ReactionString);
         }

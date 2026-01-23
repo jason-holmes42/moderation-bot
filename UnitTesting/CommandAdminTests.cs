@@ -160,7 +160,7 @@ public class CommandAdminTests
         else
         {
             // Command identified.
-            Assert.Equal(ReactionType.Command, testMessageContext.ReactionType);
+            Assert.Equal(ReactionType.ValidCommand, testMessageContext.ReactionType);
             Assert.Equal(expectedResponse, testMessageContext.ReactionString);
         }
 
