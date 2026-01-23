@@ -45,6 +45,7 @@
                 <Button HorizontalAlignment="Right" Margin="2" Width="25" Height="25" Content="✕" Click="btnClose"/>
             </Grid>
             
+            <!-- Chat Input -->
             <Grid DockPanel.Dock="Bottom" Height="25" VerticalAlignment="Bottom" Background="DimGray">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -67,18 +68,18 @@
 
             <!-- Main Content -->
             <!-- DARK gray background, white text. Wraps and dictates the size of the "line" for both sections. Each line has some padding above and below-->
-            <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <ScrollViewer VerticalScrollBarVisibility="Auto" Name="sclMessages">
                 <Grid Background="#FF18181B">
-                <Grid.ColumnDefinitions>
-                    <!-- Column 30% for bot reactions-->
-                    <ColumnDefinition Width="3*" />
-                    <!-- Some alternation (GridSplitter) from the main window to visually separate. Messages should be in-line with their triggering message. -->
-                    <ColumnDefinition Width="4" />
-                    <!-- Column 70% for incoming messages-->
-                    <ColumnDefinition Width="7*" />
-                </Grid.ColumnDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <!-- Column 30% for bot reactions-->
+                        <ColumnDefinition Width="3*" />
+                        <!-- Some alternation (GridSplitter) from the main window to visually separate. Messages should be in-line with their triggering message. -->
+                        <ColumnDefinition Width="4" />
+                        <!-- Column 70% for incoming messages-->
+                        <ColumnDefinition Width="7*" />
+                    </Grid.ColumnDefinitions>
 
-                <GridSplitter Grid.Column="1"
+                    <GridSplitter Grid.Column="1"
                               Background="#FF2D2D30"
                               HorizontalAlignment="Stretch"
                               ResizeBehavior="PreviousAndNext"
@@ -121,9 +122,6 @@
                     </ItemsControl>
                 </Grid>
             </ScrollViewer>
-            
-            <!-- Chat Input -->
-            
         </DockPanel>
     </Border>
 </UserControl>

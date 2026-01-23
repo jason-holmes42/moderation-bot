@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -26,6 +27,8 @@ public partial class ProviderView : UserControl
     {
         InitializeComponent();
         DataContext = viewModel;
+
+        viewModel.MessageItems.CollectionChanged += MessageItems_CollectionChanged;
     }
 
     // Chat input functions
@@ -104,5 +107,23 @@ public partial class ProviderView : UserControl
     private void TitleBar_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
     {
         Mouse.Capture(null);
+    }
+
+    // If new entries are multi-line, the scroll viewer can't keep up and will fall behind, so this forces it to adjust accordingly.
+    private void MessageItems_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        bool isAtBottom = sclMessages.VerticalOffset == sclMessages.ExtentHeight;
+
+        // If not already scrolled to the bottom, do nothing so as to not disrupt backreading
+        if (!isAtBottom) return;
+
+        if (e.Action == NotifyCollectionChangedAction.Add)
+        {
+            // Ask the dispatcher to scroll to the end after loading is complete so that the calculation is done when it tries to scroll
+            sclMessages.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                sclMessages.ScrollToEnd();
+            }), System.Windows.Threading.DispatcherPriority.Loaded);
+        }
     }
 }
