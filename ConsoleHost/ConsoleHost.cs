@@ -12,7 +12,7 @@ internal class ConsoleHost
     BotCore _botCore;
 
     // These are temporary variables to stand-in for selection systems to be implemented later.
-    string _fullLogFilepath = "replayLogs/Full Log.json";
+    string _fullLogFilepath = "Full Log.json";
     string _userIdentity = "testuser";
 
     static async Task Main(string[] args)
@@ -25,7 +25,7 @@ internal class ConsoleHost
     async Task Run()
     {
         // Initialize chat provider. This is where you'd insert both Chat Provider and Broadcaster selection logic, but for now we're only using ChatReplayProvider.
-        ChatReplayProvider chatReplay = await ChatReplayProvider.CreateAsync(_fullLogFilepath);
+        ChatReplayProvider chatReplay = await ChatReplayProvider.CreateAsync(_userIdentity, _fullLogFilepath);
         _chatProvider = chatReplay;
 
         // Initialize bot. Each user gets an individual bot instance that centralizes and handles their processing across whatever platforms they're using.
