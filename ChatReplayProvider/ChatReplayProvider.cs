@@ -145,11 +145,16 @@ public class ChatReplayProvider : IChatProvider
     }
 
     // Send a message from the bot to the platform in question. For ChatReplay, it processes the outgoing message as if it were an actual message within the log, allowing the bot to react accordingly.
-    public void PostMessage(string outMessage)
+    public void PostMessage(string username, string outMessage)
     {
         int secondsSinceStart = (int)(DateTime.Now - _replayStart).TotalSeconds;
-        ChatMessage chatMessage = new ChatMessage("ModerationBot", outMessage, secondsSinceStart, ConvertTimestamp(secondsSinceStart));
+        ChatMessage chatMessage = new ChatMessage(username, outMessage, secondsSinceStart, ConvertTimestamp(secondsSinceStart));
         MessageReceived(chatMessage);
+    }
+
+    public void PostMessage(string outMessage)
+    {
+        PostMessage("ModerationBot", outMessage);
     }
 
     // Issue a punishment according to provided ModerationAction information using provider-specific functions.

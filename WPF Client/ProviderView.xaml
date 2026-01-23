@@ -44,6 +44,26 @@
                 </TextBlock>
                 <Button HorizontalAlignment="Right" Margin="2" Width="25" Height="25" Content="✕" Click="btnClose"/>
             </Grid>
+            
+            <Grid DockPanel.Dock="Bottom" Height="25" VerticalAlignment="Bottom" Background="DimGray">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="75"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBox Name="txtChatInput" 
+                         Grid.Column="0" 
+                         Padding="2" 
+                         Foreground="Gray" 
+                         Text="Enter a message to send to chat."
+                         GotFocus="ChatInput_GotFocus" 
+                         LostFocus="ChatInput_LostFocus"
+                         KeyDown="ChatInput_KeyDown"/>
+
+                <Button Grid.Column="1"
+                        Content="Send"
+                        Click="ChatInput_Send"/>
+            </Grid>
 
             <!-- Main Content -->
             <!-- DARK gray background, white text. Wraps and dictates the size of the "line" for both sections. Each line has some padding above and below-->
@@ -101,6 +121,9 @@
                     </ItemsControl>
                 </Grid>
             </ScrollViewer>
+            
+            <!-- Chat Input -->
+            
         </DockPanel>
     </Border>
 </UserControl>

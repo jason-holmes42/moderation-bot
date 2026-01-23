@@ -7,6 +7,13 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
+using System.Windows.Media;
+using System.Windows;
+using WPFClient.Commands;
+using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace WPFClient;
 public class ProviderViewModel
@@ -15,6 +22,7 @@ public class ProviderViewModel
     public string UserIdentity { get; set; }
 
     public ObservableCollection<MessageItem> MessageItems { get; } = new();
+
 
     IChatProvider _chatProvider;
     CancellationTokenSource _cancelTokenSource = new();
@@ -68,6 +76,12 @@ public class ProviderViewModel
 
         // Temporarily display incoming message
         Console.WriteLine($"[{messageData.Timestamp}] {messageData.Username}: {messageData.Message}");
+    }
+
+    // Chat input for presentation demonstration only.
+    public void SendMessage(string message)
+    {
+        (_chatProvider as ChatReplayProvider.ChatReplayProvider).PostMessage(UserIdentity, message);
     }
 
     public void Cleanup()

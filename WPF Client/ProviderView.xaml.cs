@@ -19,6 +19,8 @@ namespace WPFClient;
 /// </summary>
 public partial class ProviderView : UserControl
 {
+    string _chatInputPlaceholder = "Enter a message to send to chat.";
+
     public event Action<ProviderView>? RequestClose;
     public ProviderView(ProviderViewModel viewModel)
     {
@@ -26,11 +28,47 @@ public partial class ProviderView : UserControl
         DataContext = viewModel;
     }
 
+    // Chat input functions
+    private void ChatInput_Send(object sender, RoutedEventArgs e)
+    {
+        if (DataContext is ProviderViewModel viewModel)
+        {
+            viewModel.SendMessage(txtChatInput.Text);
+            txtChatInput.Text = string.Empty;
+            txtChatInput.Focus();
+        }
+    }
+    private void ChatInput_KeyDown(object sender, KeyEventArgs e)
+    {
+        if (e.Key == Key.Enter)
+        {
+            e.Handled = true;
+            ChatInput_Send(sender, e);
+        }
+    }
+    private void ChatInput_GotFocus(object sender, RoutedEventArgs e)
+    {
+        TextBox textBox = sender as TextBox;
+        if (textBox != null && textBox.Text == _chatInputPlaceholder)
+        {
+            textBox.Text = string.Empty;
+            textBox.Foreground = new SolidColorBrush(Colors.Black);
+        }
+    }
+    private void ChatInput_LostFocus(object sender, RoutedEventArgs e)
+    {
+        TextBox textBox = sender as TextBox;
+        if (textBox != null && string.IsNullOrEmpty(textBox.Text))
+        {
+            textBox.Text = _chatInputPlaceholder;
+            textBox.Foreground = new SolidColorBrush(Colors.Gray);
+        }
+    }
+    // X to close functionality
     private void btnClose(object sender,  RoutedEventArgs e)
     {
         RequestClose?.Invoke(this);
     }
-
     private void ProviderView_Unloaded(object sender, RoutedEventArgs e)
     {
         if (DataContext is ProviderViewModel viewModel)
