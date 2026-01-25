@@ -11,5 +11,6 @@ public enum ReactionType
     ValidCommand,
     InvalidCommand,
     PermissionDenied,
-    CooldownPending
+    CooldownPending,
+    FilterExempt
 }

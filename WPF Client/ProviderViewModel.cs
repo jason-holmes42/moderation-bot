@@ -69,6 +69,10 @@ public class ProviderViewModel
         {
             entry.BotReaction = $"{messageData.ModAction.Punishment} on {messageData.ModAction.TargetUser}. Reason: {messageData.ModAction.Reason}";
         }
+        else if (messageData.ReactionType == ChatModerationBot.Core.ReactionType.FilterExempt)
+        {
+            entry.BotReaction = $"Filter triggered, but {messageData.Username}'s permissions level exempts them from punishment.";
+        }
         else if (messageData.ReactionType != ChatModerationBot.Core.ReactionType.None)
         {
             entry.BotReaction = $"Command identified: {messageData.ReactionString}";
