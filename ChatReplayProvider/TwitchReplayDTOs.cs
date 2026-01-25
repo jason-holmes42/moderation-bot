@@ -68,7 +68,7 @@ public class TwitchMessageData
             // Not currently relevant, but will be if rendering the chat as it is seen on Twitch is wanted.
     // user_badges - User Badges display small icons before the user's name on Twitch denoting various statuses; Moderator, VIP, subscriber, etc. Contains a sub-object with a "_id" unique string identifier for the type of badge and a 'version' int.
             // Not currently relevant, but will be if rendering the chat as it is seen on Twitch is wanted.
-    // user_color - hex color (e.g. #8A2BE2) value of the user's display name. Not currently relevant, but will be if rendering the chat as it is seen on Twitch is wanted.
+    public string user_color { get; init; } // hex color (e.g. #8A2BE2) value of the user's display name.
     // emoticons - Null unless the message contains emoticons. Contains sub-objects indicating '_id' for the UID of the emoticon, 'begin' for the string index of where the emoticon text begins, and 'end' for the string index of where the emoticon code text.
             // Not currently relevant, but will be if rendering the chat as it is seen on Twitch is wanted.
 }

@@ -12,13 +12,15 @@ public class ChatMessage
 {
     public string Username { get; set; }
     public string Message { get; init; }
+    public string UserColor { get; init; }
     public int OffsetSeconds { get; init; }
     public string Timestamp { get; init; }
 
-    public ChatMessage(string user, string msg, int offset = 0, string time = "")
+    public ChatMessage(string user, string msg, string userColor, int offset = 0, string time = "")
     {
         Username = user ?? throw new ArgumentNullException(nameof(user));
         Message = msg ?? throw new ArgumentNullException(nameof(msg));
+        UserColor = userColor;
         OffsetSeconds = offset;
         Timestamp = time;
     }

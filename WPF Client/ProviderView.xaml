@@ -96,13 +96,18 @@
                                         <ColumnDefinition Width="4" />
                                         <ColumnDefinition Width="7*" />
                                     </Grid.ColumnDefinitions>
+                                    <Grid.Resources>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="TextWrapping" Value="Wrap"/>
+                                            <Setter Property="Foreground" Value="White"/>
+                                            <Setter Property="FontSize" Value="14"/>
+                                            <Setter Property="Margin" Value="4,0"/>
+                                        </Style>
+                                    </Grid.Resources>
 
                                     <!-- Bot Reactions -->
                                     <TextBlock Grid.Column="0"
-                                               Text="{Binding BotReaction}"
-                                               TextWrapping="Wrap"
-                                               Foreground="White"
-                                               Margin="4,0"/>
+                                               Text="{Binding BotReaction}"/>
 
                                     <GridSplitter Grid.Column="1"
                                                   Background="#FF2D2D30"
@@ -111,11 +116,9 @@
                                                   IsEnabled="False"/>
 
                                     <!-- Chat Messages -->
-                                    <TextBlock Grid.Column="2"
-                                               Text="{Binding ChatMessage}"
-                                               TextWrapping="Wrap"
-                                               Foreground="White"
-                                               Margin="4,0"/>
+                                    <TextBlock Grid.Column="2">
+                                        [<Run Text="{Binding Timestamp}"/>] <Run Text="{Binding Username}" Foreground="{Binding UserColor}" FontWeight="Bold"/>: <Run Text="{Binding Message}"/>
+                                    </TextBlock>
                                 </Grid>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>

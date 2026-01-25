@@ -63,7 +63,7 @@ public class ProviderViewModel
 
     async void DisplayMessage(MessageContext messageData)
     {
-        MessageItem entry = new(user: messageData.Username, message: messageData.Message, timestamp: messageData.Timestamp);
+        MessageItem entry = new(user: messageData.Username, message: messageData.Message, timestamp: messageData.Timestamp, color: messageData.ChatMessage.UserColor);
 
         if (messageData.ModAction != null)
         {

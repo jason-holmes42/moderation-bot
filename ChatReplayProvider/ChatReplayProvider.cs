@@ -88,7 +88,7 @@ public class ChatReplayProvider : IChatProvider
         // Convert every entry in JSON 'comments' into a ChatMessage, stored in the messageData list
         foreach (TwitchCommentsData entry in DataJSON.comments)
         {
-            messageData.Add(new ChatMessage(entry.commenter.display_name, entry.message.body, entry.content_offset_seconds, ConvertTimestamp(entry.content_offset_seconds)));
+            messageData.Add(new ChatMessage(entry.commenter.display_name, entry.message.body, entry.message.user_color, entry.content_offset_seconds, ConvertTimestamp(entry.content_offset_seconds)));
         }
 
         // Return a list bearing ChatMessages containing the JSON data
@@ -148,7 +148,7 @@ public class ChatReplayProvider : IChatProvider
     public void PostMessage(string username, string outMessage)
     {
         int secondsSinceStart = (int)(DateTime.Now - _replayStart).TotalSeconds;
-        ChatMessage chatMessage = new ChatMessage(username, outMessage, secondsSinceStart, ConvertTimestamp(secondsSinceStart));
+        ChatMessage chatMessage = new ChatMessage(username, outMessage, "#FF0000", secondsSinceStart, ConvertTimestamp(secondsSinceStart));
         MessageReceived(chatMessage);
     }
 

@@ -9,14 +9,16 @@ namespace WPFClient;
 public class MessageItem
 {
     public string Username { get; init; }
-    public Color UserColor { get; init; }
-    public string ChatMessage { get; init; }
+    public string UserColor { get; init; }
+    public string Message { get; init; }
+    public string Timestamp { get; init; }
     public string BotReaction { get; set; } = "";
 
-    public MessageItem(string user, string message, string timestamp, Color? color = null)
+    public MessageItem(string user, string message, string timestamp, string color)
     {
         Username = user;
-        UserColor = color ?? Color.White;
-        ChatMessage = $"[{timestamp}] {user}: {message}";
+        Message = message;
+        Timestamp = timestamp;
+        UserColor = color;
     }
 }
