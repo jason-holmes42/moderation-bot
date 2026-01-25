@@ -67,14 +67,30 @@ public class ProviderViewModel
 
         if (messageData.ModAction != null)
         {
+            switch (messageData.ModAction.Punishment)
+            {
+                case ChatModerationBot.Filtering.PunishmentType.Warning:
+                    entry.State = MessageResponseState.Warning;
+                    break;
+                case ChatModerationBot.Filtering.PunishmentType.Timeout:
+                    entry.State = MessageResponseState.Timeout;
+                    break;
+                case ChatModerationBot.Filtering.PunishmentType.Ban:
+                default:
+                    entry.State = MessageResponseState.Ban;
+                    break;
+            }
+
             entry.BotReaction = $"{messageData.ModAction.Punishment} on {messageData.ModAction.TargetUser}. Reason: {messageData.ModAction.Reason}";
         }
         else if (messageData.ReactionType == ChatModerationBot.Core.ReactionType.FilterExempt)
         {
+            entry.State = MessageResponseState.FilterExempt;
             entry.BotReaction = $"Filter triggered, but {messageData.Username}'s permissions level exempts them from punishment.";
         }
         else if (messageData.ReactionType != ChatModerationBot.Core.ReactionType.None)
         {
+            entry.State = MessageResponseState.Command;
             entry.BotReaction = $"Command identified: {messageData.ReactionString}";
         }
 

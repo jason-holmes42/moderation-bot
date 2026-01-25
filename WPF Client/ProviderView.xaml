@@ -91,36 +91,80 @@
                               Grid.ColumnSpan="3">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="3*" />
-                                            <ColumnDefinition Width="4" />
-                                            <ColumnDefinition Width="7*" />
-                                        </Grid.ColumnDefinitions>
-                                        <Grid.Resources>
-                                            <Style TargetType="TextBlock">
-                                                <Setter Property="TextWrapping" Value="Wrap"/>
-                                                <Setter Property="Foreground" Value="White"/>
-                                                <Setter Property="FontSize" Value="14"/>
-                                                <Setter Property="Margin" Value="4,0"/>
+                                    <Border CornerRadius="10">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding State}" Value="{x:Static local:MessageResponseState.Timeout}">
+                                                        <Setter Property="Background">
+                                                            <Setter.Value>
+                                                                <SolidColorBrush Color="DarkGoldenrod" Opacity="0.4"/>
+                                                            </Setter.Value>
+                                                        </Setter>
+                                                        <Setter Property="BorderBrush" Value="Orange"/>
+                                                        <Setter Property="BorderThickness" Value="1"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding State}" Value="{x:Static local:MessageResponseState.Ban}">
+                                                        <Setter Property="Background">
+                                                            <Setter.Value>
+                                                                <SolidColorBrush Color="DarkRed" Opacity="0.4"/>
+                                                            </Setter.Value>
+                                                        </Setter>
+                                                        <Setter Property="BorderBrush" Value="Red"/>
+                                                        <Setter Property="BorderThickness" Value="1"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding State}" Value="{x:Static local:MessageResponseState.FilterExempt}">
+                                                        <Setter Property="Background">
+                                                            <Setter.Value>
+                                                                <SolidColorBrush Color="DarkSlateGray" Opacity="0.4"/>
+                                                            </Setter.Value>
+                                                        </Setter>
+                                                        <Setter Property="BorderBrush" Value="Green"/>
+                                                        <Setter Property="BorderThickness" Value="1"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding State}" Value="{x:Static local:MessageResponseState.Command}">
+                                                        <Setter Property="Background">
+                                                            <Setter.Value>
+                                                                <SolidColorBrush Color="MidnightBlue" Opacity="0.4"/>
+                                                            </Setter.Value>
+                                                        </Setter>
+                                                        <Setter Property="BorderBrush" Value="Blue"/>
+                                                        <Setter Property="BorderThickness" Value="1"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
                                             </Style>
-                                        </Grid.Resources>
+                                        </Border.Style>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="3*" />
+                                                <ColumnDefinition Width="4" />
+                                                <ColumnDefinition Width="7*" />
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.Resources>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="TextWrapping" Value="Wrap"/>
+                                                    <Setter Property="Foreground" Value="White"/>
+                                                    <Setter Property="FontSize" Value="14"/>
+                                                    <Setter Property="Margin" Value="4,0"/>
+                                                </Style>
+                                            </Grid.Resources>
 
-                                        <!-- Bot Reactions -->
-                                        <TextBlock Grid.Column="0"
+                                            <!-- Bot Reactions -->
+                                            <TextBlock Grid.Column="0"
                                                Text="{Binding BotReaction}"/>
 
-                                        <GridSplitter Grid.Column="1"
+                                            <GridSplitter Grid.Column="1"
                                                   Background="#FF2D2D30"
                                                   HorizontalAlignment="Stretch"
                                                   ResizeBehavior="PreviousAndNext"
                                                   IsEnabled="False"/>
 
-                                        <!-- Chat Messages -->
-                                        <TextBlock Grid.Column="2">
-                                        [<Run Text="{Binding Timestamp}"/>] <Run Text="{Binding Username}" Foreground="{Binding UserColor}" FontWeight="Bold"/>: <Run Text="{Binding Message}"/>
-                                        </TextBlock>
-                                    </Grid>
+                                            <!-- Chat Messages -->
+                                            <TextBlock Grid.Column="2">
+                                                [<Run Text="{Binding Timestamp}"/>] <Run Text="{Binding Username}" Foreground="{Binding UserColor}" FontWeight="Bold"/>: <Run Text="{Binding Message}"/>
+                                            </TextBlock>
+                                        </Grid>
+                                    </Border>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>

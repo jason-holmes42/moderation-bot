@@ -13,6 +13,7 @@ public class MessageItem
     public string Message { get; init; }
     public string Timestamp { get; init; }
     public string BotReaction { get; set; } = "";
+    public MessageResponseState State { get; set; } = MessageResponseState.None;
 
     public MessageItem(string user, string message, string timestamp, string color)
     {
