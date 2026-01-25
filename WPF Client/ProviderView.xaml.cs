@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -21,12 +22,25 @@ namespace WPFClient;
 public partial class ProviderView : UserControl
 {
     public event Action<ProviderView>? RequestClose;
+
+    private readonly double minWinHeight = 250;
+    private readonly double minWinWidth = 500;
+
     public ProviderView(ProviderViewModel viewModel)
     {
         InitializeComponent();
         DataContext = viewModel;
 
         viewModel.MessageItems.CollectionChanged += MessageItems_CollectionChanged;
+
+        ResizeRight.DragDelta += ResizeThumb_DragDelta;
+        ResizeLeft.DragDelta += ResizeThumb_DragDelta;
+        ResizeTop.DragDelta += ResizeThumb_DragDelta;
+        ResizeBottom.DragDelta += ResizeThumb_DragDelta;
+        ResizeCornerBR.DragDelta += ResizeThumb_DragDelta;
+        ResizeCornerBL.DragDelta += ResizeThumb_DragDelta;
+        ResizeCornerTR.DragDelta += ResizeThumb_DragDelta;
+        ResizeCornerTL.DragDelta += ResizeThumb_DragDelta;
     }
 
     // Chat input functions
@@ -128,6 +142,53 @@ public partial class ProviderView : UserControl
             {
                 sclMessages.ScrollToEnd();
             }), System.Windows.Threading.DispatcherPriority.Loaded);
+        }
+    }
+
+    // Control resize functionality
+    private void ResizeThumb_DragDelta(object sender, DragDeltaEventArgs e)
+    {
+        Thumb thumb = (Thumb)sender;
+
+        // Identify in which direction(s) to change the window
+        int horizontalSign = 0;
+        int verticalSign = 0;
+
+        // Alignment defaults to 'Stretch' if not set, so we can use it to identify which side of the window the controls are on.
+        if (thumb.HorizontalAlignment == HorizontalAlignment.Left)
+        {
+            // The math of control resizing assumes a right/bottom bias, meaning left and top controls need to invert their math to resize correctly.
+            horizontalSign = -1;
+        }
+        else if (thumb.HorizontalAlignment == HorizontalAlignment.Right)
+        {
+            horizontalSign = 1;
+        }
+        // Else would mean alignment = Stretch, which would be either top or bottom. Since those should have their horizontal axis locked, we don't do anything with the width.
+
+        if (thumb.VerticalAlignment == VerticalAlignment.Top)
+        {
+            verticalSign = -1;
+        }
+        else if (thumb.VerticalAlignment== VerticalAlignment.Bottom)
+        {
+            verticalSign = 1;
+        }
+
+        // Apply any changes accordingly
+        double newWidth = Width + (e.HorizontalChange * horizontalSign);
+        double newHeight = Height + (e.VerticalChange * verticalSign);
+
+        if (newWidth > minWinWidth)
+        {
+            this.Width = newWidth;
+            // Since location is also based on the top left corner of a control, you also need to move the control while resizing top or left sides to get the proper effect.
+            if (horizontalSign == -1) Canvas.SetLeft(this, Canvas.GetLeft(this) + e.HorizontalChange);
+        }
+        if (newHeight > minWinHeight)
+        {
+            this.Height = newHeight;
+            if (verticalSign == -1)Canvas.SetTop(this, Canvas.GetTop(this) + e.VerticalChange);
         }
     }
 }

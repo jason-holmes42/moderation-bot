@@ -20,11 +20,12 @@
             </Style.Resources>
         </Style>
     </UserControl.Resources>
-    
-    <Border BorderBrush="DarkViolet" BorderThickness="1" Unloaded="ProviderView_Unloaded">
-        <DockPanel>
-            <!-- Title Bar -->
-            <Grid DockPanel.Dock="Top"
+
+    <Grid>
+        <Border BorderBrush="DarkViolet" BorderThickness="1" Unloaded="ProviderView_Unloaded">
+            <DockPanel>
+                <!-- Title Bar -->
+                <Grid DockPanel.Dock="Top"
                   Height="28"
                   Background="#FF2D2D30"
                   x:Name="TitleBar"
@@ -32,27 +33,27 @@
                   MouseMove="TitleBar_MouseMove"
                   MouseLeftButtonUp="TitleBar_MouseLeftButtonUp">
 
-                <TextBlock VerticalAlignment="Center"
+                    <TextBlock VerticalAlignment="Center"
                            Margin="8,0"
                            Foreground="White">
-                    <TextBlock.Text>
-                        <MultiBinding StringFormat="{}{0} | {1}">
-                            <Binding Path="ProviderName"/>
-                            <Binding Path="UserIdentity"/>
-                        </MultiBinding>
-                    </TextBlock.Text>
-                </TextBlock>
-                <Button HorizontalAlignment="Right" Margin="2" Width="25" Height="25" Content="✕" Click="btnClose"/>
-            </Grid>
-            
-            <!-- Chat Input -->
-            <Grid DockPanel.Dock="Bottom" Height="25" VerticalAlignment="Bottom" Background="DimGray">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="75"/>
-                </Grid.ColumnDefinitions>
+                        <TextBlock.Text>
+                            <MultiBinding StringFormat="{}{0} | {1}">
+                                <Binding Path="ProviderName"/>
+                                <Binding Path="UserIdentity"/>
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+                    <Button HorizontalAlignment="Right" Margin="2" Width="25" Height="25" Content="✕" Click="btnClose"/>
+                </Grid>
 
-                <TextBox Name="txtChatInput" 
+                <!-- Chat Input -->
+                <Grid DockPanel.Dock="Bottom" Height="25" VerticalAlignment="Bottom" Background="DimGray">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="75"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBox Name="txtChatInput" 
                          Grid.Column="0" 
                          Padding="2" 
                          Foreground="Gray" 
@@ -61,70 +62,103 @@
                          KeyDown="ChatInput_KeyDown"
                          Loaded="ChatInput_Loaded"/>
 
-                <Button Grid.Column="1"
+                    <Button Grid.Column="1"
                         Content="{Binding [SendButton], Source={x:Static local:LocalizationManager.Instance}, TargetNullValue='Send'}"
                         Click="ChatInput_Send"/>
-            </Grid>
+                </Grid>
 
-            <!-- Main Content -->
-            <!-- DARK gray background, white text. Wraps and dictates the size of the "line" for both sections. Each line has some padding above and below-->
-            <ScrollViewer VerticalScrollBarVisibility="Auto" Name="sclMessages">
-                <Grid Background="#FF18181B">
-                    <Grid.ColumnDefinitions>
-                        <!-- Column 30% for bot reactions-->
-                        <ColumnDefinition Width="3*" />
-                        <!-- Some alternation (GridSplitter) from the main window to visually separate. Messages should be in-line with their triggering message. -->
-                        <ColumnDefinition Width="4" />
-                        <!-- Column 70% for incoming messages-->
-                        <ColumnDefinition Width="7*" />
-                    </Grid.ColumnDefinitions>
+                <!-- Main Content -->
+                <!-- DARK gray background, white text. Wraps and dictates the size of the "line" for both sections. Each line has some padding above and below-->
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Name="sclMessages">
+                    <Grid Background="#FF18181B">
+                        <Grid.ColumnDefinitions>
+                            <!-- Column 30% for bot reactions-->
+                            <ColumnDefinition Width="3*" />
+                            <!-- Some alternation (GridSplitter) from the main window to visually separate. Messages should be in-line with their triggering message. -->
+                            <ColumnDefinition Width="4" />
+                            <!-- Column 70% for incoming messages-->
+                            <ColumnDefinition Width="7*" />
+                        </Grid.ColumnDefinitions>
 
-                    <GridSplitter Grid.Column="1"
+                        <GridSplitter Grid.Column="1"
                               Background="#FF2D2D30"
                               HorizontalAlignment="Stretch"
                               ResizeBehavior="PreviousAndNext"
                               IsEnabled="False"/>
 
-                    <ItemsControl ItemsSource="{Binding MessageItems}"
+                        <ItemsControl ItemsSource="{Binding MessageItems}"
                               Grid.Column="0"
                               Grid.ColumnSpan="3">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="3*" />
-                                        <ColumnDefinition Width="4" />
-                                        <ColumnDefinition Width="7*" />
-                                    </Grid.ColumnDefinitions>
-                                    <Grid.Resources>
-                                        <Style TargetType="TextBlock">
-                                            <Setter Property="TextWrapping" Value="Wrap"/>
-                                            <Setter Property="Foreground" Value="White"/>
-                                            <Setter Property="FontSize" Value="14"/>
-                                            <Setter Property="Margin" Value="4,0"/>
-                                        </Style>
-                                    </Grid.Resources>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="3*" />
+                                            <ColumnDefinition Width="4" />
+                                            <ColumnDefinition Width="7*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.Resources>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="TextWrapping" Value="Wrap"/>
+                                                <Setter Property="Foreground" Value="White"/>
+                                                <Setter Property="FontSize" Value="14"/>
+                                                <Setter Property="Margin" Value="4,0"/>
+                                            </Style>
+                                        </Grid.Resources>
 
-                                    <!-- Bot Reactions -->
-                                    <TextBlock Grid.Column="0"
+                                        <!-- Bot Reactions -->
+                                        <TextBlock Grid.Column="0"
                                                Text="{Binding BotReaction}"/>
 
-                                    <GridSplitter Grid.Column="1"
+                                        <GridSplitter Grid.Column="1"
                                                   Background="#FF2D2D30"
                                                   HorizontalAlignment="Stretch"
                                                   ResizeBehavior="PreviousAndNext"
                                                   IsEnabled="False"/>
 
-                                    <!-- Chat Messages -->
-                                    <TextBlock Grid.Column="2">
+                                        <!-- Chat Messages -->
+                                        <TextBlock Grid.Column="2">
                                         [<Run Text="{Binding Timestamp}"/>] <Run Text="{Binding Username}" Foreground="{Binding UserColor}" FontWeight="Bold"/>: <Run Text="{Binding Message}"/>
-                                    </TextBlock>
-                                </Grid>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </Grid>
-            </ScrollViewer>
-        </DockPanel>
-    </Border>
+                                        </TextBlock>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Grid>
+                </ScrollViewer>
+            </DockPanel>
+        </Border>
+
+        <Thumb x:Name="ResizeLeft" Width="5"
+               HorizontalAlignment="Left"
+               Cursor="SizeWE" Opacity="0"/>
+
+        <Thumb x:Name="ResizeRight" Width="5"
+               HorizontalAlignment="Right"
+               Cursor="SizeWE" Opacity="0"/>
+
+        <Thumb x:Name="ResizeTop" Height="5"
+               VerticalAlignment="Top"
+               Cursor="SizeNS" Opacity="0"/>
+
+        <Thumb x:Name="ResizeBottom" Height="5"
+               VerticalAlignment="Bottom"
+               Cursor="SizeNS" Opacity="0"/>
+
+        <Thumb x:Name="ResizeCornerBR" Width="5" Height="5"
+               HorizontalAlignment="Right" VerticalAlignment="Bottom"
+               Cursor="SizeNWSE" Opacity="0"/>
+
+        <Thumb x:Name="ResizeCornerBL" Width="5" Height="5"
+               HorizontalAlignment="Left" VerticalAlignment="Bottom"
+               Cursor="SizeNESW" Opacity="0"/>
+
+        <Thumb x:Name="ResizeCornerTR" Width="5" Height="5"
+               HorizontalAlignment="Right" VerticalAlignment="Top"
+               Cursor="SizeNESW" Opacity="0"/>
+
+        <Thumb x:Name="ResizeCornerTL" Width="5" Height="5"
+               HorizontalAlignment="Left" VerticalAlignment="Top"
+               Cursor="SizeNWSE" Opacity="0"/>
+    </Grid>
 </UserControl>
