@@ -3,9 +3,10 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WPFClient"
         xmlns:commands="clr-namespace:WPFClient.Commands"
         mc:Ignorable="d"
-        Title="Chat Moderation Bot" Height="720" Width="1080"
+        Title="{Binding [MainWindowTitle], Source={x:Static local:LocalizationManager.Instance}}" Height="720" Width="1080"
         WindowStartupLocation="CenterScreen">
     <Window.CommandBindings>
         <CommandBinding Command="commands:CustomCommands.Exit" CanExecute="ExitCommand_CanExecute" Executed="ExitCommand_Executed" />
@@ -13,10 +14,14 @@
     </Window.CommandBindings>
     <DockPanel>
         <Menu DockPanel.Dock="Top" Margin="5" Background="White">
-            <MenuItem Header="_File" MinWidth="40">
-                <MenuItem Command="commands:CustomCommands.NewProvider" CommandTarget="{Binding NewProviderCommand}"/>
+            <MenuItem Header="{Binding [MenuFile], Source={x:Static local:LocalizationManager.Instance}, TargetNullValue='File'}" MinWidth="40" MinHeight="20">
+                <MenuItem Header="{Binding [NewProviderCommand], Source={x:Static local:LocalizationManager.Instance}}" Command="commands:CustomCommands.NewProvider" CommandTarget="{Binding NewProviderCommand}"/>
                 <Separator />
-                <MenuItem Command="commands:CustomCommands.Exit"/>
+                <MenuItem Header="{Binding [ExitCommand], Source={x:Static local:LocalizationManager.Instance}}" Command="commands:CustomCommands.Exit"/>
+            </MenuItem>
+            <MenuItem Header="{Binding [MenuLanguage], Source={x:Static local:LocalizationManager.Instance}, TargetNullValue='Language'}" MinWidth="40" MinHeight="20">
+                <MenuItem Header="{Binding [MenuLanguageEN], Source={x:Static local:LocalizationManager.Instance}, TargetNullValue='English'}" Command="{Binding ChangeLanguageCommand}" CommandParameter="en-US"/>
+                <MenuItem Header="{Binding [MenuLanguageJP], Source={x:Static local:LocalizationManager.Instance}, TargetNullValue='日本語'}" Command="{Binding ChangeLanguageCommand}" CommandParameter="ja-JP"/>
             </MenuItem>
         </Menu>
         

@@ -23,7 +23,6 @@ public partial class NewProviderDialog : Window
     public ProviderID selectedProvider { get; private set; }
     public string? fileToLoad { get; private set; }
 
-    private string identityPlaceholder = "Enter your identity on the chosen platform...";
     private bool providerIsSet = false;
 
     public NewProviderDialog()
@@ -47,19 +46,19 @@ public partial class NewProviderDialog : Window
     {
         if (!providerIsSet)
         {
-            MessageBox.Show("Please select a provider.");
+            MessageBox.Show(LocalizationManager.Instance["Error_NewProviderSelectProvider"], LocalizationManager.Instance["Error"]);
             return;
         }
 
         if (selectedProvider == ProviderID.ChatReplay && fileToLoad == null)
         {
-            MessageBox.Show("Please select a chat density.");
+            MessageBox.Show(LocalizationManager.Instance["Error_NewProviderSelectDensity"], LocalizationManager.Instance["Error"]);
             return;
         }
 
-        if (txtIdentity.Text == identityPlaceholder || txtIdentity.Text.Contains(' '))
+        if (txtIdentity.Text == LocalizationManager.Instance["IdentityInputPlaceholder"] || txtIdentity.Text.Contains(' '))
         {
-            MessageBox.Show("Please enter an identity for this platform.");
+            MessageBox.Show(LocalizationManager.Instance["Error_NewProviderEnterIdentity"], LocalizationManager.Instance["Error"]);
             return;
         }
 
@@ -70,7 +69,7 @@ public partial class NewProviderDialog : Window
     private void Identity_GotFocus(object sender, RoutedEventArgs e)
     {
         TextBox textBox = sender as TextBox;
-        if (textBox != null && textBox.Text == identityPlaceholder)
+        if (textBox != null && textBox.Text == LocalizationManager.Instance["IdentityInputPlaceholder"])
         {
             textBox.Text = string.Empty;
             textBox.Foreground = new SolidColorBrush(Colors.Black);
@@ -82,8 +81,14 @@ public partial class NewProviderDialog : Window
         TextBox textBox = sender as TextBox;
         if (textBox != null && string.IsNullOrEmpty(textBox.Text))
         {
-            textBox.Text = identityPlaceholder;
+            textBox.Text = LocalizationManager.Instance["IdentityInputPlaceholder"];
             textBox.Foreground = new SolidColorBrush(Colors.Gray);
         }
+    }
+
+    private void Identity_Loaded(object sender, RoutedEventArgs e)
+    {
+        TextBox textBox = sender as TextBox;
+        textBox.Text = LocalizationManager.Instance["IdentityInputPlaceholder"];
     }
 }

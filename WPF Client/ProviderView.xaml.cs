@@ -20,8 +20,6 @@ namespace WPFClient;
 /// </summary>
 public partial class ProviderView : UserControl
 {
-    string _chatInputPlaceholder = "Enter a message to send to chat.";
-
     public event Action<ProviderView>? RequestClose;
     public ProviderView(ProviderViewModel viewModel)
     {
@@ -52,7 +50,7 @@ public partial class ProviderView : UserControl
     private void ChatInput_GotFocus(object sender, RoutedEventArgs e)
     {
         TextBox textBox = sender as TextBox;
-        if (textBox != null && textBox.Text == _chatInputPlaceholder)
+        if (textBox != null && textBox.Text == LocalizationManager.Instance["ChatInputPlaceholder"])
         {
             textBox.Text = string.Empty;
             textBox.Foreground = new SolidColorBrush(Colors.Black);
@@ -63,10 +61,16 @@ public partial class ProviderView : UserControl
         TextBox textBox = sender as TextBox;
         if (textBox != null && string.IsNullOrEmpty(textBox.Text))
         {
-            textBox.Text = _chatInputPlaceholder;
+            textBox.Text = LocalizationManager.Instance["ChatInputPlaceholder"];
             textBox.Foreground = new SolidColorBrush(Colors.Gray);
         }
     }
+    private void ChatInput_Loaded(object sender, RoutedEventArgs e)
+    {
+        TextBox textBox = sender as TextBox;
+        textBox.Text = LocalizationManager.Instance["ChatInputPlaceholder"];
+    }
+
     // X to close functionality
     private void btnClose(object sender,  RoutedEventArgs e)
     {

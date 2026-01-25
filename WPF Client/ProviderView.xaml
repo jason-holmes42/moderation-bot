@@ -56,13 +56,13 @@
                          Grid.Column="0" 
                          Padding="2" 
                          Foreground="Gray" 
-                         Text="Enter a message to send to chat."
                          GotFocus="ChatInput_GotFocus" 
                          LostFocus="ChatInput_LostFocus"
-                         KeyDown="ChatInput_KeyDown"/>
+                         KeyDown="ChatInput_KeyDown"
+                         Loaded="ChatInput_Loaded"/>
 
                 <Button Grid.Column="1"
-                        Content="Send"
+                        Content="{Binding [SendButton], Source={x:Static local:LocalizationManager.Instance}, TargetNullValue='Send'}"
                         Click="ChatInput_Send"/>
             </Grid>
 

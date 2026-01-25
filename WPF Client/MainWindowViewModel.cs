@@ -21,6 +21,12 @@ public class MainWindowViewModel
     Dictionary<ProviderID, ProviderView> _currentViews = new();
 
     public RelayCommand NewProviderCommand => new(execute => StartProvider());
+    public RelayCommand ChangeLanguageCommand => new(parameter => ChangeCulture((string)parameter));
+
+    public MainWindowViewModel()
+    {
+        LocalizationManager.Instance.ChangeCulture("ja-JP");
+    }
 
     public async Task InitializeAsync()
     {
@@ -103,5 +109,10 @@ public class MainWindowViewModel
         {
             _currentViews.Remove(viewModel.Provider);
         }
+    }
+
+    private void ChangeCulture(string newCulture)
+    {
+        LocalizationManager.Instance.ChangeCulture(newCulture);
     }
 }

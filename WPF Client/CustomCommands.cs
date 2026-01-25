@@ -10,7 +10,7 @@ public static class CustomCommands
 {
     public static readonly RoutedUICommand Exit = new RoutedUICommand
         (
-            "Exit",
+            LocalizationManager.Instance["ExitCommand"],
             "Exit",
             typeof(CustomCommands),
             new InputGestureCollection()
@@ -21,8 +21,8 @@ public static class CustomCommands
 
     public static readonly RoutedUICommand NewProvider = new RoutedUICommand
         (
-            "Start _New Provider",
-            "Start _New Provider",
+            LocalizationManager.Instance["NewProviderCommand"],
+            "NewProvider",
             typeof(CustomCommands),
             new InputGestureCollection()
             {

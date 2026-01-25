@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:WPFClient"
         xmlns:providers="clr-namespace:ChatModerationBot.Core.Providers;assembly=ChatModerationBot"
         mc:Ignorable="d"
-        Title="Start Provider"
+        Title="{Binding [NewProviderDialog], Source={x:Static local:LocalizationManager.Instance}, TargetNullValue='Start New Provider'}"
         SizeToContent="WidthAndHeight"
         WindowStyle="SingleBorderWindow"
         WindowStartupLocation="CenterOwner"
@@ -42,6 +42,7 @@
                             <!-- Selected -->
                             <Trigger Property="IsChecked" Value="True">
                                 <Setter TargetName="ProviderCardBorder" Property="BorderBrush" Value="DodgerBlue"/>
+                                <Setter TargetName="ProviderCardBorder" Property="BorderThickness" Value="2"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -68,15 +69,18 @@
                 <StackPanel>
                     <DockPanel VerticalAlignment="Center">
                         <Image Source="Images/twitch_glitch_VOD.png" Height="40" Width="40" Margin="0,0,5,0"/>
-                        <TextBlock HorizontalAlignment="Center" FontSize="14" TextAlignment="Center" Margin="0">
-                            Twitch <LineBreak/> VOD Chat Replay
+                        <TextBlock>Test Text</TextBlock>
+                        <TextBlock HorizontalAlignment="Center" FontSize="14" TextAlignment="Center" Margin="0"
+                                   Text="{Binding [TwitchVODTitle], Source={x:Static local:LocalizationManager.Instance}, TargetNullValue='Twitch\nVOD Chat Replay'}">
                         </TextBlock>
                     </DockPanel>
-                    <TextBlock Text="Replay a Twitch VOD chat log" />
-                    <Label Content="Choose the chat density:" Margin="-5,10,0,0"/>
-                    <RadioButton Name="rdSlow" GroupName="chatReplayDensity" Checked="Options_Checked" Content="Slow" Tag="low_density_log.json"/>
-                    <RadioButton Name="rdMedium" GroupName="chatReplayDensity" Checked="Options_Checked" Content="Medium" Tag="medium_density_log.json"/>
-                    <RadioButton Name="rdFast" GroupName="chatReplayDensity" Checked="Options_Checked" Content="Fast" Tag="high_density_log.json"/>
+                    <TextBlock Text="{Binding [TwitchVODDesc], Source={x:Static local:LocalizationManager.Instance}, TargetNullValue='Replay a Twitch VOD chat log'}" 
+                               TextWrapping="Wrap"
+                               Margin="0,10,0,0"/>
+                    <Label Content="{Binding [TwitchVODDensity], Source={x:Static local:LocalizationManager.Instance}, TargetNullValue='Choose a chat density:'}" Margin="-5,10,0,0"/>
+                    <RadioButton Name="rdSlow" GroupName="chatReplayDensity" Checked="Options_Checked" Content="{Binding [TwitchVODDensityLow], Source={x:Static local:LocalizationManager.Instance}, TargetNullValue='Low'}" Tag="low_density_log.json"/>
+                    <RadioButton Name="rdMedium" GroupName="chatReplayDensity" Checked="Options_Checked" Content="{Binding [TwitchVODDensityMedium], Source={x:Static local:LocalizationManager.Instance}, TargetNullValue='Medium'}" Tag="medium_density_log.json"/>
+                    <RadioButton Name="rdFast" GroupName="chatReplayDensity" Checked="Options_Checked" Content="{Binding [TwitchVODDensityHigh], Source={x:Static local:LocalizationManager.Instance}, TargetNullValue='High'}" Tag="high_density_log.json"/>
                 </StackPanel>
             </RadioButton>
 
@@ -88,9 +92,13 @@
                 <StackPanel>
                     <DockPanel VerticalAlignment="Center">
                         <Image Source="Images/twitch_glitch.png" Height="40" Width="40" Margin="0,0,5,0"/>
-                        <TextBlock HorizontalAlignment="Center" FontSize="18" Text="Twitch" />
+                        <TextBlock HorizontalAlignment="Center" FontSize="14" TextAlignment="Center" Margin="0"
+                                   Text="{Binding [TwitchTitle], Source={x:Static local:LocalizationManager.Instance}, TargetNullValue='Twitch'}">
+                        </TextBlock>
                     </DockPanel>
-                    <TextBlock Text="Connect to a live Twitch chat" />
+                    <TextBlock Text="{Binding [TwitchDesc], Source={x:Static local:LocalizationManager.Instance}, TargetNullValue='Connect to a live Twitch stream chat.'}" 
+                               TextWrapping="Wrap"
+                               Margin="0,10,0,0"/>
                 </StackPanel>
             </RadioButton>
 
@@ -102,9 +110,13 @@
                 <StackPanel>
                     <DockPanel VerticalAlignment="Center">
                         <Image Source="Images/youtube_icon.png" Height="40" Width="40" Margin="0,0,5,0"/>
-                        <TextBlock HorizontalAlignment="Center" FontSize="18" Text="YouTube" />
+                        <TextBlock HorizontalAlignment="Center" FontSize="14" TextAlignment="Center" Margin="0"
+                                   Text="{Binding [YoutubeTitle], Source={x:Static local:LocalizationManager.Instance}, TargetNullValue='YouTube'}">
+                        </TextBlock>
                     </DockPanel>
-                    <TextBlock Text="Connect to a live YouTube chat" />
+                    <TextBlock Text="{Binding [YoutubeDesc], Source={x:Static local:LocalizationManager.Instance}, TargetNullValue='Connect to a live YouTube chat.'}" 
+                               TextWrapping="Wrap"
+                               Margin="0,10,0,0"/>
                 </StackPanel>
             </RadioButton>
 
@@ -116,21 +128,24 @@
                 <StackPanel>
                     <DockPanel VerticalAlignment="Center">
                         <Image Source="Images/niconicoterebichan.png" Height="40" Width="40" Margin="0,0,5,0"/>
-                        <TextBlock HorizontalAlignment="Center" FontSize="18" Text="ニコニコ" />
+                        <TextBlock HorizontalAlignment="Center" FontSize="14" TextAlignment="Center" Margin="0"
+                                   Text="{Binding [NiconicoTitle], Source={x:Static local:LocalizationManager.Instance}, TargetNullValue='ニコニコ'}">
+                        </TextBlock>
                     </DockPanel>
-                    <TextBlock Text="Connect to a live Nico Nico chat" />
+                    <TextBlock Text="{Binding [NiconicoDesc], Source={x:Static local:LocalizationManager.Instance}, TargetNullValue='Connect to a live Niconico chat.'}" 
+                               TextWrapping="Wrap"
+                               Margin="0,10,0,0"/>
                 </StackPanel>
             </RadioButton>
 
         </StackPanel>
 
-        <Label Content="Platform Identity" Margin="0,0,0,-2"/>
-        <TextBox Name="txtIdentity" Padding="2" Margin="5,0,0,0" Foreground="Gray" GotFocus="Identity_GotFocus" LostFocus="Identity_LostFocus">
-            Enter your identity on the chosen platform...
-        </TextBox>
+        <Label Content="{Binding [PlatformIdentityLabel], Source={x:Static local:LocalizationManager.Instance}, TargetNullValue='Platform Identity'}" Margin="0,0,0,-2"/>
+        <TextBox Name="txtIdentity" Padding="2" Margin="5,0,0,0" Foreground="Gray" GotFocus="Identity_GotFocus" LostFocus="Identity_LostFocus" Loaded="Identity_Loaded"/>
+
         <WrapPanel HorizontalAlignment="Right" Margin="10,5,0,0">
-            <Button Name="btnOK" Click="btnDialogOK_Click" IsDefault="True">OK</Button>
-            <Button Name="btnCancel" IsCancel="True" Margin="10,5,0,5">Cancel</Button>
+            <Button Name="btnOK" Click="btnDialogOK_Click" IsDefault="True" Content="{Binding [OKButton], Source={x:Static local:LocalizationManager.Instance}, TargetNullValue='OK'}"/>
+            <Button Name="btnCancel" IsCancel="True" Margin="10,5,0,5" Content="{Binding [CancelButton], Source={x:Static local:LocalizationManager.Instance}, TargetNullValue='Cancel'}"/>
         </WrapPanel>
     </StackPanel>
 </Window>
