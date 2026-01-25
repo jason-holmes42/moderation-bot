@@ -20,7 +20,7 @@ public class ChatMessage
     {
         Username = user ?? throw new ArgumentNullException(nameof(user));
         Message = msg ?? throw new ArgumentNullException(nameof(msg));
-        UserColor = userColor;
+        UserColor = userColor ?? "#FFFFFF";
         OffsetSeconds = offset;
         Timestamp = time;
     }
