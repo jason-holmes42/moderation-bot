@@ -427,3 +427,5 @@ FodyWeavers.xsd
 *.msm
 *.msp
 Full Log.json
+/ConsoleHost/CommentDTO.cs
+/ConsoleHost/ConsoleHost.cs
