@@ -14,7 +14,7 @@ public class ChatReplayProvider : IChatProvider
 
     public ChatEndpoint ChannelIdentity { get; init; }      // Used to identify this specific provider for message routing from BotCore
 
-    int _timeElapsed;            // Used to keep track of the seconds elapsed as provided by replay log's offset seconds
+    double _timeElapsed;            // Used to keep track of the seconds elapsed as provided by replay log's offset seconds
     DateTime _replayStart;       // Used to track time since replay began for dynamic timestamp creation for PostMessage
 
     List<ChatMessage> _commentData;
@@ -102,7 +102,7 @@ public class ChatReplayProvider : IChatProvider
         _replayStart = DateTime.Now; // For tracking against real time for use with PostMessage function
 
         // Initial delay to match up with the first message's delay.
-        await Task.Delay(replayData[0].OffsetSeconds * 1000, cancelToken);
+        await Task.Delay((int)(replayData[0].OffsetSeconds * 1000), cancelToken);
 
         while (!cancelToken.IsCancellationRequested)
         {
@@ -115,7 +115,7 @@ public class ChatReplayProvider : IChatProvider
                 if (i + 1 < replayData.Count)
                 {
                     // Handle the wait until the next message using the next message's offset time.
-                    await Task.Delay((replayData[i + 1].OffsetSeconds - _timeElapsed) * 1000, cancelToken);
+                    await Task.Delay((int)((replayData[i + 1].OffsetSeconds - _timeElapsed) * 1000), cancelToken);
                 }
                 else
                 {
@@ -126,7 +126,7 @@ public class ChatReplayProvider : IChatProvider
     }
 
     // Convert the content_offset_seconds information into a time-since-VOD-began timestamp
-    string ConvertTimestamp(int offsetSeconds)
+    string ConvertTimestamp(double offsetSeconds)
     {
         TimeSpan elapsedTime = TimeSpan.FromSeconds(offsetSeconds);
         string timeString;

@@ -37,7 +37,7 @@ public class TwitchCommentsData
     // channel_id - the channel ID from which the chat originated. Should be the same as the streamer ID. Not relevant.
     // content_type - "video"; not relevant
     // content_id - UID for the VOD; not currently relevant
-    public int content_offset_seconds { get; init; }      // The offset (in seconds) from the start of the VOD that the chat message occurred. Necessary for proper timing.
+    public double content_offset_seconds { get; init; }      // The offset (in seconds) from the start of the VOD that the chat message occurred. Necessary for proper timing.
     public TwitchCommenterData commenter { get; init; }   // Information about the commenter. Necessary.
     public TwitchMessageData message { get; init; }       // Information about the message. Necessary.
 
