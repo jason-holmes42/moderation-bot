@@ -7,9 +7,16 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+    <AssemblyName>Chat Moderation Bot</AssemblyName>
+    <ApplicationIcon>app.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="config\testuser\commands.json" />
+    <None Remove="config\testuser\filter.json" />
+    <None Remove="config\testuser\permissions.json" />
+    <None Remove="config\testuser\user_identity.json" />
+    <None Remove="icon.png" />
     <None Remove="Images\niconicoterebichan.png" />
     <None Remove="Images\twitch_glitch.png" />
     <None Remove="Images\twitch_glitch_VOD.png" />
@@ -17,6 +24,19 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="app.ico" />
+    <Content Include="config\testuser\commands.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="config\testuser\filter.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="config\testuser\permissions.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="config\testuser\user_identity.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Images\twitch_glitch_VOD.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -48,9 +68,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Update="Localization\Strings.en-US.resx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Localization\Strings.ja-JP.resx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
     <EmbeddedResource Update="Localization\Strings.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
 

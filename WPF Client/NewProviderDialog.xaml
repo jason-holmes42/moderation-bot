@@ -69,7 +69,6 @@
                 <StackPanel>
                     <DockPanel VerticalAlignment="Center">
                         <Image Source="Images/twitch_glitch_VOD.png" Height="40" Width="40" Margin="0,0,5,0"/>
-                        <TextBlock>Test Text</TextBlock>
                         <TextBlock HorizontalAlignment="Center" FontSize="14" TextAlignment="Center" Margin="0"
                                    Text="{Binding [TwitchVODTitle], Source={x:Static local:LocalizationManager.Instance}, TargetNullValue='Twitch\nVOD Chat Replay'}">
                         </TextBlock>
