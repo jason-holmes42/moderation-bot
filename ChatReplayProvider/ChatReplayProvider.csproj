@@ -7,21 +7,30 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="replayLogs\high_density_log.json" />
+    <None Remove="replayLogs\low_density_log.json" />
+    <None Remove="replayLogs\medium_density_log.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="replayLogs\high_density_log.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="replayLogs\low_density_log.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="replayLogs\medium_density_log.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\BotCore\ChatModerationBot.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <None Update="replayLogs\Full Log.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="replayLogs\high_density_log.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="replayLogs\low_density_log.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="replayLogs\medium_density_log.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 

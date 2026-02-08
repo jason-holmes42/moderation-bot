@@ -87,10 +87,10 @@
                 "logo": ""
             },
             "message": {
-                "body": "!permissions set TestUser none",
+                "body": "!filter off",
                 "bits_spent": 0,
                 "fragments": [{
-                        "text": "!permissions set TestUser none",
+                        "text": "!filter off",
                         "emoticon": null
                     }
                 ],
@@ -99,7 +99,7 @@
                         "version": ""
                     }
                 ],
-                "user_color": "#000000",
+                "user_color": "#00FF00",
                 "emoticons": []
             }
         }, {
@@ -110,19 +110,19 @@
             "content_id": "2584527176",
             "content_offset_seconds": 6,
             "commenter": {
-                "display_name": "PJDiCesare",
+                "display_name": "DemonstrationPlant",
                 "_id": "00000000",
-                "name": "PJDiCesare",
+                "name": "DemonstrationPlant",
                 "bio": "",
                 "created_at": "2025-12-19T05:31:00.000000Z",
                 "updated_at": "2025-12-19T05:31:00.000000Z",
                 "logo": ""
             },
             "message": {
-                "body": "!honk",
+                "body": "This is a planted message to demonstrate that the filter does not catch the word 'evoker'!",
                 "bits_spent": 0,
                 "fragments": [{
-                        "text": "!honk",
+                        "text": "This is a planted message to demonstrate that the filter does not catch the word 'evoker'!",
                         "emoticon": null
                     }
                 ],
@@ -131,7 +131,7 @@
                         "version": ""
                     }
                 ],
-                "user_color": "#000000",
+                "user_color": "#FF00FF",
                 "emoticons": []
             }
         }, {
@@ -142,19 +142,19 @@
             "content_id": "2584527176",
             "content_offset_seconds": 7,
             "commenter": {
-                "display_name": "CommandTest3",
+                "display_name": "CommandTest",
                 "_id": "00000000",
-                "name": "CommandTest3",
+                "name": "CommandTest",
                 "bio": "",
                 "created_at": "2025-12-19T05:31:00.000000Z",
                 "updated_at": "2025-12-19T05:31:00.000000Z",
                 "logo": ""
             },
             "message": {
-                "body": "!uptime",
+                "body": "!filter on",
                 "bits_spent": 0,
                 "fragments": [{
-                        "text": "!uptime",
+                        "text": "!filter on",
                         "emoticon": null
                     }
                 ],
@@ -163,7 +163,7 @@
                         "version": ""
                     }
                 ],
-                "user_color": "#000000",
+                "user_color": "#00FF00",
                 "emoticons": []
             }
         }, {
@@ -172,21 +172,21 @@
             "channel_id": "22379976",
             "content_type": "video",
             "content_id": "2584527176",
-            "content_offset_seconds": 8,
+            "content_offset_seconds": 7,
             "commenter": {
-                "display_name": "CommandTest2",
+                "display_name": "DemonstrationPlant",
                 "_id": "00000000",
-                "name": "CommandTest2",
+                "name": "DemonstrationPlant",
                 "bio": "",
                 "created_at": "2025-12-19T05:31:00.000000Z",
                 "updated_at": "2025-12-19T05:31:00.000000Z",
                 "logo": ""
             },
             "message": {
-                "body": "!uptime",
+                "body": "Another planted message demonstrating that the filter for 'evoker' is active again!",
                 "bits_spent": 0,
                 "fragments": [{
-                        "text": "!uptime",
+                        "text": "Another planted message demonstrating that the filter for 'evoker' is active again!",
                         "emoticon": null
                     }
                 ],
@@ -195,7 +195,7 @@
                         "version": ""
                     }
                 ],
-                "user_color": "#000000",
+                "user_color": "#FF00FF",
                 "emoticons": []
             }
         }, {
@@ -224,6 +224,38 @@
                 ],
                 "user_badges": [],
                 "user_color": "#1E90FF",
+                "emoticons": []
+            }
+        }, {
+            "_id": "test",
+            "created_at": "2025-10-06T04:32:28.9705118Z",
+            "channel_id": "22379976",
+            "content_type": "video",
+            "content_id": "2584527176",
+            "content_offset_seconds": 10,
+            "commenter": {
+                "display_name": "DemonstrationPlant",
+                "_id": "00000000",
+                "name": "DemonstrationPlant",
+                "bio": "",
+                "created_at": "2025-12-19T05:31:00.000000Z",
+                "updated_at": "2025-12-19T05:31:00.000000Z",
+                "logo": ""
+            },
+            "message": {
+                "body": "The filter respects Regex entries, so even though the last message avoided the filter, if I say 'summon' by itself, I'll get caught.",
+                "bits_spent": 0,
+                "fragments": [{
+                        "text": "The filter respects Regex entries, so even though the last message avoided the filter, if I say 'summon' by itself, I'll get caught.",
+                        "emoticon": null
+                    }
+                ],
+                "user_badges": [{
+                        "_id": "",
+                        "version": ""
+                    }
+                ],
+                "user_color": "#FF00FF",
                 "emoticons": []
             }
         }, {
@@ -315,7 +347,7 @@
                         "version": ""
                     }
                 ],
-                "user_color": "#000000",
+                "user_color": "#00FF00",
                 "emoticons": []
             }
         }, {
@@ -347,7 +379,7 @@
                         "version": ""
                     }
                 ],
-                "user_color": "#000000",
+                "user_color": "#00FF00",
                 "emoticons": []
             }
         }, {
@@ -379,7 +411,7 @@
                         "version": ""
                     }
                 ],
-                "user_color": "#000000",
+                "user_color": "#00FF00",
                 "emoticons": []
             }
         }, {
@@ -509,7 +541,7 @@
                         "version": ""
                     }
                 ],
-                "user_color": "#000000",
+                "user_color": "#00FF00",
                 "emoticons": []
             }
         }, {
@@ -637,7 +669,7 @@
                         "version": ""
                     }
                 ],
-                "user_color": "#000000",
+                "user_color": "#00FF00",
                 "emoticons": []
             }
         }, {
