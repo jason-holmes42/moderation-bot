@@ -137,7 +137,7 @@
 VOD Chat Replay</value>
   </data>
   <data name="TwitchVODDesc" xml:space="preserve">
-    <value>Replay a provided Twitch VOD chat log in real time, with different densities to demonstrate the bot's abilities.</value>
+    <value>Replay a provided Twitch VOD chat log in real time, with different message density options to demonstrate the bot's abilities.</value>
   </data>
   <data name="TwitchVODDensityHigh" xml:space="preserve">
     <value>High (200 messages per minute)</value>

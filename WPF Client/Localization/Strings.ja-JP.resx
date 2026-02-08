@@ -136,19 +136,19 @@
     <value>Twitch VODチャットリプレイ</value>
   </data>
   <data name="TwitchVODDesc" xml:space="preserve">
-    <value>実時間で設けられたTwitch VODチャットをリプレイします。ボットの能力を見せるためにいろな濃度を選べます。</value>
+    <value>提供されたTwitch VODチャットログをリアルタイムで再生する。ボットはメッセージの密度によってさまざまな能力を発揮する。</value>
   </data>
   <data name="TwitchVODDensityHigh" xml:space="preserve">
-    <value>高（1分２百メッセジー）</value>
+    <value>高（1分あたり200メッセジー）</value>
   </data>
   <data name="TwitchVODDensityMedium" xml:space="preserve">
-    <value>並（1分90メッセジー）</value>
+    <value>中（1分あたり90メッセジー）</value>
   </data>
   <data name="TwitchVODDensityLow" xml:space="preserve">
-    <value>小（1分30メッセジー）</value>
+    <value>低（1分あたり30メッセジー）</value>
   </data>
   <data name="TwitchVODDensity" xml:space="preserve">
-    <value>チャット濃度を選ぶ：</value>
+    <value>チャット濃度を選んでください：</value>
   </data>
   <data name="YoutubeTitle" xml:space="preserve">
     <value>YouTube</value>
@@ -160,14 +160,14 @@
     <value>ニコニコ</value>
   </data>
   <data name="YoutubeDesc" xml:space="preserve">
-    <value>ライブYouTubeストリームに繋ぎます。
+    <value>YouTubeライブチャットに繋ぎます。
 
-完全な実装には、Google OAuthと YouTubeアカウントからの権限付与が必要になり、ここでトリガーされる可能性があります。</value>
+機能をフルに稼働させるために必要なGoogle OAuthとYouTubeアカウントの承認をここで得ることができます。</value>
   </data>
   <data name="TwitchDesc" xml:space="preserve">
-    <value>ライブTwitchストリームに繋ぎます。
+    <value>Twitchライブチャットに繋ぎます。
 
-完全な実装には、OAuth トークンの収集が必要ですが、ここで実行できます。</value>
+機能をフルに稼働させるためにはOAuthトークンが必要ですが、それはここで収集できます。</value>
   </data>
   <data name="NiconicoDesc" xml:space="preserve">
     <value>ライブニコニコストリームに繋ぎます。
@@ -175,10 +175,10 @@
 完全な実装には、コメントの投稿やモデレーションを行うために、適切な権限を持つアカウントの有効なログイン認証情報が必要になります。これらの認証情報はここで収集できます。</value>
   </data>
   <data name="PlatformIdentityLabel" xml:space="preserve">
-    <value>サイトの氏名</value>
+    <value>サイトのユーザー名</value>
   </data>
   <data name="IdentityInputPlaceholder" xml:space="preserve">
-    <value>選んだサイトの氏名を入力してください：</value>
+    <value>選んだサイトのユーザー名を入力してください：</value>
   </data>
   <data name="OKButton" xml:space="preserve">
     <value>OK</value>
