@@ -95,6 +95,15 @@
                                         <Border.Style>
                                             <Style TargetType="Border">
                                                 <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding State}" Value="{x:Static local:MessageResponseState.Warning}">
+                                                        <Setter Property="Background">
+                                                            <Setter.Value>
+                                                                <SolidColorBrush Color="Teal" Opacity="0.4"/>
+                                                            </Setter.Value>
+                                                        </Setter>
+                                                        <Setter Property="BorderBrush" Value="Cyan"/>
+                                                        <Setter Property="BorderThickness" Value="1"/>
+                                                    </DataTrigger>
                                                     <DataTrigger Binding="{Binding State}" Value="{x:Static local:MessageResponseState.Timeout}">
                                                         <Setter Property="Background">
                                                             <Setter.Value>
