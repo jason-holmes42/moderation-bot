@@ -1,0 +1,8 @@
+{
+  "PermissionsSettings": {},
+  "PermissionsList": {
+    "ChatReplay": {
+      "CommandTest": "Moderator"
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "FilterRules": [
+    {
+      "FilterPhrase": "evoker",
+      "PunishType": "Timeout"
+    },
+    {
+      "FilterPhrase": "\\bsummon\\b",
+      "PunishType": "Ban"
+    }
+  ],
+  "FilterSettings": {
+    "FilterEnabled": true,
+    "FilterExemptionLevel": "Moderator"
+  }
+}

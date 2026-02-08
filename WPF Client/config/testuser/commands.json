@@ -1,0 +1,14 @@
+{
+  "CustomCommands": [
+    {
+      "CommandString": "test",
+      "CommandAliases": null,
+      "RequiredPermissions": "None",
+      "CommandResponse": "Test is working!"
+    }
+  ],
+  "CommandSettings": {
+    "CommandChar": "!",
+    "CooldownExemptionLevel": "Moderator"
+  }
+}
