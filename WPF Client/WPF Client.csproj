@@ -37,26 +37,23 @@
     <Content Include="config\testuser\user_identity.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Images\twitch_glitch_VOD.png">
+    <Resource Include="Images\twitch_glitch_VOD.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\youtube_icon.png">
+    </Resource>
+    <Resource Include="Images\youtube_icon.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\niconicoterebichan.png">
+    </Resource>
+    <Resource Include="Images\niconicoterebichan.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </Resource>
+	<Resource Include="Images\twitch_glitch.png">
+	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</Resource>
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BotCore\ChatModerationBot.csproj" />
-    <ProjectReference Include="..\ChatReplayProvider\ChatReplayProvider.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Images\twitch_glitch.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+	  <ProjectReference Include="..\BotCore\ChatModerationBot.csproj" />
+	  <ProjectReference Include="..\ChatReplayProvider\ChatReplayProvider.csproj" />
   </ItemGroup>
 
   <ItemGroup>
