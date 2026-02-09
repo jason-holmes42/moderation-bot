@@ -36,9 +36,13 @@ My original vision for this project was to revitalize the chat moderation bot Iâ
 1.	Revise the structure of the program to be more flexible and modular.
 2.	Allow for one bot to manage multiple platforms simultaneously.
 3.	Make the user experience more palatable to others.
+
 The first goal was achieved by using a more robust planning period, carefully considering the programâ€™s assumptions and needs. This also allowed me to design the chat provider system so that the second goal could be achieved at the same time.
+
 The third goal required building a graphical UI to contain the bot instead of relying on the console terminal. While the resulting UI is simple, it is functional and cleaner than relying purely on console terminal. It also provides a solid foundation upon which to expand functionality for future development. However, the time it took to learn what I needed about WPF and implement it was longer than anticipated.
+
 There are some remaining aspects of the program with which I am displeased. During development, I toyed with the idea of having the provider window include additional windows showing all currently active commands, filters, and permissions. However, because this was not considered during the planning phase, retrofitting the project to support this would have required a significant time investment. Performance is also a concern; because there is no culling system for the provider window, UI performance degrades after a large number of messages have been displayed. This would be my first priority were I to continue development of this project.
+
 Overall, I am pleased with the results.
 
 ## Authorship
