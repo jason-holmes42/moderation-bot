@@ -21,14 +21,20 @@ In 2015, I wrote a simple chat moderation bot for a Twitch streamer. I expanded 
 
 ## Technical Overview
 The bot is implemented in C# with a UI client based on the WPF framework. Supported platforms have a dedicated chat provider module which handles platform connections. This provider implements the IChatProvider interface, which enforces standards on incoming chat messages to ensure smooth processing and routing. It also ensures that the bot is able to communicate with each platform as needed.
+
 The providers convert incoming chat messages into MessageContext objects. The bot accepts these messages using event-based notifications. The MessageContext is then passed through the Filter and Command services, which decide whether a reaction is necessary. Any necessary reactions are sent back to the original provider using the IChatProvider interface. The processed message is sent to the UI for display using event-based notifications.
+
 The diagram below demonstrates the full processing pipeline.
+ 
+ [System flow diagram for the Chat Moderation Bot](system flow chart.png))
  
 Once the core functionality was in place, unit testing was used to ensure edge cases were covered and all assumptions made during planning and development lined up with reality.
 
 ## A Note on Japanese Language Support
 The application UI supports both English and Japanese. The default language is Japanese and users may switch at any time by selecting the 言語/Language option in the menu.
+
 Chat message processing itself is language-agnostic. However, the default settings and provided chat logs assume an English-language chat environment.
+
 Japanese language parsing involves significantly different linguistic processing requirements including complex normalization and tokenization processes that are outside of the scope of this project. However, the system is designed to allow for such extensions in the future with minimal restructuring.
 
 ## Retrospective
