@@ -26,7 +26,7 @@ The providers convert incoming chat messages into MessageContext objects. The bo
 
 The diagram below demonstrates the full processing pipeline.
  
- [System flow diagram for the Chat Moderation Bot](system flow chart.png))
+ ![System flow diagram for the Chat Moderation Bot](system flow chart.png)
  
 Once the core functionality was in place, unit testing was used to ensure edge cases were covered and all assumptions made during planning and development lined up with reality.
 
