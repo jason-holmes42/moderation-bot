@@ -3,6 +3,12 @@
 ## Summary
 This is a chat moderation bot written in C#. It is contained within a WPF client to provide a graphical user interface for ease of use. It is designed to accept chat messages from one or more platforms, assess them for prohibited phrases or requested actions, and respond to the originating platform as required. This allows the user to centralize their moderation systems across all platforms where they stream.
 
+## Compiled Program Download Links / コンパイル済みプログラムのダウンロードリンク
+For ease of access, you can download the fully compiled program here. アクセスを容易にするため、完全にコンパイルされたプログラムをこちらからダウンロードできます。
+
+* Direct Download Link / ダウンロードリンク:  https://42.gigafile.nu/0606-bcb6b6165ac02fb33ca05803ddf9fbc5e
+* No .NET Requirement Download Link / NETとしないダウンロードリンク: https://drive.google.com/drive/u/1/folders/1KGvkm3Gzl0pa6TYVmyAgY57go8PIhtTE
+
 ## Background
 In 2015, I wrote a simple chat moderation bot for a Twitch streamer. I expanded upon its feature set and user base to over a dozen active streamers, actively supporting it for about a year before it was no longer required. At the end of 2025, I revisited the idea. I redesigned it from scratch and wrote a new chat moderation bot in C# to reflect my current programming and architecture design skills.
 
