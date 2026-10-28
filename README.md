@@ -6,7 +6,7 @@ This is a chat moderation bot written in C#. It is contained within a WPF client
 ## Compiled Program Download Links / コンパイル済みプログラムのダウンロードリンク
 For ease of access, you can download the fully compiled program here. アクセスを容易にするため、完全にコンパイルされたプログラムをこちらからダウンロードできます。
 
-* Direct Download Link / ダウンロードリンク:  https://42.gigafile.nu/0606-bcb6b6165ac02fb33ca05803ddf9fbc5e
+* Direct Download Link / ダウンロードリンク: https://drive.google.com/file/d/1YD3JuR72hcuo4r53XT12qZuXmLqYJxL3
 * No .NET Requirement Download Link / NETとしないダウンロードリンク: https://drive.google.com/drive/u/1/folders/1KGvkm3Gzl0pa6TYVmyAgY57go8PIhtTE
 
 ## Background
